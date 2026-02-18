@@ -31,4 +31,4 @@ What does NOT belong here:
 
 -Database code
 -Business logic
--Large JS scripts (those go in app/static/js/)
+-JS scripts (those go in app/static/js/)

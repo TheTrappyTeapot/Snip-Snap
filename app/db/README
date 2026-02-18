@@ -1,0 +1,28 @@
+# app/db/
+
+Database layer: connection management and SQL queries for Postgres.
+
+## Why this exists
+Routes should not contain raw SQL and connection boilerplate. Keeping DB code here:
+- Reduces duplication
+- Improves testability
+- Avoids routes becoming unmaintainable
+- Makes team collaboration cleaner
+
+## Typical files
+- `connection.py`:
+  - Responsible for opening/closing DB connections
+  - Reads DB config from environment variables or a `.env` file
+- `queries.py` (or multiple files later):
+  - Contains SQL and query functions (e.g. `get_users()`, `create_post(...)`)
+  - Returns plain Python data structures to the routes layer
+
+## What belongs here
+- Connection helpers
+- Query functions
+- SQL statements
+
+## What does NOT belong here
+- Flask route decorators or request handling
+- Template rendering
+- Front-end JavaScript

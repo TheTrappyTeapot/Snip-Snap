@@ -1,0 +1,21 @@
+# app/static/
+
+This folder contains static files served directly to the browser.
+
+## Structure
+- `css/` for stylesheets
+- `js/` for client-side JavaScript
+- (optional later) `img/` for images, icons, etc.
+
+## What belongs here
+- CSS files referenced by templates
+- JavaScript files referenced by templates
+- Images and other static assets
+
+## What does NOT belong here
+- HTML templates (those go in `app/templates/`)
+- Python code (those go in `app/`)
+- SQL queries (those go in `app/db/`)
+
+## Notes
+Use Flask’s `url_for("static", filename="...")` to link static files in templates.
