@@ -1,13 +1,5 @@
-# Python
+.venv/
 __pycache__/
 *.pyc
 .env
-venv/
 
-# Node / React
-node_modules/
-dist/
-build/
-
-# OS
-.DS_Store
