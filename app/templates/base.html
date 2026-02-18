@@ -4,7 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ title or "SnipSnap" }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}" />
+  
+    {% block head_extra %}{% endblock %}
   </head>
 
   <body>
@@ -20,6 +24,9 @@
       {% block content %}{% endblock %}
     </main>
 
+    <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
   </body>
 </html>
