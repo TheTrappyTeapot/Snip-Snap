@@ -1,0 +1,19 @@
+# app/
+
+This folder contains the Flask application code.
+
+## What belongs here
+- Flask app entry point (e.g. `app.py`)
+- Route handlers (the functions decorated with `@app.get(...)`, etc.)
+- High-level application wiring (registering routes, config, blueprints later)
+
+## What does NOT belong here
+- SQL queries (these go in `app/db/`)
+- Full HTML pages duplicated across routes (templates go in `app/templates/`)
+- CSS/JS assets (these go in `app/static/`)
+
+## Typical workflow
+When adding a new page:
+1) Add a new route in `app.py`
+2) Create a matching template in `app/templates/`
+3) Add any page-specific JS/CSS in `app/static/` if needed

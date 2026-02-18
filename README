@@ -3,3 +3,54 @@ this is a file
 it contains data
 
 OOOooOooOOOooOoooo
+
+
+----- Project structure (where things live) -----
+
+This repo is organised so that each layer of the app has a clear home:
+-Routes / request handling (Flask) live in app/
+-HTML templates (Jinja) live in app/templates/
+-Static assets (CSS/JS/images) live in app/static/
+-Database connection + queries live in app/db/
+
+
+This separation keeps responsibilities clean:
+-Flask routes decide what to do for a given URL.
+-The DB layer decides how data is stored and retrieved.
+-Templates decide how pages are rendered.
+-Static files add styling and interactivity.
+
+
+Why this structure is used
+-Lower merge conflicts: multiple people can work in different layers without stepping on each other.
+-Easier debugging: if it’s a UI issue, it’s in templates/ or static/; if it’s a data issue, it’s in db/.
+-Scales cleanly: new pages usually mean “add a route + template”, not copy/pasting HTML everywhere.
+
+
+----- How to run locally via VSC terminal -----
+
+Create/activate the virtual environment (Windows PowerShell):
+python -m venv .venv
+.\.venv\Scripts\Activate
+
+Install dependencies:
+pip install -r requirements.txt
+
+Run Flask:
+python -m app.app
+Then Ctrl+click the http://127.0.0.1:5000/ link
+
+
+----- Database notes (safe defaults) -----
+
+Database credentials should not be hard-coded in Python files.
+Use a .env file or environment variables (and keep .env in .gitignore).
+All SQL and DB access should go through app/db/ rather than being written inside routes.
+
+
+----- Rules of thumb ----- 
+
+No SQL in route functions → put it in app/db/
+No business logic in templates → keep templates focused on presentation
+No API keys or any sensitive info stored in Git → use environment variables / .env (ignored)
+Keep pages small → use base.html and blocks to avoid duplication

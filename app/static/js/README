@@ -1,0 +1,17 @@
+# app/static/js/
+
+Client-side JavaScript for the site (runs in the browser).
+
+## What belongs here
+- Event handlers (click, submit, etc.)
+- UI behaviour (show/hide, form validation, simple interactivity)
+- Fetch calls to Flask endpoints (later, for dynamic features)
+
+## What does NOT belong here
+- Database access (DB stays server-side in Python)
+- Secrets/credentials (never store secrets in JS)
+
+## Pattern
+If a page needs specific JS, either:
+- Load a dedicated file for that page, or
+- Keep it in `main.js` if it’s truly global
