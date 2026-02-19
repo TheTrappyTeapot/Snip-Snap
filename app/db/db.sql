@@ -126,13 +126,13 @@ INSERT INTO Barbershop (name, postcode, location_lat, location_lng)
 VALUES
 (
   'Fade Factory',
-  'BN1 1AA',
+  'PO1 2SB',
   50.79536421032783,
   -1.0941994724762119
 ),
 (
   'Sharp Cuts',
-  'BN1 1AB',
+  'PO1 2DU',
   50.79808043529969,
   -1.0916402828737106
 );
