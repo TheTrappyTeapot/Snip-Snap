@@ -1,279 +1,334 @@
-Great idea. This is exactly how you avoid every colleague’s AI reinventing (and breaking) your architecture.
+PURPOSE
 
-Below is a **ready-to-paste `AI-README.md`** written **for AI tools**, not humans.
-It is explicit, directive, and constraint-based — so their ChatGPT behaves like a junior dev who’s already onboarded.
+This document defines exactly how code must be structured in this project.
 
----
+Any AI assistant generating code for this repository MUST follow these rules.
 
-# AI-README.md
+This project uses a structured architecture with clear separation between:
 
-**(Instructions for AI assistants working on this repository)**
+Components
 
-## Purpose of this file
+Features
 
-This file explains the **project architecture, constraints, and conventions** so that any AI assistant (e.g. ChatGPT) used by contributors can immediately generate **compatible, non-destructive code**.
+Pages
 
-AI assistants **must follow this document** when suggesting or generating code.
+Services (backend)
 
----
+Do NOT invent new folder structures.
+Do NOT move files unless instructed.
+Do NOT mix frontend and backend responsibilities.
 
-## Tech stack
+PROJECT STRUCTURE (AUTHORITATIVE)
 
-* **Backend**: Flask (Python)
-* **Frontend**: HTML (Jinja templates), CSS, vanilla JavaScript
-* **Database**: PostgreSQL
-* **No frontend frameworks** (no React, Vue, etc.)
-* **No ORMs yet** (raw SQL via a DB layer)
-
----
-
-## High-level architecture (DO NOT VIOLATE)
-
-The app is deliberately layered:
-
-```
-Routes (Flask)
-   ↓
-Database layer (SQL, connections)
-   ↓
-Templates (HTML structure)
-   ↓
-Static assets (CSS / JS behaviour)
-```
-
-### Absolute rules
-
-* ❌ **No SQL inside Flask route functions**
-* ❌ **No database access from templates or JS**
-* ❌ **No HTML generation inside JavaScript**
-* ❌ **No secrets or credentials in JS or committed files**
-* ❌ **No changes to file structure without agreement**
-
----
-
-## Folder structure (authoritative)
-
-```
 app/
-  app.py                # Flask entry point and routes ONLY
-  db/
-    connection.py       # Database connection logic only
-    queries.py          # SQL queries only (no Flask)
-  templates/
-    base.html           # Shared layout
-    *.html              # Page templates (extend base.html)
-  static/
-    css/
-      main.css
-      components/
-        searchAutocomplete.css
-    js/
-      components/
-        searchAutocomplete.js
-      pages/
-        discover.js
-```
+app.py
+db/
+services/
+templates/
+static/
+css/
+components/
+features/
+pages/
+js/
+components/
+features/
+pages/
 
----
+ARCHITECTURE OVERVIEW
 
-## Flask (`app/app.py`)
+There are four layers in this application:
 
-### Responsibilities
+Components (Reusable UI pieces)
 
-* Define routes
-* Call database query functions
-* Pass data to templates
+Features (Vertical application behaviour)
 
-### Forbidden
+Pages (Feature composition)
 
-* Writing SQL
-* Business logic
-* HTML generation
+Services (Backend feature logic)
 
-**Correct pattern:**
+Each layer has strict responsibilities.
 
-```python
-data = get_something_from_db()
-return render_template("page.html", data=data)
-```
+COMPONENTS
 
----
+Location:
+static/js/components/
+static/css/components/
 
-## Templates (`app/templates/`)
+Definition:
+A component is a small, reusable frontend UI element.
 
-### Rules
+Examples:
 
-* Use **Jinja inheritance**
-* Pages must extend `base.html`
-* Templates define **structure only**
+SearchBarAutocomplete
 
-### Forbidden
+PhotoUploadInput
 
-* Database access
-* Complex logic
-* Fetch calls
+TagList
 
-**Correct pattern:**
+Modal
 
-```html
-{% extends "base.html" %}
-{% block content %}
-  <h1>Page</h1>
-{% endblock %}
-```
+Button
 
----
+Rules:
 
-## JavaScript architecture
+Components must be reusable.
 
-### Component JS (`static/js/components/`)
+Components must NOT contain business logic.
 
-Reusable, page-agnostic logic.
+Components must NOT call backend routes directly.
+
+Components must NOT know about Flask or the database.
+
+Components communicate via callbacks or emitted events only.
+
+Components manage only their own UI state.
+
+Correct:
+Component receives data and a callback function.
+Component calls the callback when user interacts.
+
+Incorrect:
+Component performs fetch() to backend.
+Component contains feature-level logic.
+Component manipulates page-level layout.
+
+FEATURES
+
+Location:
+static/js/features/
+static/css/features/
+
+Definition:
+A feature is a vertical slice of application behaviour.
+
+A feature:
+
+Composes multiple components.
+
+Owns interaction logic.
+
+Communicates with the backend via fetch().
+
+Manages feature-specific state.
+
+Examples:
+
+uploadPost
+
+discoverSearch
+
+followBarber
+
+likePost
+
+Rules:
+
+A feature may use multiple components.
+
+A feature handles form submission.
+
+A feature may call backend routes using fetch().
+
+A feature should be self-contained.
+
+A feature must NOT contain database logic.
+
+A feature must NOT render full pages.
+
+Correct:
+uploadPost.js imports PhotoUploadInput and TagList,
+handles submission,
+sends POST request to backend.
+
+Incorrect:
+Feature directly writes SQL.
+Feature modifies unrelated page elements.
+
+PAGES
+
+Location:
+static/js/pages/
+static/css/pages/
+
+Definition:
+A page is responsible for composing features into a screen.
+
+Pages:
+
+Initialise features.
+
+Connect DOM elements to features.
+
+Contain minimal logic.
+
+Rules:
+
+Pages must NOT contain business logic.
+
+Pages must NOT call the database.
+
+Pages must NOT duplicate feature logic.
+
+Pages should only initialise features.
+
+Correct:
+barber_dashboard.js initialises uploadPost feature.
+
+Incorrect:
+barber_dashboard.js contains image validation logic.
+
+SERVICES (BACKEND)
+
+Location:
+app/services/
+
+Definition:
+A service file contains backend logic for a single feature.
+
+Each feature should have one corresponding service file.
 
 Example:
+services/upload_post_service.py
 
-* `searchAutocomplete.js`
+Rules:
 
-**Rules**
+Services contain validation logic.
 
-* No page-specific logic
-* No assumptions about backend
-* Communicate via callbacks only
+Services handle filesystem operations.
 
----
+Services call database query functions.
 
-### Page manager JS (`static/js/pages/`)
+Services return structured results.
 
-One file per page.
+Services must NOT render templates.
 
-**Responsibilities**
+Services must NOT contain route decorators.
 
-* Initialise components
-* Own page-specific behaviour
-* Handle callbacks from components
+Services must NOT contain frontend code.
 
-**Example**
+Correct:
+Service validates image, saves file, calls create_haircut_post().
 
-```js
-createSearchBarAutocomplete(
-  mountElement,
-  onSelectHandler,
-  items
-);
-```
+Incorrect:
+Service returns HTML.
+Service contains Flask route decorators.
 
----
+ROUTES (app.py)
 
-## Shared autocomplete component (CRITICAL)
+Routes must be thin.
 
-### Authoritative behaviour
+Routes:
 
-The search autocomplete component:
+Receive request
 
-* Accepts items with shape:
+Call service
 
-```js
-{
-  id: number,          // Database PK
-  type: "tag" | "barber" | "barbershop",  // Table name
-  label: string        // Display name
-}
-```
+Render template or return JSON
 
-* Matching:
+Routes must NOT:
 
-  * Case-insensitive
-  * "contains"
-  * Minimum 1 character
-  * Limit 6 results
+Contain heavy validation logic
 
-* UI:
+Contain file handling logic
 
-  * Icon per type
-  * Dropdown closes on:
+Contain database logic
 
-    * selection
-    * ESC
-    * click outside
+Correct:
+result = handle_upload_post(request)
 
-* Callback:
+Incorrect:
+Entire upload logic written inside route.
 
-```js
-onSelect(selectedItemObject)
-```
+DATABASE LAYER (app/db/)
 
-### Forbidden
+Rules:
 
-* Modifying component behaviour without discussion
-* Hardcoding page logic inside the component
+Only SQL queries.
 
----
+No Flask imports.
 
-## Database layer (`app/db/`)
+No template rendering.
 
-### `connection.py`
+No business logic.
 
-* Reads DB config from environment variables
-* Opens/closes connections
+STRICT SEPARATION RULES
 
-### `queries.py`
+Frontend (static/) and Backend (services/, db/) are completely separate environments.
 
-* Contains **only SQL and query functions**
-* Returns plain Python data
+Do NOT:
 
-### Forbidden
+Import JavaScript into Python.
 
-* Flask imports
-* Template rendering
-* JS-style logic
+Import Python into JavaScript.
 
----
+Put Python files inside static/.
 
-## Environment & secrets
+Put JS inside services/.
 
-* Use `.env` for:
+HOW TO IMPLEMENT A NEW FEATURE
 
-  * DB credentials
-* `.env` is gitignored
-* AI must **never** suggest committing secrets
+For a new feature named "exampleFeature":
 
----
+Create frontend feature file:
+static/js/features/exampleFeature.js
 
-## Git & workflow rules
+Create optional CSS:
+static/css/features/exampleFeature.css
 
-* Feature branches only
-* No direct commits to `main`
-* One logical change per commit
-* Respect existing file structure
+Create backend service:
+services/example_feature_service.py
 
----
+Add thin route in app.py:
+route calls service only.
 
-## When unsure
+Page initialises feature.
 
-If an AI assistant is unsure where code belongs:
+TASK TYPES
 
-1. **Do not guess**
-2. Ask the human developer
-3. Default to **non-destructive suggestions**
+This repository uses three task categories:
 
----
+COMPONENT TASK
 
-## Summary for AI assistants
+Build reusable UI element.
 
-* This is a **layered Flask app**
-* Keep responsibilities clean
-* Reuse existing components
-* Never bypass the DB layer
-* Never invent structure
+Must be reusable.
 
-If you follow this file, your output will integrate cleanly.
+Must not include business logic.
 
----
+FEATURE TASK
 
-If you want, next I can:
+Full vertical behaviour.
 
-* add a **PR template for humans + AI**
-* add a **DB schema contract for AI**
-* add an **“allowed changes” checklist for AI**
+Requires frontend feature file.
 
-Just say the word.
+Requires backend service file.
+
+May require DB query additions.
+
+PAGE TASK
+
+Compose features.
+
+Initialise features.
+
+Minimal logic only.
+
+IF UNSURE
+
+If unsure where code belongs:
+
+UI reusable element → Component
+
+User interaction + backend call → Feature
+
+Backend validation or filesystem → Service
+
+SQL query → db/queries.py
+
+Route definition → app.py
+
+Screen composition → Page
+
+Never guess.
+Follow this document.
