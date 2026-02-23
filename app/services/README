@@ -1,0 +1,127 @@
+# Services Folder
+
+## Purpose
+
+The `services/` folder contains **backend business logic** for the application.
+
+Each service represents a **single application feature** and acts as the boundary between:
+
+* HTTP routes (`app.py`)
+* Database queries (`app/db/`)
+* External resources (filesystem, validation, processing)
+
+Services enforce a clean separation of concerns and ensure routes remain thin.
+
+---
+
+## What Belongs in `services/`
+
+A service file should:
+
+* Implement backend logic for **one feature**
+* Validate incoming data
+* Perform filesystem operations (uploads, deletes, processing)
+* Call database query functions
+* Return **structured results** (dicts, objects, status flags)
+
+### Example
+
+```
+services/
+├── upload_post_service.py
+├── follow_barber_service.py
+├── discover_search_service.py
+```
+
+Each file corresponds to a frontend **feature**.
+
+---
+
+## What Does NOT Belong in `services/`
+
+Service files must **NOT**:
+
+* Contain Flask route decorators
+* Render templates
+* Return HTML
+* Import frontend code
+* Contain SQL directly
+* Call `render_template`
+* Handle request routing logic
+
+---
+
+## Relationship to Other Layers
+
+### Routes (`app.py`)
+
+* Receive the request
+* Call a service
+* Return JSON or render a template
+
+Routes must not contain business logic.
+
+### Database Layer (`app/db/`)
+
+* Contains **only SQL queries**
+* No validation or business rules
+
+Services call database functions but do not implement SQL.
+
+### Frontend (`static/`)
+
+* Never communicates directly with services
+* Uses routes via `fetch()`
+
+---
+
+## Service Design Rules
+
+* One service file per feature
+* Functions should be deterministic and testable
+* No global state
+* Explicit inputs and outputs
+* Errors should be raised or returned in structured form
+
+---
+
+## Example Flow
+
+```
+Frontend Feature
+      ↓
+Route (app.py)
+      ↓
+Service (services/)
+      ↓
+Database Queries (app/db/)
+```
+
+---
+
+## Why This Exists
+
+This folder exists to:
+
+* Prevent bloated routes
+* Centralise backend logic
+* Make features easier to reason about
+* Enable testing without HTTP context
+* Enforce architectural discipline
+
+---
+
+## If Unsure
+
+If backend logic is needed and it is **not**:
+
+* SQL
+* Routing
+* Template rendering
+
+Then it belongs in `services/`.
+
+Do not bypass this layer.
+
+---
+
