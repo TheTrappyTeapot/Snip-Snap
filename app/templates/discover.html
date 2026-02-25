@@ -4,11 +4,16 @@
 
   <div id="searchBarMount"></div>
 
+  <div id="tagListMount"></div>
+
+  <div id="postGalleryMount"></div>
+  <div id="postGallerySentinel"></div>
+
   <p id="discoverSelection" class="placeholder" aria-live="polite">
     No selection yet.
   </p>
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{ url_for('static', filename='js/pages/discover.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/pages/discover.js') }}"></script>
 {% endblock %}

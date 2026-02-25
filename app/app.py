@@ -1,11 +1,14 @@
 from pathlib import Path
 from uuid import uuid4
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from PIL import Image, UnidentifiedImageError
 from werkzeug.utils import secure_filename
 
 from app.db.queries import create_haircut_post, filter_existing_tag_ids
+
+from app.services.post_gallery_service import query_post_gallery
+from app.services.discover_search_service import get_discover_search_items
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 
@@ -30,6 +33,17 @@ def create_app():
             success=None,
             form_data={"tags": ""},
         )
+    
+    @app.post("/api/gallery/posts")
+    def api_gallery_posts():
+        payload = request.get_json(silent=True) or {}
+        result = query_post_gallery(payload)
+        return jsonify(result)
+    
+    @app.get("/api/discover/search_items")
+    def api_discover_search_items():
+        items = get_discover_search_items()
+        return jsonify({"items": items})
 
     @app.post("/barber_dashboard/upload_post")
     def upload_post():
@@ -128,6 +142,7 @@ def create_app():
             form_data={"tags": ""},
         )
 
+    print(app.url_map)
     return app
 
 

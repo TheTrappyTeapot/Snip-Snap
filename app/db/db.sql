@@ -291,98 +291,72 @@ VALUES
 ('medium');
 
 
-INSERT INTO HaircutPhoto (barber_id, image_url, width_px, height_px)
+INSERT INTO HaircutPhoto (barber_id, image_url, width_px, height_px, is_post)
 VALUES
-(1, '/static/uploads/haircuts/image.png', 183, 275),
-(2, '/static/uploads/haircuts/image1.png', 225, 225),
-(3, '/static/uploads/haircuts/image2.png', 205, 246),
-(4, '/static/uploads/haircuts/image3.png', 225, 225),
-(5, '/static/uploads/haircuts/image4.png', 214, 235),
-(6, '/static/uploads/haircuts/image5.png', 201, 250),
-(1, '/static/uploads/haircuts/image6.png', 194, 259),
-(2, '/static/uploads/haircuts/image7.png', 168, 299),
-(3, '/static/uploads/haircuts/image8.png', 183, 275),
-(4, '/static/uploads/haircuts/image9.png', 206, 244);
+(1, '/static/uploads/haircut_photos/image.png', 183, 275, TRUE),
+(2, '/static/uploads/haircut_photos/image1.png', 225, 225, TRUE),
+(3, '/static/uploads/haircut_photos/image2.png', 205, 246, TRUE),
+(4, '/static/uploads/haircut_photos/image3.png', 225, 225, TRUE),
+(5, '/static/uploads/haircut_photos/image4.png', 214, 235, FALSE),
+(6, '/static/uploads/haircut_photos/image5.png', 201, 250, TRUE),
+(1, '/static/uploads/haircut_photos/image6.png', 194, 259, TRUE),
+(2, '/static/uploads/haircut_photos/image7.png', 168, 299, FALSE),
+(3, '/static/uploads/haircut_photos/image8.png', 183, 275, TRUE),
+(4, '/static/uploads/haircut_photos/image9.png', 206, 244, FALSE);
 
 
 INSERT INTO HaircutPhoto_Tag (photo_id, tag_id)
-SELECT p.photo_id, t.tag_id
-FROM (
-    VALUES
-    (1, 'fade'),
-    (1, 'short'),
-    (1, 'modern'),
+VALUES
+(1, 1), -- fade
+(1, 2), -- skin fade
+(1, 15), -- modern
 
-    (2, 'skin fade'),
-    (2, 'taper'),
-    (2, 'clean shave'),
+(2, 3), -- taper
+(2, 16), -- classic
+(2, 4), -- clean shave
 
-    (3, 'quiff'),
-    (3, 'medium'),
-    (3, 'classic'),
+(3, 5), -- quiff
+(3, 6), -- pompadour
+(3, 7), -- slick back
 
-    (4, 'pompadour'),
-    (4, 'medium'),
-    (4, 'slick back'),
+(4, 8), -- beard
+(4, 9), -- beard trim
+(4, 10), -- line up
 
-    (5, 'buzz cut'),
-    (5, 'short'),
-    (5, 'edgy'),
+(5, 11), -- buzz cut
+(5, 12), -- short
+(5, 13), -- edgy
 
-    (6, 'textured crop'),
-    (6, 'fringe'),
-    (6, 'modern'),
-
-    (7, 'undercut'),
-    (7, 'slick back'),
-    (7, 'classic'),
-
-    (8, 'crop'),
-    (8, 'short'),
-    (8, 'modern'),
-
-    (9, 'beard'),
-    (9, 'beard trim'),
-    (9, 'classic'),
-
-    (10, 'line up'),
-    (10, 'fade'),
-    (10, 'edgy')
-) AS m(photo_id, tag_name)
-JOIN Tag t ON t.name = m.tag_name
-JOIN HaircutPhoto p ON p.photo_id = m.photo_id;
+(6, 14), -- textured crop
+(6, 15), -- fringe
+(6, 16); -- modern
 
 
 INSERT INTO Barber_Tag (barber_id, tag_id)
-SELECT b.barber_id, t.tag_id
-FROM (
-    VALUES
-    (1, 'fade'),
-    (1, 'skin fade'),
-    (1, 'modern'),
+VaLUES
+(1, 1), -- fade
+(1, 2), -- skin fade
+(1, 3), -- taper
 
-    (2, 'taper'),
-    (2, 'classic'),
-    (2, 'clean shave'),
+(2, 3), -- taper
+(2, 4), -- clean shave
+(2, 10), -- line up
 
-    (3, 'quiff'),
-    (3, 'pompadour'),
-    (3, 'slick back'),
+(3, 5), -- quiff
+(3, 6), -- pompadour
+(3, 7), -- slick back
 
-    (4, 'beard'),
-    (4, 'beard trim'),
-    (4, 'line up'),
+(4, 8), -- beard
+(4, 9), -- beard trim
+(4, 10), -- line up
 
-    (5, 'buzz cut'),
-    (5, 'short'),
-    (5, 'edgy'),
+(5, 11), -- buzz cut
+(5, 12), -- short
+(5, 13), -- edgy
 
-    (6, 'textured crop'),
-    (6, 'fringe'),
-    (6, 'modern')
-) AS m(barber_id, tag_name)
-JOIN Tag t ON t.name = m.tag_name
-JOIN Barber b ON b.barber_id = m.barber_id;
+(6, 14), -- textured crop
+(6, 15), -- fringe
+(6, 16); -- modern
 
 
 INSERT INTO Review (target_barber_id, user_id, text, rating)
