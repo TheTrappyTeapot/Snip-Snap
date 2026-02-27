@@ -1,40 +1,34 @@
-(function () {
-  const mount = document.getElementById("searchBarMount");
-  const out = document.getElementById("discoverSelection");
+import { TagList } from "../components/tagList.js";
+import { initPostGallery } from "../features/postGallery.js";
+import { initDiscoverSearch } from "../features/discoverSearch.js";
 
-  // Hardcoded test data (NOT fruit), with table names as types and PK-like IDs.
-  // Replace later with real DB/API results.
-  const all_items = [
-    // tags
-    { id: 101, type: "tag", label: "Fade" },
-    { id: 102, type: "tag", label: "Skin fade" },
-    { id: 103, type: "tag", label: "Beard trim" },
-    { id: 104, type: "tag", label: "Hot towel" },
-    { id: 105, type: "tag", label: "Scissor cut" },
+const tagListMount = document.getElementById("tagListMount");
+const galleryMount = document.getElementById("postGalleryMount");
+const sentinelEl = document.getElementById("postGallerySentinel");
+const searchMount = document.getElementById("searchBarMount");
+const out = document.getElementById("discoverSelection");
 
-    // barbers
-    { id: 201, type: "barber", label: "George Hart" },
-    { id: 202, type: "barber", label: "Sam Patel" },
-    { id: 203, type: "barber", label: "Ayesha Khan" },
+const tagList = new TagList({
+  mountEl: tagListMount,
+  initialItems: [{ id: 2, type: "filter" }],
+});
 
-    // barbershops
-    { id: 301, type: "barbershop", label: "Kingsclere Cuts" },
-    { id: 302, type: "barbershop", label: "Basingstoke Barbers" },
-    { id: 303, type: "barbershop", label: "Reading Groom Room" },
+initPostGallery({
+  mountEl: galleryMount,
+  sentinelEl,
+  tagList,
+  config: {
+    endpoint: "/api/gallery/posts",
+    columns: 3,
+    limit: 18,
+  },
+});
 
-    // Deliberate disambiguation collision example
-    { id: 204, type: "barber", label: "Fade King" },
-    { id: 304, type: "barbershop", label: "Fade King" },
-  ];
-
-  function send_selected_item_here(item) {
-    // This is the contract: you get the FULL object.
-    // Later you’ll likely trigger fetch/navigation based on item.type & item.id.
-    out.textContent = `Selected: ${item.label}  (type: ${item.type}, id: ${item.id})`;
-  }
-
-  // Mount the shared autocomplete component
-  window.createSearchBarAutocomplete(mount, send_selected_item_here, all_items, {
-    placeholder: "Search tags, barbers, or shops…",
-  });
-})();
+initDiscoverSearch({
+  mountEl: searchMount,
+  outEl: out,
+  tagList,
+  config: {
+    endpoint: "/api/discover/search_items",
+  },
+});

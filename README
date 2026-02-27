@@ -5,26 +5,228 @@ it contains data
 OOOooOooOOOooOoooo
 
 
------ Project structure (where things live) -----
 
-This repo is organised so that each layer of the app has a clear home:
--Routes / request handling (Flask) live in app/
--HTML templates (Jinja) live in app/templates/
--Static assets (CSS/JS/images) live in app/static/
--Database connection + queries live in app/db/
+----- AI HELPER -----
+This is a link to a chat i had with Mr GPT where we setup the whole project. I reccomend branching off from this chat because then your AI agent will have all the context needed to help with your development.
+
+Link to chat: https://chatgpt.com/share/69960701-9138-8002-b3b8-faedb987b85c
 
 
-This separation keeps responsibilities clean:
--Flask routes decide what to do for a given URL.
--The DB layer decides how data is stored and retrieved.
--Templates decide how pages are rendered.
--Static files add styling and interactivity.
+PROJECT ARCHITECTURE EXPLANATION (FOR HUMANS)
+
+WHY THIS STRUCTURE EXISTS
+
+Earlier in development it was unclear where different types of logic should live.
+That caused backend logic to be placed in routes, frontend logic to grow too large, and responsibilities to mix.
+
+To fix this, we now follow a strict layered structure.
+
+The goal is:
+Clear separation of concerns
+Predictable file placement
+Reusable UI components
+Small, readable routes
+Features that are self-contained
+Backend logic that is not tied to Flask
+
+This structure is designed to be simple enough for everyone to understand, while still scalable.
 
 
-Why this structure is used
--Lower merge conflicts: multiple people can work in different layers without stepping on each other.
--Easier debugging: if it’s a UI issue, it’s in templates/ or static/; if it’s a data issue, it’s in db/.
--Scales cleanly: new pages usually mean “add a route + template”, not copy/pasting HTML everywhere.
+THE FOUR LAYERS
+
+The application is divided into four conceptual layers:
+Components (Reusable UI pieces)
+Features (Vertical functionality)
+Pages (Screen composition)
+Services (Backend feature logic)
+
+Think of it like this:
+Component → Feature → Page
+and
+Route → Service → DB
+
+
+COMPONENTS (Frontend Building Blocks)
+
+Location:
+static/js/components/
+static/css/components/
+
+A component is a small reusable UI element.
+
+Examples:
+Search bar
+Photo upload input
+Tag selector
+Modal
+Reusable button
+
+A component:
+Manages only its own UI state
+Receives data and callbacks
+Does not call the backend directly
+Does not contain business logic
+If you can reuse it in another feature, it’s a component.
+If it contains business logic, it is not a component.
+
+
+FEATURES (Vertical Functionality)
+
+Location:
+static/js/features/
+static/css/features/
+
+A feature represents one complete piece of user behaviour.
+
+Examples:
+
+Upload Post
+Discover Search
+Follow Barber
+Like Post
+
+A feature:
+Imports and composes components
+Handles interaction logic
+Calls backend routes via fetch()
+Manages feature-level state
+A feature should be self-contained.
+If you removed the feature file, that functionality should disappear cleanly.
+Features are not reusable UI pieces — components are.
+
+
+PAGES (Screen Composition)
+
+Location:
+static/js/pages/
+static/css/pages/
+
+A page:
+Initializes features
+Connects DOM elements
+Contains minimal logic
+
+Pages should not:
+Contain business logic
+Perform validation
+Call the database directly
+Duplicate feature logic
+A page simply wires things together.
+
+
+SERVICES (Backend Logic)
+
+Location:
+app/services/
+
+Each feature that requires backend logic gets one service file.
+
+Example:
+services/upload_post_service.py
+
+A service:
+Validates input
+Handles file system operations
+Calls database query functions
+Returns structured results
+
+A service must NOT:
+Contain route decorators
+Render templates
+Return HTML
+Contain frontend code
+Services are pure backend feature logic.
+
+
+ROUTES (app.py)
+
+Routes must remain thin.
+
+A route should:
+Receive the request
+Call the service
+Render a template or return JSON
+
+A route should NOT:
+Contain complex validation
+Contain file system logic
+Contain database queries
+If a route becomes long, the logic belongs in a service.
+
+
+DATABASE LAYER
+
+Location:
+app/db/
+
+This folder contains:
+
+Database connection logic
+Raw query functions
+
+No business logic.
+No Flask rendering.
+No validation.
+
+Only database interaction.
+
+
+HOW TO ADD A NEW FEATURE
+
+Example: Adding a "Create Comment" feature.
+
+Create frontend feature file:
+static/js/features/createComment.js
+
+Create optional feature CSS:
+static/css/features/createComment.css
+
+Create backend service:
+services/create_comment_service.py
+
+Add thin route in app.py:
+route calls the service only
+
+Page initialises the feature
+
+
+HOW TO DECIDE WHERE CODE BELONGS
+
+Ask yourself:
+Is this reusable UI?
+→ Component
+Is this user behaviour that may call backend?
+→ Feature
+Is this backend validation or filesystem logic?
+→ Service
+Is this SQL?
+→ db/queries.py
+Is this wiring features to a screen?
+→ Page
+
+If you’re unsure, ask before placing the code.
+
+
+WHY THIS MATTERS
+
+Without structure:
+Files grow too large
+Responsibilities mix
+Code becomes hard to debug
+Features become difficult to reuse
+Onboarding becomes confusing
+
+With this structure:
+Every file has a clear purpose
+New contributors know where to add code
+AI tools generate correct structure
+Features scale cleanly
+
+
+FINAL PRINCIPLE
+
+Keep things simple.
+If a file starts doing too many different jobs, it is in the wrong place.
 
 
 ----- How to run locally via VSC terminal -----
