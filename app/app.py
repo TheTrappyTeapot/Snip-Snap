@@ -1,11 +1,11 @@
 from pathlib import Path
 from uuid import uuid4
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from PIL import Image, UnidentifiedImageError
 from werkzeug.utils import secure_filename
 
-from app.db.queries import create_haircut_post, filter_existing_tag_ids
+from app.db.queries import create_haircut_post, filter_existing_tag_ids, get_barbershops_for_map
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 
@@ -20,6 +20,18 @@ def create_app():
     @app.get("/discover")
     def discover():
         return render_template("discover.html", title="Discover Page")
+
+    @app.get("/map")
+    def map_page():
+        return render_template("map.html", title="Map")
+
+    @app.get("/api/barbershops")
+    def api_barbershops():
+        try:
+            shops = get_barbershops_for_map()
+            return jsonify(shops)
+        except Exception:
+            return jsonify({"error": "Could not load barbershops"}), 500
 
     @app.get("/barber_dashboard")
     def barber_dashboard():
