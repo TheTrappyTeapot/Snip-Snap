@@ -7,7 +7,9 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}" />
-  
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/postImageCard.css') }}">
+    
     {% block head_extra %}{% endblock %}
   </head>
 
@@ -25,8 +27,8 @@
       {% block content %}{% endblock %}
     </main>
 
-    <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
 
     {% block scripts %}{% endblock %}
   </body>
