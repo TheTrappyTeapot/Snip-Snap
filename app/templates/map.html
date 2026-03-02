@@ -10,10 +10,8 @@
 
   <div id="map"></div>
 
-  <!-- Search bar overlay -->
-  <div id="map-search-bar">
-    <input type="text" id="map-search-input" placeholder="Search barbershops..." autocomplete="off" />
-  </div>
+  <!-- Search bar overlay (searchAutocomplete mounts here) -->
+  <div id="map-search-bar"></div>
 
   <!-- My Location button -->
   <button id="my-location-btn" type="button">My Location &#8593;</button>
@@ -21,6 +19,7 @@
   <!-- Location modal -->
   <div id="location-modal">
     <div id="location-modal-content">
+      <button type="button" id="location-modal-close" aria-label="Close">&times;</button>
       <input
         type="text"
         id="location-input"

@@ -25,21 +25,12 @@ main.container:has(#map-wrapper) {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  padding: 6px 10px;
-  width: 260px;
-  display: flex;
-  align-items: center;
+  width: 280px;
 }
 
-#map-search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
+/* Let the dropdown overflow above the map layers */
+#map-search-bar .sa-dropdown {
+  z-index: 1001;
 }
 
 /* ── My Location button (bottom-centre) ── */
@@ -88,6 +79,24 @@ main.container:has(#map-wrapper) {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
+}
+
+#location-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #888;
+  padding: 0;
+}
+
+#location-modal-close:hover {
+  color: #222;
 }
 
 #location-input {

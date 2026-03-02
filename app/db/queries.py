@@ -130,6 +130,59 @@ def _pick_label(row: Dict[str, Any], preferred_keys: List[str]) -> str:
 import psycopg2.extras
 
 
+def get_barbershops_for_map():
+    """Return all barbershops with their barbers for the map page API."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT
+                    bs.barbershop_id,
+                    bs.name,
+                    bs.postcode,
+                    bs.location_lat,
+                    bs.location_lng,
+                    bs.phone,
+                    bs.website,
+                    b.barber_id,
+                    b.bio,
+                    u.username,
+                    pp.image_url AS profile_image_url
+                FROM Barbershop bs
+                LEFT JOIN Barber b ON b.barbershop_id = bs.barbershop_id
+                LEFT JOIN App_User u ON u.user_id = b.user_id
+                LEFT JOIN ProfilePhoto pp ON pp.user_id = b.user_id
+                ORDER BY bs.barbershop_id, b.barber_id
+                """
+            )
+            rows = cur.fetchall()
+
+    shops = {}
+    for row in rows:
+        bid = row["barbershop_id"]
+        if bid not in shops:
+            shops[bid] = {
+                "barbershop_id": bid,
+                "name": row["name"],
+                "postcode": row["postcode"].strip(),
+                "lat": row["location_lat"],
+                "lng": row["location_lng"],
+                "phone": row["phone"],
+                "website": row["website"],
+                "barbers": [],
+            }
+        if row["barber_id"] is not None:
+            shops[bid]["barbers"].append(
+                {
+                    "barber_id": row["barber_id"],
+                    "username": row["username"],
+                    "profile_image_url": row["profile_image_url"],
+                }
+            )
+
+    return list(shops.values())
+
+
 def fetch_discover_search_items():
     items = [
         {"id": 0, "type": "filter", "label": "Closest"},

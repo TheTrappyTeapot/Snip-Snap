@@ -12,6 +12,19 @@
   let userLng = null;
   let allShops = [];
 
+  // ── Search bar (always visible, items populated after shops load) ─────────────
+  const searchBar = createSearchBarAutocomplete(
+    "#map-search-bar",
+    function (item) {
+      const shop = allShops.find(function (s) {
+        return s.barbershop_id === item.id;
+      });
+      if (shop) map.setView([shop.lat, shop.lng], LOCATION_ZOOM);
+    },
+    [],
+    { placeholder: "Search barbershops..." }
+  );
+
   // ── Map initialisation ───────────────────────────────────────────────────────
   const map = L.map("map", { zoomControl: true }).setView(UK_CENTER, UK_ZOOM);
 
@@ -30,7 +43,7 @@
   const savePrompt = document.getElementById("save-location-prompt");
   const saveNoBtn = document.getElementById("save-location-no");
   const saveYesBtn = document.getElementById("save-location-yes");
-  const searchInput = document.getElementById("map-search-input");
+  const locationModalClose = document.getElementById("location-modal-close");
 
   // ── Location modal ───────────────────────────────────────────────────────────
   function showModal() {
@@ -47,6 +60,7 @@
   showModal();
 
   myLocationBtn.addEventListener("click", showModal);
+  locationModalClose.addEventListener("click", hideModal);
 
   // Set location by postcode / address (Nominatim geocoding)
   setLocationBtn.addEventListener("click", geocodeAndZoom);
@@ -212,20 +226,6 @@
     });
   }
 
-  // ── Search bar filtering ─────────────────────────────────────────────────────
-  searchInput.addEventListener("input", function () {
-    const query = searchInput.value.trim().toLowerCase();
-    if (!query) return;
-
-    const match = allShops.find(function (s) {
-      return s.name.toLowerCase().includes(query);
-    });
-
-    if (match) {
-      map.setView([match.lat, match.lng], LOCATION_ZOOM);
-    }
-  });
-
   // ── Bootstrap ────────────────────────────────────────────────────────────────
   fetch("/api/barbershops")
     .then(function (res) {
@@ -234,6 +234,12 @@
     .then(function (shops) {
       allShops = shops;
       addMarkers(shops);
+
+      // Populate the search bar with the loaded shops
+      const shopItems = shops.map(function (s) {
+        return { id: s.barbershop_id, type: "barbershop", label: s.name };
+      });
+      searchBar.setItems(shopItems);
     })
     .catch(function () {
       console.error("Could not load barbershops from /api/barbershops");
