@@ -36,15 +36,7 @@ function createDefaultAvatarSvg(size) {
 }
 
 function createAvatar(size, imageUrl, altText) {
-  const avatar = createEl("div", "userPromo__avatar");
-  avatar.style.width = `${size}px`;
-  avatar.style.height = `${size}px`;
-  avatar.style.borderRadius = "50%";
-  avatar.style.overflow = "hidden";
-  avatar.style.display = "grid";
-  avatar.style.placeItems = "center";
-  avatar.style.background = "#e9ecef";
-  avatar.style.flexShrink = "0";
+  const avatar = createEl("div", "user-promo__avatar");
 
   const cleanUrl = typeof imageUrl === "string" ? imageUrl.trim() : "";
   if (cleanUrl) {
@@ -52,19 +44,14 @@ function createAvatar(size, imageUrl, altText) {
     img.src = cleanUrl;
     img.alt = altText;
     img.loading = "lazy";
-    img.style.width = "100%";
-    img.style.height = "100%";
-    img.style.objectFit = "cover";
     img.addEventListener("error", () => {
       avatar.textContent = "";
       const fallback = createDefaultAvatarSvg(Math.max(20, Math.floor(size * 0.6)));
-      fallback.style.color = "#9aa1a9";
       avatar.appendChild(fallback);
     });
     avatar.appendChild(img);
   } else {
     const fallback = createDefaultAvatarSvg(Math.max(20, Math.floor(size * 0.6)));
-    fallback.style.color = "#9aa1a9";
     avatar.appendChild(fallback);
   }
 
@@ -81,24 +68,18 @@ function buildPromoRow(data, options = {}) {
       ? data.barbershop_name.trim()
       : "";
 
-  const row = createEl("div", "userPromo userPromo--ready");
-  row.style.display = "flex";
-  row.style.alignItems = "center";
-  row.style.gap = "10px";
-  row.style.minHeight = `${safeSize}px`;
+  const row = createEl("div", "user-promo user-promo--ready");
+  row.style.setProperty("--user-promo-avatar-size", `${safeSize}px`);
 
   const avatar = createAvatar(safeSize, data?.profile_image_url, `${name} profile image`);
 
-  const textWrap = createEl("div", "userPromo__text");
-  const title = createEl("div", "userPromo__name");
-  title.style.fontWeight = "700";
+  const textWrap = createEl("div", "user-promo__text");
+  const title = createEl("div", "user-promo__name");
   title.textContent = name;
   textWrap.appendChild(title);
 
   if (role === "barber" && barbershopName) {
-    const subtitle = createEl("div", "userPromo__shop");
-    subtitle.style.fontSize = "0.875rem";
-    subtitle.style.opacity = "0.85";
+    const subtitle = createEl("div", "user-promo__subtext");
     subtitle.textContent = barbershopName;
     textWrap.appendChild(subtitle);
   }
@@ -112,34 +93,16 @@ function buildSkeleton(options = {}) {
   const size = Number(options.avatarSize) || 36;
   const safeSize = Math.min(40, Math.max(32, size));
 
-  const row = createEl("div", "userPromo userPromo--loading", { "aria-busy": "true" });
-  row.style.display = "flex";
-  row.style.alignItems = "center";
-  row.style.gap = "10px";
+  const row = createEl("div", "user-promo user-promo--loading", { "aria-busy": "true" });
+  row.style.setProperty("--user-promo-avatar-size", `${safeSize}px`);
 
-  const avatar = createEl("div", "userPromo__avatarSkeleton");
-  avatar.style.width = `${safeSize}px`;
-  avatar.style.height = `${safeSize}px`;
-  avatar.style.borderRadius = "50%";
-  avatar.style.background = "#e9ecef";
-  avatar.style.flexShrink = "0";
+  const avatar = createEl("div", "user-promo__avatar-skeleton");
 
-  const textWrap = createEl("div", "userPromo__textSkeleton");
-  textWrap.style.display = "grid";
-  textWrap.style.gap = "6px";
-  textWrap.style.minWidth = "120px";
+  const textWrap = createEl("div", "user-promo__text");
 
-  const line1 = createEl("div", "userPromo__line userPromo__line--name");
-  line1.style.height = "10px";
-  line1.style.width = "90px";
-  line1.style.borderRadius = "6px";
-  line1.style.background = "#eceff2";
+  const line1 = createEl("div", "user-promo__line user-promo__line--name");
 
-  const line2 = createEl("div", "userPromo__line userPromo__line--sub");
-  line2.style.height = "9px";
-  line2.style.width = "130px";
-  line2.style.borderRadius = "6px";
-  line2.style.background = "#f2f4f6";
+  const line2 = createEl("div", "user-promo__line user-promo__line--subtext");
 
   textWrap.appendChild(line1);
   textWrap.appendChild(line2);
