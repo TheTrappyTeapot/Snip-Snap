@@ -1,70 +1,57 @@
-class FilterDropdown {
-  constructor(mountElementId, tagListInstance) {
-    // Store reference to TagList
-    this.tagList = tagListInstance;
+const DEFAULT_FILTER_OPTIONS = [
+  { id: 2, label: "Most recent" },
+  { id: 0, label: "Closest" },
+  { id: 1, label: "Highest rated" },
+];
 
-    // Define allowed filter options
-    this.options = [
-      "Most recent",
-      "Closest",
-      "Highest rated"
-    ];
+export class FilterDropdown {
+  constructor({ mountEl, tagList, options = DEFAULT_FILTER_OPTIONS }) {
+    this.mountEl = mountEl;
+    this.tagList = tagList;
+    this.options = Array.isArray(options) ? options : DEFAULT_FILTER_OPTIONS;
 
-    // Get mount element
-    this.mountElement = document.getElementById(mountElementId);
-
-    if (!this.mountElement) {
-      console.error(`FilterDropdown: Mount element '${mountElementId}' not found`);
-      return;
+    if (!this.mountEl) {
+      throw new Error("FilterDropdown: mountEl is required.");
     }
-
     if (!this.tagList || typeof this.tagList.add_item !== "function") {
-      console.error("FilterDropdown: Invalid TagList instance provided");
-      return;
+      throw new Error("FilterDropdown: valid tagList instance is required.");
     }
 
-    // Render UI
     this.render();
   }
 
   render() {
-    // Clear mount element (important rule)
-    this.mountElement.innerHTML = "";
+    this.mountEl.textContent = "";
 
-    // Create dropdown select element
     const select = document.createElement("select");
     select.className = "filter-dropdown-select";
 
-    // Default placeholder option
     const placeholder = document.createElement("option");
+    placeholder.value = "";
     placeholder.textContent = "Select filter";
     placeholder.disabled = true;
     placeholder.selected = true;
     select.appendChild(placeholder);
 
-    // Create options
-    this.options.forEach(optionText => {
+    this.options.forEach((optionData) => {
       const option = document.createElement("option");
-      option.value = optionText.toLowerCase();
-      option.textContent = optionText;
+      option.value = String(optionData.id);
+      option.textContent = optionData.label;
       select.appendChild(option);
     });
 
-    // Add change event
     select.addEventListener("change", (event) => {
-      const selectedValue = event.target.value;
+      const value = Number(event.target.value);
+      if (!Number.isFinite(value)) return;
 
-      // Call TagList API exactly as required
       this.tagList.add_item({
-        name: selectedValue,
-        type: "filter"
+        id: value,
+        type: "filter",
       });
 
-      // Reset dropdown to placeholder
       select.selectedIndex = 0;
     });
 
-    // Mount into provided div
-    this.mountElement.appendChild(select);
+    this.mountEl.appendChild(select);
   }
 }
