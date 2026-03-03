@@ -10,6 +10,12 @@ def _get_conn():
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
         raise RuntimeError("DATABASE_URL environment variable is not set")
+
+    # Supabase Postgres requires SSL. Enforce if not present in the URL.
+    if "sslmode=" not in db_url:
+        sep = "&" if "?" in db_url else "?"
+        db_url = f"{db_url}{sep}sslmode=require"
+
     return psycopg2.connect(db_url)
 
 
