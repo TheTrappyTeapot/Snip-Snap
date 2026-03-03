@@ -1,40 +1,42 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ title or "SnipSnap" }}</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/postImageCard.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
-    
-    {% block head_extra %}{% endblock %}
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{% block title %}App{% endblock %}</title>
   </head>
-
   <body>
-    <header class="site-header">
-      <nav class="nav">
-        <a href="{{ url_for('welcome') }}">Welcome Page</a>
-        <a href="{{ url_for('discover') }}">Discover Page</a>
-        <a href="{{ url_for('map_page') }}">Map</a>
-        <a href="{{ url_for('barber_dashboard') }}">Barber Dashboard</a>
-      </nav>
-    </header>
+    <nav>
+      <a href="{{ url_for('home') }}">Home</a>
 
-    <main class="container">
+      {% set u = session.get("user") %}
+      {% if u %}
+        <span style="margin-left:12px;">
+          {{ (u.get("email") or u.get("username") or "User") }} ({{ u.get("role") }})
+        </span>
+
+        <span style="margin-left:12px;">
+          <a href="{{ url_for('discover') }}">Discover</a>
+          <a style="margin-left:12px;" href="{{ url_for('map_page') }}">Map</a>
+
+          {% if u.get("role") in ["customer", "barber"] %}
+            <a style="margin-left:12px;" href="{{ url_for('profile') }}">My profile</a>
+          {% endif %}
+
+          {% if u.get("role") == "barber" %}
+            <a style="margin-left:12px;" href="{{ url_for('dashboard') }}">Dashboard</a>
+          {% endif %}
+        </span>
+
+        <a style="margin-left:12px;" href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a style="margin-left:12px;" href="{{ url_for('login') }}">Login</a>
+        <a style="margin-left:12px;" href="{{ url_for('signup') }}">Sign up</a>
+      {% endif %}
+    </nav>
+
+    <main style="padding:16px;">
       {% block content %}{% endblock %}
     </main>
-
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
-    <script>
-      window.__SUPABASE_URL__ = "{{ config['SUPABASE_PUBLIC_URL'] }}";
-      window.__SUPABASE_ANON_KEY__ = "{{ config['SUPABASE_PUBLIC_ANON_KEY'] }}";
-    </script>
-
-    {% block scripts %}{% endblock %}
   </body>
 </html>

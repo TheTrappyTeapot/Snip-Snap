@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Discover{% endblock %}
+
+{% block content %}
+<h1>Discover</h1>
+
+<p>
+  Welcome {{ session["user"]["username"] or session["user"]["email"] }}.
+</p>
+
+<p>
+  Role: <strong>{{ session["user"]["role"] }}</strong>
+</p>
+
+<hr>
+
+<p>This is the discover page. Later this will show post content.</p>
+{% endblock %}

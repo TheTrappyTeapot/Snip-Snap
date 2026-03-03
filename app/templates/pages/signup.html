@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+<h1>Sign up</h1>
+
+<p>Signup page loaded.</p>
+
+<form id="signupForm">
+  <label>Email<br><input id="email" type="email" required autocomplete="email"></label><br><br>
+  <label>Password<br><input id="password" type="password" required autocomplete="new-password"></label><br><br>
+  <button type="submit">Create account</button>
+</form>
+
+<hr>
+
+<button id="googleBtn" type="button">Sign up with Google</button>
+
+<p id="msg" style="margin-top:12px;"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "{{ supabase_url|e }}";
+  const SUPABASE_ANON_KEY = "{{ supabase_anon_key|e }}";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const msg = document.getElementById("msg");
+
+  async function postTokenToFlask(access_token) {
+    const res = await fetch("{{ url_for('auth_callback') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access_token }),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || "Auth callback failed");
+  }
+
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "Creating account…";
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) { msg.textContent = error.message; return; }
+
+    if (data.session?.access_token) {
+      await postTokenToFlask(data.session.access_token);
+      window.location.href = "{{ url_for('discover') }}";
+    } else {
+      msg.textContent = "Check your email to confirm your account, then log in.";
+    }
+  });
+
+  document.getElementById("googleBtn").addEventListener("click", async () => {
+    msg.textContent = "Redirecting to Google…";
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + "{{ url_for('auth_redirect') }}",
+      },
+    });
+  });
+</script>
+{% endblock %}

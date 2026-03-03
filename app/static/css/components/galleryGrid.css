@@ -1,9 +1,0 @@
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(var(--gallery-columns, 3), 1fr);
-  gap: 10px;
-}
-
-.galleryGrid__cell {
-  width: 100%;
-}
