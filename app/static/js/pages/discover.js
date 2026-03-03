@@ -1,7 +1,6 @@
 import { TagList } from "../components/tagList.js";
 import { initPostGallery } from "../features/postGallery.js";
 import { initDiscoverSearch } from "../features/discoverSearch.js";
-import { initUserPromos } from "../components/userPromo.js";
 
 const tagListMount = document.getElementById("tagListMount");
 const galleryMount = document.getElementById("postGalleryMount");
@@ -33,5 +32,3 @@ initDiscoverSearch({
     endpoint: "/api/discover/search_items",
   },
 });
-
-initUserPromos();
