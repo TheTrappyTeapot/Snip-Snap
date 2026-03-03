@@ -68,3 +68,57 @@ def get_app_user_by_email(email: str):
         "username": row[3],
         "role": row[4],
     }
+
+
+def get_barber_public_by_user_id(user_id: int):
+    """
+    Public barber profile (safe fields only).
+    """
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT user_id, username, location_lat, location_lng, postcode, role
+                FROM App_User
+                WHERE user_id = %s
+                """,
+                (user_id,),
+            )
+            row = cur.fetchone()
+
+    if not row:
+        return None
+
+    role = (row[5] or "").strip().lower()
+    if role != "barber":
+        return None
+
+    return {
+        "user_id": row[0],
+        "username": row[1],
+        "location_lat": row[2],
+        "location_lng": row[3],
+        "postcode": row[4],
+        "role": role,
+    }
+
+
+def update_barber_profile(user_id: int, username: str | None, postcode: str | None, lat, lng) -> None:
+    """
+    Barber edits their own public profile.
+    """
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE App_User
+                SET
+                  username = COALESCE(%s, username),
+                  postcode = COALESCE(%s, postcode),
+                  location_lat = %s,
+                  location_lng = %s
+                WHERE user_id = %s
+                """,
+                (username, postcode, lat, lng, user_id),
+            )
+        conn.commit()

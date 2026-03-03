@@ -18,6 +18,7 @@
         <span style="margin-left:12px;">
           <a href="{{ url_for('discover') }}">Discover</a>
           <a style="margin-left:12px;" href="{{ url_for('map_page') }}">Map</a>
+          <a href="{{ url_for('barber_profile') }}">Barber profile</a>
 
           {% if u.get("role") in ["customer", "barber"] %}
             <a style="margin-left:12px;" href="{{ url_for('profile') }}">My profile</a>
