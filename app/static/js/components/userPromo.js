@@ -122,7 +122,7 @@ export async function mountUserPromo(containerEl, userId, options = {}) {
     name: "Unknown",
     role: "",
     barbershop_name: "",
-    profile_image_url: "",
+    profile_image_url: null,
   };
 
   try {

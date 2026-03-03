@@ -127,6 +127,40 @@ def _pick_label(row: Dict[str, Any], preferred_keys: List[str]) -> str:
     return ""
 
 
+def _normalise_profile_photo_url(raw_value: Any) -> Optional[str]:
+    if not isinstance(raw_value, str):
+        return None
+
+    value = raw_value.strip()
+    if not value:
+        return None
+
+    lowered = value.lower()
+    if lowered.startswith("http://") or lowered.startswith("https://") or lowered.startswith("//"):
+        return value
+
+    if lowered.startswith("static/"):
+        value = f"/{value}"
+        lowered = value.lower()
+
+    if lowered.startswith("/uploads/"):
+        value = f"/static{value}"
+        lowered = value.lower()
+
+    if lowered.startswith("/static/uploads/profiles/"):
+        filename = value.rsplit("/", 1)[-1]
+        return f"/static/uploads/profile_photos/{filename}"
+
+    if lowered.startswith("/static/uploads/profile_photos/"):
+        return value
+
+    if lowered.startswith("/static/"):
+        return value
+
+    filename = value.rsplit("/", 1)[-1]
+    return f"/static/uploads/profile_photos/{filename}"
+
+
 def get_user_promo(user_id: int) -> Optional[Dict[str, Any]]:
     with _get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -155,7 +189,7 @@ def get_user_promo(user_id: int) -> Optional[Dict[str, Any]]:
     return {
         "name": row.get("name") or "Unknown",
         "role": row.get("role") or "",
-        "profile_image_url": row.get("profile_image_url") or "",
+        "profile_image_url": _normalise_profile_photo_url(row.get("profile_image_url")),
         "barbershop_name": row.get("barbershop_name") or "",
     }
 
