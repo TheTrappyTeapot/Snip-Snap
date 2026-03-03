@@ -25,4 +25,4 @@ If a page needs specific JS, either:
 - Example markup:
 	- `<div class="js-user-promo" data-user-id="42"></div>`
 
-`initUserPromos()` is called from `app/static/js/pages/discover.js`.
+`initUserPromos()` is called from `app/static/js/main.js`.
