@@ -1,5 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Welcome</h1>
-  <p class="placeholder">Placeholder page.</p>
+  <div id="dev-auth" style="margin: 12px 0; padding: 12px; border: 1px solid #ccc;">
+  <strong>Dev Auth</strong>
+  <div style="margin-top: 8px;">
+    <label for="devUserSelect">Switch user:</label>
+    <select id="devUserSelect">
+      <option value="guest">Guest (signed out)</option>
+      <option value="customer">Customer (test)</option>
+      <option value="barber">Barber (test)</option>
+    </select>
+    <button id="devUserApplyBtn" type="button">Apply</button>
+  </div>
+
+  <div style="margin-top: 8px; font-size: 0.9em;">
+    <span>Session status: </span><code id="devAuthStatus">loading…</code>
+  </div>
+</div>
+
+<script src="/static/js/pages/welcome.js"></script>
 {% endblock %}

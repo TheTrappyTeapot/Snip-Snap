@@ -19,6 +19,42 @@ def _get_conn():
     return psycopg2.connect(db_url)
 
 
+def get_app_user_by_auth_user_id(auth_user_id: str) -> Optional[Dict[str, Any]]:
+    """
+    Returns App_User row for a given Supabase auth_user_id (UUID).
+    Returns None if not found.
+    """
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT user_id, role
+                FROM App_User
+                WHERE auth_user_id = %s
+                LIMIT 1
+                """,
+                (auth_user_id,),
+            )
+            row = cur.fetchone()
+
+    return row
+
+
+def set_auth_user_id_for_user(user_id: int, auth_user_id: str) -> None:
+    """
+    Links an existing App_User row to a Supabase auth_user_id (UUID).
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE App_User
+                SET auth_user_id = %s
+                WHERE user_id = %s
+                """,
+                (auth_user_id, user_id),
+            )
+
 def filter_existing_tag_ids(tag_ids: List[int]) -> List[int]:
     if not tag_ids:
         return []

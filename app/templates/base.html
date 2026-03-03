@@ -30,6 +30,10 @@
 
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+    <script>
+      window.__SUPABASE_URL__ = "{{ config['SUPABASE_PUBLIC_URL'] }}";
+      window.__SUPABASE_ANON_KEY__ = "{{ config['SUPABASE_PUBLIC_ANON_KEY'] }}";
+    </script>
 
     {% block scripts %}{% endblock %}
   </body>
