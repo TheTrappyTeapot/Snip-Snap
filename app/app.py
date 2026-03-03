@@ -16,6 +16,7 @@ from app.services.post_gallery_service import query_post_gallery
 from app.services.discover_search_service import get_discover_search_items
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+DEMO_BARBER_USER_ID = 4
 
 def create_app():
     app = Flask(__name__)
@@ -45,6 +46,7 @@ def create_app():
         return render_template(
             "barber_dashboard.html",
             title="Barber Dashboard",
+            user_id=DEMO_BARBER_USER_ID,
             errors=[],
             success=None,
             form_data={"tags": ""},
@@ -119,6 +121,7 @@ def create_app():
                 render_template(
                     "barber_dashboard.html",
                     title="Barber Dashboard",
+                    user_id=DEMO_BARBER_USER_ID,
                     errors=errors,
                     success=None,
                     form_data={"tags": tags_raw},
@@ -150,6 +153,7 @@ def create_app():
                 render_template(
                     "barber_dashboard.html",
                     title="Barber Dashboard",
+                    user_id=DEMO_BARBER_USER_ID,
                     errors=["Could not save post to the database."],
                     success=None,
                     form_data={"tags": tags_raw},
@@ -160,6 +164,7 @@ def create_app():
         return render_template(
             "barber_dashboard.html",
             title="Barber Dashboard",
+            user_id=DEMO_BARBER_USER_ID,
             errors=[],
             success="Post uploaded successfully.",
             form_data={"tags": ""},
