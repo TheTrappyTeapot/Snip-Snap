@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, abort
+from db import get_user_promo
 
 def create_app():
     app = Flask(__name__)
@@ -14,6 +15,13 @@ def create_app():
     @app.get("/barber_dashboard")
     def barber_dashboard():
         return render_template("barber_dashboard.html", title="Barber Dashboard")
+
+    @app.route('/api/users/<int:user_id>/promo', methods=['GET'])
+    def user_promo(user_id):
+        user_data = get_user_promo(user_id)
+        if user_data is None:
+            abort(404, description="User not found")
+        return jsonify(user_data)
 
     return app
 
