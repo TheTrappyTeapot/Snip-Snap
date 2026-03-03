@@ -7,16 +7,12 @@
   color: #1f2933;
 }
 
-.user-promo__avatar,
-.user-promo__avatar-skeleton {
+.user-promo__avatar {
   width: var(--user-promo-avatar-size);
   height: var(--user-promo-avatar-size);
   border-radius: 999px;
   overflow: hidden;
   flex-shrink: 0;
-}
-
-.user-promo__avatar {
   display: grid;
   place-items: center;
   background: #e9ecef;
@@ -45,45 +41,4 @@
   font-size: 0.825rem;
   color: #6b7280;
   line-height: 1.2;
-}
-
-.user-promo--loading {
-  color: transparent;
-}
-
-.user-promo__avatar-skeleton,
-.user-promo__line {
-  position: relative;
-  background: #e7ebef;
-}
-
-.user-promo__line {
-  height: 10px;
-  border-radius: 6px;
-}
-
-.user-promo__line--name {
-  width: 96px;
-}
-
-.user-promo__line--subtext {
-  width: 132px;
-  height: 9px;
-  background: #eef1f4;
-}
-
-.user-promo__avatar-skeleton::after,
-.user-promo__line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
-  animation: user-promo-shimmer 1.25s ease-in-out infinite;
-}
-
-@keyframes user-promo-shimmer {
-  100% {
-    transform: translateX(100%);
-  }
 }

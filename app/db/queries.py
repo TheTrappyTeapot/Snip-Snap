@@ -158,10 +158,17 @@ def get_user_promo(user_id: int) -> Optional[Dict[str, Any]]:
     if not row:
         return None
 
+    raw_url = row.get("profile_image_url")
+    image_url = None
+    if raw_url and "/profiles/" in raw_url:
+        image_url = raw_url.replace("/static/uploads/profiles/", "/static/uploads/profile_photos/")
+    elif raw_url:
+        image_url = raw_url
+
     return {
         "name": row.get("name") or "Unknown",
         "role": row.get("role") or "",
-        "profile_image_url": row.get("profile_image_url") or "",
+        "profile_image_url": image_url,
         "barbershop_name": row.get("barbershop_name") or "",
     }
 
