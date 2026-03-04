@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 
 from .db import fetch_discover_posts, fetch_discover_search_items
+from .supabase_storage import sign_storage_path
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -70,6 +71,10 @@ def gallery_posts():
 
     has_more = len(rows) > limit
     items = rows[:limit]
+    for it in items:
+        # it["image_url"] currently holds storage path (after you migrate your data)
+        path = it.get("image_url")
+        it["image_url"] = sign_storage_path(path, expires_in=3600)
 
     next_cursor = _make_next_cursor(items) if has_more else None
 

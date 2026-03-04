@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{% block title %}App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   </head>
   <body>
     <nav>
@@ -39,7 +42,8 @@
 
     <main style="padding:16px;">
       {% block content %}{% endblock %}
-      {% block scripts %}{% endblock %}
+      {% block scripts %}
+      {% endblock %}
     </main>
   </body>
 </html>
