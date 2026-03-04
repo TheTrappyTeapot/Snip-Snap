@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
+{% endblock %}
+
 {% block content %}
   <h1>Discover Page</h1>
 
