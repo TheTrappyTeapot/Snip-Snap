@@ -1,18 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Discover{% endblock %}
-
 {% block content %}
-<h1>Discover</h1>
+  <h1>Discover Page</h1>
 
-<p>
-  Welcome {{ session["user"]["username"] or session["user"]["email"] }}.
-</p>
+  <div id="searchBarMount"></div>
 
-<p>
-  Role: <strong>{{ session["user"]["role"] }}</strong>
-</p>
+  <div id="tagListMount"></div>
 
-<hr>
+  <div id="postGalleryMount"></div>
+  <div id="postGallerySentinel"></div>
 
-<p>This is the discover page. Later this will show post content.</p>
+  <p id="discoverSelection" class="placeholder" aria-live="polite">
+    No selection yet.
+  </p>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/pages/discover.js') }}"></script>
 {% endblock %}
