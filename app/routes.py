@@ -2,7 +2,7 @@ import os
 from flask import render_template, request, redirect, session, url_for, jsonify
 from .auth import verify_supabase_jwt
 from .access import login_required, roles_required
-from .db import link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email
+from .db import link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo
 from uuid import uuid4
 from datetime import datetime
 
@@ -133,3 +133,10 @@ def register_routes(app):
     @roles_required("barber")              # barbers only
     def dashboard():
         return render_template("pages/dashboard.html")
+
+    @app.get("/api/users/<int:user_id>/promo")
+    def user_promo(user_id):
+        user_data = get_user_promo(user_id)
+        if user_data is None:
+            return jsonify({"error": "User not found"}), 404
+        return jsonify(user_data)

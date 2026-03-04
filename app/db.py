@@ -68,3 +68,42 @@ def get_app_user_by_email(email: str):
         "username": row[3],
         "role": row[4],
     }
+
+def get_user_promo(user_id: int):
+    """Get user profile data for the userPromo component."""
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    u.username AS name,
+                    u.role,
+                    pp.image_url AS profile_image_url,
+                    bs.name AS barbershop_name
+                FROM App_User u
+                LEFT JOIN Barber b ON b.user_id = u.user_id
+                LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
+                LEFT JOIN ProfilePhoto pp ON pp.user_id = u.user_id
+                WHERE u.user_id = %s
+                LIMIT 1
+                """,
+                (user_id,),
+            )
+            row = cur.fetchone()
+
+    if not row:
+        return None
+
+    raw_url = row[2]
+    image_url = None
+    if raw_url and "/profiles/" in raw_url:
+        image_url = raw_url.replace("/static/uploads/profiles/", "/static/uploads/profile_photos/")
+    elif raw_url:
+        image_url = raw_url
+
+    return {
+        "name": row[0] or "Unknown",
+        "role": row[1] or "",
+        "profile_image_url": image_url,
+        "barbershop_name": row[3] or "",
+    }
