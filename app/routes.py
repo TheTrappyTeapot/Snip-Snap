@@ -2,7 +2,7 @@ import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
 from .auth import verify_supabase_jwt
 from .access import login_required, roles_required
-from .db import link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_barber_public_by_user_id, update_barber_profile
+from .db import link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile
 from uuid import uuid4
 from datetime import datetime
 

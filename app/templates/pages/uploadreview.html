@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Review Component</title>
+
+<style>
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+
+body{
+margin:0;
+padding:16px;
+background:#000000;
+display:flex;
+justify-content:center
+}
+
+.review-component{
+width:100%;
+max-width:520px;
+background:#0a0a0a;
+border-radius:12px;
+border:1px solid #facc15;
+padding:16px;
+display:flex;
+flex-direction:column;
+gap:12px;
+box-shadow:0 8px 25px rgba(0,0,0,.6);
+}
+
+.header{
+font-size:18px;
+font-weight:600;
+color:#ffffff;
+letter-spacing:.3px;
+}
+
+.stars{
+display:flex;
+align-items:center;
+gap:6px;
+flex-wrap:wrap;
+}
+
+.star{
+font-size:26px;
+cursor:pointer;
+user-select:none;
+transition:transform .15s,color .15s;
+}
+
+.star:hover{
+transform:scale(1.15);
+color:#facc15;
+}
+
+.star.inactive{color:#ffffff}
+.star.active{color:#facc15}
+
+.rating-label{
+font-size:13px;
+color:#ffffff;
+margin-left:8px;
+opacity:.8;
+}
+
+textarea{
+width:100%;
+resize:vertical;
+min-height:90px;
+border-radius:8px;
+border:1px solid #ffffff;
+padding:10px;
+font-size:14px;
+outline:none;
+background:#000000;
+color:#ffffff;
+}
+
+textarea::placeholder{
+color:#ffffff;
+opacity:.5;
+}
+
+textarea:focus{
+border-color:#facc15;
+box-shadow:0 0 0 2px rgba(250,204,21,.25);
+}
+
+.actions{
+display:flex;
+gap:10px;
+justify-content:flex-end;
+flex-wrap:wrap;
+}
+
+button{
+border:none;
+padding:9px 16px;
+border-radius:999px;
+font-weight:600;
+cursor:pointer;
+transition:.2s;
+}
+
+.upload{
+background:#facc15;
+color:#000000;
+}
+
+.upload:hover{
+background:#eab308;
+transform:translateY(-1px);
+}
+
+.cancel{
+background:#ffffff;
+color:#000000;
+}
+
+.cancel:hover{
+background:#e5e5e5;
+transform:translateY(-1px);
+}
+
+.output{
+font-size:13px;
+color:#ffffff;
+background:#000000;
+border:1px dashed #facc15;
+border-radius:6px;
+padding:8px;
+word-break:break-word;
+opacity:.9;
+}
+
+@media (max-width:420px){
+.star{font-size:24px}
+.header{font-size:16px}
+}
+</style>
+
+</head>
+<body>
+
+<div class="review-component" id="uploadReview">
+
+<div class="header">Upload a review</div>
+
+<div class="stars" id="stars">
+<span class="star inactive" data-value="1">★</span>
+<span class="star inactive" data-value="2">★</span>
+<span class="star inactive" data-value="3">★</span>
+<span class="star inactive" data-value="4">★</span>
+<span class="star inactive" data-value="5">★</span>
+<span class="rating-label" id="ratingLabel">Select rating</span>
+</div>
+
+<textarea id="reviewText" placeholder="Write your review..."></textarea>
+
+<div class="actions">
+<button class="upload" id="uploadBtn">Upload</button>
+<button class="cancel" id="cancelBtn">Cancel</button>
+</div>
+
+<div class="output" id="output">Component ready</div>
+
+</div>
+
+<script>
+(function(){
+
+function UploadReview(root){
+this.root=root
+this.rating=0
+this.text=""
+this.stars=[...root.querySelectorAll(".star")]
+this.textarea=root.querySelector("#reviewText")
+this.output=root.querySelector("#output")
+
+this.init()
+}
+
+UploadReview.prototype.init=function(){
+
+this.stars.forEach(star=>{
+star.addEventListener("click",()=>{
+this.rating=parseInt(star.dataset.value)
+this.updateStars()
+})
+})
+
+this.textarea.addEventListener("input",()=>{
+this.text=this.textarea.value
+})
+
+this.root.querySelector("#uploadBtn").addEventListener("click",()=>{
+
+if(this.rating===0){
+this.output.textContent="Please select a star rating."
+return
+}
+
+if(this.text.trim()===""){
+this.output.textContent="Please write a review before uploading."
+return
+}
+
+const review=this.get_review()
+
+console.log("Sending review:",review)
+
+this.output.textContent="Review submitted successfully."
+
+this.clear()
+
+})
+
+this.root.querySelector("#cancelBtn").addEventListener("click",()=>{
+this.clear()
+this.output.textContent="Review cancelled."
+})
+
+}
+
+UploadReview.prototype.updateStars=function(){
+
+this.stars.forEach(s=>{
+
+if(parseInt(s.dataset.value)<=this.rating){
+s.classList.add("active")
+s.classList.remove("inactive")
+}else{
+s.classList.add("inactive")
+s.classList.remove("active")
+}
+
+})
+
+this.root.querySelector("#ratingLabel").textContent=this.rating?this.rating+" star rating":"Select rating"
+
+}
+
+UploadReview.prototype.get_review=function(){
+return{
+rating:this.rating,
+text:this.text
+}
+}
+
+UploadReview.prototype.clear=function(){
+this.rating=0
+this.text=""
+this.textarea.value=""
+this.updateStars()
+}
+
+window.UploadReviewComponent=new UploadReview(document.getElementById("uploadReview"))
+
+})()
+</script>
+
+</body>
+</html>
