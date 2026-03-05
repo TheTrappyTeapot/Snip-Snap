@@ -13,7 +13,6 @@ def _get_conn():
     # Supabase Postgres requires SSL. Enforce if not present in the URL.
     if "sslmode=" not in db_url:
         sep = "&" if "?" in db_url else "?"
-        db_url = f"{db_url}{sep}sslmode=require"
 
     return psycopg2.connect(db_url)
 
@@ -222,16 +221,36 @@ def fetch_discover_posts(
     cursor: Optional[Tuple[datetime, int]],
     limit: int,
     effective_sort: str,
+    viewer_lat: float | None = None,
+    viewer_lng: float | None = None,
 ) -> List[Dict[str, Any]]:
-    where = ["hp.is_post = TRUE", "hp.status = 'show'"]
+    where: List[str] = ["hp.is_post = TRUE", "hp.status = 'show'"]
     params: List[Any] = []
+    join: List[str] = []
+    having: List[str] = []
 
-    join = []
-    having = []
+    # --- Core joins for promo + barbershop coords (never use App_User location for barbers)
+    join.append("JOIN barber b_promo ON b_promo.barber_id = hp.barber_id")
+    join.append("JOIN app_user u_promo ON u_promo.user_id = b_promo.user_id")
+    join.append("LEFT JOIN barbershop bs_promo ON bs_promo.barbershop_id = b_promo.barbershop_id")
+    join.append("LEFT JOIN profilephoto pp_promo ON pp_promo.user_id = u_promo.user_id")
 
+    # --- Rating aggregate (barber rating)
+    join.append("""
+        LEFT JOIN (
+            SELECT
+                r.target_barber_id AS barber_id,
+                AVG(r.rating)::float AS avg_rating,
+                COUNT(*)::int AS rating_count
+            FROM review r
+            WHERE r.status = 'show' AND r.rating IS NOT NULL AND r.target_barber_id IS NOT NULL
+            GROUP BY r.target_barber_id
+        ) rating_agg ON rating_agg.barber_id = hp.barber_id
+    """)
+
+    # --- Filters
     if barbershop_ids:
-        join.append("JOIN Barber b ON b.barber_id = hp.barber_id")
-        where.append("b.barbershop_id = ANY(%s)")
+        where.append("b_promo.barbershop_id = ANY(%s)")
         params.append(barbershop_ids)
 
     if barber_ids:
@@ -239,7 +258,7 @@ def fetch_discover_posts(
         params.append(barber_ids)
 
     if tag_ids:
-        join.append("JOIN HaircutPhoto_Tag hpt ON hpt.photo_id = hp.photo_id")
+        join.append("JOIN haircutphoto_tag hpt ON hpt.photo_id = hp.photo_id")
         where.append("hpt.tag_id = ANY(%s)")
         params.append(tag_ids)
         having.append("COUNT(DISTINCT hpt.tag_id) = %s")
@@ -250,26 +269,64 @@ def fetch_discover_posts(
         where.append("(hp.created_at < %s OR (hp.created_at = %s AND hp.photo_id < %s))")
         params.extend([cursor_created_at, cursor_created_at, cursor_photo_id])
 
-    order_by = "hp.created_at DESC, hp.photo_id DESC"
+    # --- Distance (PostGIS). Only compute if we can.
+    include_distance = (viewer_lat is not None and viewer_lng is not None)
 
-    if effective_sort == "closest":
-        order_by = "hp.created_at DESC, hp.photo_id DESC"
+    distance_expr = "NULL::float"
+    if include_distance:
+        distance_expr = """
+        (ST_DistanceSphere(
+            ST_MakePoint(bs_promo.location_lng, bs_promo.location_lat),
+            ST_MakePoint(%s, %s)
+        ) / 1000.0)::float
+        """
+        params.extend([viewer_lng, viewer_lat])
 
-    if effective_sort == "highest_rated":
+    # Decide order_by ONCE (do not overwrite later)
+    if effective_sort == "closest" and include_distance:
+        order_by = "distance_km ASC, hp.created_at DESC, hp.photo_id DESC"
+    elif effective_sort == "highest_rated":
+        order_by = "rating_agg.avg_rating DESC NULLS LAST, rating_agg.rating_count DESC, hp.created_at DESC, hp.photo_id DESC"
+    else:
         order_by = "hp.created_at DESC, hp.photo_id DESC"
 
     having_sql = f"HAVING {' AND '.join(having)}" if having else ""
 
     sql = f"""
-        SELECT hp.photo_id, hp.image_url, hp.width_px, hp.height_px, hp.created_at
-        FROM HaircutPhoto hp
+        SELECT
+            hp.photo_id,
+            hp.image_url,
+            hp.width_px,
+            hp.height_px,
+            hp.created_at,
+            hp.barber_id,
+
+            u_promo.username AS promo_name,
+            u_promo.role AS promo_role,
+            bs_promo.name AS promo_barbershop_name,
+            pp_promo.image_url AS promo_profile_image_url,
+
+            bs_promo.location_lat AS shop_lat,
+            bs_promo.location_lng AS shop_lng,
+
+            rating_agg.avg_rating AS avg_rating,
+            rating_agg.rating_count AS rating_count,
+
+            {distance_expr} AS distance_km
+
+        FROM haircutphoto hp
         {' '.join(join)}
         WHERE {' AND '.join(where)}
-        GROUP BY hp.photo_id
+        GROUP BY
+            hp.photo_id, hp.image_url, hp.width_px, hp.height_px, hp.created_at, hp.barber_id,
+            u_promo.username, u_promo.role, bs_promo.name, pp_promo.image_url,
+            bs_promo.location_lat, bs_promo.location_lng,
+            rating_agg.avg_rating, rating_agg.rating_count
         {having_sql}
         ORDER BY {order_by}
         LIMIT %s
     """
+
     params.append(limit)
 
     with _get_conn() as conn:
@@ -279,6 +336,18 @@ def fetch_discover_posts(
 
     return rows
 
+
+def get_user_location(user_id: int):
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT location_lat, location_lng FROM App_User WHERE user_id = %s", (user_id,))
+            row = cur.fetchone()
+    if not row:
+        return None
+    lat, lng = row
+    if lat is None or lng is None:
+        return None
+    return {"lat": float(lat), "lng": float(lng)}
 
 def _pick_label(row: Dict[str, Any], preferred_keys: List[str]) -> str:
     for k in preferred_keys:

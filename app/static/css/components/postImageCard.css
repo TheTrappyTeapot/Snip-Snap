@@ -1,10 +1,17 @@
 .postImageCard {
   width: 100%;
   border-radius: 10px;
-  overflow: hidden;
   border: 1px solid #e6e6e6;
   background: #f3f3f3;
+  overflow: hidden; /* ok now because media is inside */
+}
+
+/* NEW: the square area */
+.postImageCard__media {
+  width: 100%;
   aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f3f3f3;
 }
 
 .postImageCard__img {
@@ -12,4 +19,48 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.postImageCard__meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+}
+
+.stars{
+  position:relative;
+  display:inline-block;
+  line-height:1;
+  font-size:14px;
+}
+
+.stars__bg{
+  color:#cfcfcf;
+}
+
+.stars__fg{
+  position:absolute;
+  left:0;
+  top:0;
+  overflow:hidden;
+  white-space:nowrap;
+  color:#111;
+}
+
+.rating__text{
+  margin-left:8px;
+  font-size:12px;
+  color:#444;
+}
+
+.postImageCard__distance{
+  font-size:12px;
+  color:#444;
+  white-space:nowrap;
+}
+
+.postImageCard .user-promo {
+  padding: 8px 10px 0 10px;
 }

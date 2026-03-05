@@ -10,7 +10,7 @@ const out = document.getElementById("discoverSelection");
 
 const tagList = new TagList({
   mountEl: tagListMount,
-  initialItems: [{ id: 2, type: "filter" }],
+  initialItems: [{ id: 2, type: "filter" }, { id: 1, type: "filter" }, { id: 0, type: "filter" }],
 });
 
 initPostGallery({

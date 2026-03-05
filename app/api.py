@@ -1,7 +1,7 @@
 from datetime import datetime
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 
-from .db import fetch_discover_posts, fetch_discover_search_items
+from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location
 from .supabase_storage import sign_storage_path
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -59,6 +59,21 @@ def gallery_posts():
     cursor_raw = payload.get("cursor")
     cursor = _parse_cursor(cursor_raw) if isinstance(cursor_raw, str) else None
 
+    # --- viewer location (customer OR barber) ---
+    u = session.get("user") or {}
+    uid = u.get("id")
+
+    viewer_lat = None
+    viewer_lng = None
+
+    if uid is not None:
+        loc = get_user_location(int(uid))  # returns {"lat": float, "lng": float} or None
+        if loc:
+            viewer_lat = loc["lat"]
+            viewer_lng = loc["lng"]
+
+    print("gallery_posts effective_sort =", effective_sort, "viewer_lat/lng =", viewer_lat, viewer_lng)
+
     # Fetch 1 extra so we can calculate has_more
     rows = fetch_discover_posts(
         tag_ids=tag_ids,
@@ -67,14 +82,20 @@ def gallery_posts():
         cursor=cursor,
         limit=limit + 1,
         effective_sort=effective_sort,
+        viewer_lat=viewer_lat,
+        viewer_lng=viewer_lng,
     )
 
     has_more = len(rows) > limit
     items = rows[:limit]
     for it in items:
-        # it["image_url"] currently holds storage path (after you migrate your data)
-        path = it.get("image_url")
-        it["image_url"] = sign_storage_path(path, expires_in=3600)
+        # Haircut photo
+        it["image_url"] = sign_storage_path(it.get("image_url"), expires_in=3600)
+
+        # Promo profile photo (optional)
+        it["promo_profile_image_url"] = sign_storage_path(
+            it.get("promo_profile_image_url"), expires_in=3600
+        )
 
     next_cursor = _make_next_cursor(items) if has_more else None
 

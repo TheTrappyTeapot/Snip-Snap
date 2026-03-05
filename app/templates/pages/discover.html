@@ -3,6 +3,8 @@
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/postImageCard.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -21,6 +23,9 @@
 {% endblock %}
 
 {% block scripts %}
+  <script>
+    window.__VIEWER_LOC__ = {{ viewer_loc|tojson }};
+  </script>
   <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/pages/discover.js') }}"></script>
 {% endblock %}

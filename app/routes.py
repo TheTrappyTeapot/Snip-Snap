@@ -2,7 +2,7 @@ import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
 from .auth import verify_supabase_jwt
 from .access import login_required, roles_required
-from .db import link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile
+from .db import get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile
 from uuid import uuid4
 from datetime import datetime
 
@@ -112,10 +112,18 @@ def register_routes(app):
         print("Current session:", session.get("user"))
         return jsonify(session.get("user") or {})
     
-    @app.route("/discover")
+    @app.get("/discover")
     @login_required
     def discover():
-        return render_template("pages/discover.html")
+        user = session["user"]
+        viewer_loc = None
+
+        # Only customers get distance; guests/barbers won’t show it unless you want them to.
+        u = session.get("user") or {}
+        uid = u.get("id")
+        viewer_loc = get_user_location(int(uid)) if uid else None
+
+        return render_template("pages/discover.html", viewer_loc=viewer_loc)
     
     @app.route("/map")
     @login_required
