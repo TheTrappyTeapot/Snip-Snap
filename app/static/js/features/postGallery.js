@@ -26,10 +26,20 @@ function normaliseTagListItems(items) {
 
 function resolveEffectiveSort(filter_ids) {
   const set = new Set(filter_ids || []);
-  if (set.has(2)) return "most_recent";
-  if (set.has(1) && set.size === 1) return "highest_rated";
-  if (set.has(0) && set.size === 1) return "closest";
-  if (set.size > 1) return "most_recent";
+
+  const hasClosest = set.has(0);
+  const hasHighestRated = set.has(1);
+  const hasMostRecent = set.has(2);
+
+  const selectedCount =
+    (hasClosest ? 1 : 0) +
+    (hasHighestRated ? 1 : 0) +
+    (hasMostRecent ? 1 : 0);
+
+  if (selectedCount === 0) return "most_recent";
+  if (selectedCount > 1) return "blended";
+  if (hasClosest) return "closest";
+  if (hasHighestRated) return "highest_rated";
   return "most_recent";
 }
 
@@ -48,6 +58,17 @@ async function fetchPosts({ endpoint, payload }) {
   return await res.json();
 }
 
+function createGalleryLoader() {
+  const el = document.createElement("div");
+  el.className = "postGalleryLoader";
+  el.hidden = true;
+  el.innerHTML = `
+    <div class="postGalleryLoader__spinner" aria-hidden="true"></div>
+    <div class="postGalleryLoader__text">Loading…</div>
+  `;
+  return el;
+}
+
 export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
   const state = {
     items: [],
@@ -61,6 +82,19 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
   const endpoint = (config && config.endpoint) || "/api/gallery/posts";
   const columns = (config && config.columns) || 3;
   const limit = (config && config.limit) || 18;
+
+
+  const loaderEl = createGalleryLoader();
+
+  if (sentinelEl && sentinelEl.parentNode) {
+    sentinelEl.parentNode.insertBefore(loaderEl, sentinelEl);
+  } else {
+    mountEl.parentNode?.appendChild(loaderEl);
+  }
+
+  function setLoadingVisible(visible) {
+    loaderEl.hidden = !visible;
+  }
 
   function render() {
     if (state.error) {
@@ -122,6 +156,8 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     state.cursor = null;
     state.has_more = true;
 
+    setLoadingVisible(true);
+
     const payload = buildPayload({ cursor: null });
     state.lastPayloadKey = payloadKey(payload);
 
@@ -134,6 +170,7 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
       state.error = e;
     } finally {
       state.loading = false;
+      setLoadingVisible(false);
       render();
     }
   }
@@ -149,6 +186,8 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     state.loading = true;
     state.error = null;
 
+    setLoadingVisible(true);
+
     try {
       const data = await fetchPosts({ endpoint, payload });
       const newItems = Array.isArray(data.items) ? data.items : [];
@@ -159,6 +198,7 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
       state.error = e;
     } finally {
       state.loading = false;
+      setLoadingVisible(false);
       render();
     }
   }

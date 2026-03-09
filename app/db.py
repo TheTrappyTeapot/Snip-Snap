@@ -3,6 +3,9 @@ import psycopg2
 import psycopg2.extras
 from typing import List, Optional, Tuple, Dict, Any
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def _get_conn():
@@ -213,7 +216,9 @@ def create_haircut_post(barber_id: int, image_url: str, width_px: int, height_px
                 )
     return photo_id
 
-
+# fetch_discover_posts is a complex query builder for the discover page, supporting multiple optional filters and sorts, and calculating distance and blended scores for ranking.
+# It returns a list of haircut posts with associated promo info, ratings, and distance if viewer location is provided.
+# It is a very important function for the discover page performance and relevance, and is carefully optimized with conditional joins and where clauses based on the provided filters.
 def fetch_discover_posts(
     tag_ids: List[int],
     barber_ids: List[int],
@@ -225,17 +230,18 @@ def fetch_discover_posts(
     viewer_lng: float | None = None,
 ) -> List[Dict[str, Any]]:
     where: List[str] = ["hp.is_post = TRUE", "hp.status = 'show'"]
-    params: List[Any] = []
+    where_params: List[Any] = []
+    select_params: List[Any] = []
     join: List[str] = []
     having: List[str] = []
 
-    # --- Core joins for promo + barbershop coords (never use App_User location for barbers)
+    # --- Core joins for promo + barbershop coords
     join.append("JOIN barber b_promo ON b_promo.barber_id = hp.barber_id")
     join.append("JOIN app_user u_promo ON u_promo.user_id = b_promo.user_id")
     join.append("LEFT JOIN barbershop bs_promo ON bs_promo.barbershop_id = b_promo.barbershop_id")
     join.append("LEFT JOIN profilephoto pp_promo ON pp_promo.user_id = u_promo.user_id")
 
-    # --- Rating aggregate (barber rating)
+    # --- Rating aggregate
     join.append("""
         LEFT JOIN (
             SELECT
@@ -243,7 +249,9 @@ def fetch_discover_posts(
                 AVG(r.rating)::float AS avg_rating,
                 COUNT(*)::int AS rating_count
             FROM review r
-            WHERE r.status = 'show' AND r.rating IS NOT NULL AND r.target_barber_id IS NOT NULL
+            WHERE r.status = 'show'
+              AND r.rating IS NOT NULL
+              AND r.target_barber_id IS NOT NULL
             GROUP BY r.target_barber_id
         ) rating_agg ON rating_agg.barber_id = hp.barber_id
     """)
@@ -251,28 +259,30 @@ def fetch_discover_posts(
     # --- Filters
     if barbershop_ids:
         where.append("b_promo.barbershop_id = ANY(%s)")
-        params.append(barbershop_ids)
+        where_params.append(barbershop_ids)
 
     if barber_ids:
         where.append("hp.barber_id = ANY(%s)")
-        params.append(barber_ids)
+        where_params.append(barber_ids)
 
     if tag_ids:
         join.append("JOIN haircutphoto_tag hpt ON hpt.photo_id = hp.photo_id")
         where.append("hpt.tag_id = ANY(%s)")
-        params.append(tag_ids)
+        where_params.append(tag_ids)
         having.append("COUNT(DISTINCT hpt.tag_id) = %s")
-        params.append(len(tag_ids))
+        where_params.append(len(tag_ids))
 
     if cursor is not None:
         cursor_created_at, cursor_photo_id = cursor
         where.append("(hp.created_at < %s OR (hp.created_at = %s AND hp.photo_id < %s))")
-        params.extend([cursor_created_at, cursor_created_at, cursor_photo_id])
+        where_params.extend([cursor_created_at, cursor_created_at, cursor_photo_id])
 
-    # --- Distance (PostGIS). Only compute if we can.
+    # --- Distance
     include_distance = (viewer_lat is not None and viewer_lng is not None)
 
     distance_expr = "NULL::float"
+    distance_score_expr = "0.0::float"
+
     if include_distance:
         distance_expr = """
         (ST_DistanceSphere(
@@ -280,13 +290,41 @@ def fetch_discover_posts(
             ST_MakePoint(%s, %s)
         ) / 1000.0)::float
         """
-        params.extend([viewer_lng, viewer_lat])
+        # SELECT placeholders come before WHERE placeholders
+        select_params.extend([viewer_lng, viewer_lat])
 
-    # Decide order_by ONCE (do not overwrite later)
+        distance_score_expr = """
+        (1.0 / (1.0 + (
+            ST_DistanceSphere(
+                ST_MakePoint(bs_promo.location_lng, bs_promo.location_lat),
+                ST_MakePoint(%s, %s)
+            ) / 1000.0
+        )))
+        """
+        # blended_score uses distance again, so add them again
+        select_params.extend([viewer_lng, viewer_lat])
+
+    # --- Scoring
+    rating_score_expr = "COALESCE(rating_agg.avg_rating, 0)::float / 5.0"
+    recency_score_expr = """
+    (1.0 / (1.0 + (EXTRACT(EPOCH FROM (NOW() - hp.created_at)) / 86400.0)))
+    """
+
+    blended_score_expr = f"""
+    (
+        0.45 * ({distance_score_expr}) +
+        0.35 * ({rating_score_expr}) +
+        0.20 * ({recency_score_expr})
+    )::float
+    """
+
+    # --- Ordering
     if effective_sort == "closest" and include_distance:
         order_by = "distance_km ASC, hp.created_at DESC, hp.photo_id DESC"
     elif effective_sort == "highest_rated":
         order_by = "rating_agg.avg_rating DESC NULLS LAST, rating_agg.rating_count DESC, hp.created_at DESC, hp.photo_id DESC"
+    elif effective_sort == "blended":
+        order_by = "blended_score DESC, hp.created_at DESC, hp.photo_id DESC"
     else:
         order_by = "hp.created_at DESC, hp.photo_id DESC"
 
@@ -312,7 +350,8 @@ def fetch_discover_posts(
             rating_agg.avg_rating AS avg_rating,
             rating_agg.rating_count AS rating_count,
 
-            {distance_expr} AS distance_km
+            {distance_expr} AS distance_km,
+            {blended_score_expr} AS blended_score
 
         FROM haircutphoto hp
         {' '.join(join)}
@@ -327,7 +366,7 @@ def fetch_discover_posts(
         LIMIT %s
     """
 
-    params.append(limit)
+    params = select_params + where_params + [limit]
 
     with _get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -335,7 +374,6 @@ def fetch_discover_posts(
             rows = cur.fetchall()
 
     return rows
-
 
 def get_user_location(user_id: int):
     with _get_conn() as conn:
