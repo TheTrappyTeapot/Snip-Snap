@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/discover.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
@@ -8,15 +9,22 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Discover Page</h1>
+  <div class="login-page">
+    <section class="login-card">
+      <div class="login-card__header">
+        <h1 class="login-card__title">Discover</h1>
+        <p class="login-card__subtitle">Find the best barbers and cuts closest to you.</p>
+      </div>
 
-  <div id="searchBarMount"></div>
+      <div class="discover-actions">
+        <div id="searchBarMount" class="discover-search"></div>
+        <div id="tagListMount" class="discover-taglist"></div>
+      </div>
 
-  <div id="tagListMount"></div>
-
-  <div id="postGalleryMount"></div>
-  <div id="postGallerySentinel"></div>
-
+      <div id="postGalleryMount" class="galleryGrid" style="margin-top: 8px;"></div>
+      <div id="postGallerySentinel"></div>
+    </section>
+  </div>
 {% endblock %}
 
 {% block scripts %}
