@@ -85,40 +85,67 @@
   .discover-search,
   .discover-taglist,
   .postImageCard {
-    background: var(--discover-surface);
-    border-color: var(--discover-border);
-    box-shadow: var(--discover-shadow);
+    background: #1f232a;
+    border-color: var(--login-accent, #f59e0b);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
     color: var(--discover-text);
   }
 
-  .sa-input,
+  .discover-header h1 {
+    color: var(--login-accent, #f59e0b);
+  }
+
+  .discover-taglist,
+  .taglist li {
+    border-color: var(--login-accent, #f59e0b) !important;
+    color: var(--login-accent, #f59e0b) !important;
+    background: #1f232a !important;
+  }
+
+  .sa-root {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .sa-input {
+    background: #1f232a;
+    color: var(--login-text);
+    border: 1px solid var(--login-accent, #f59e0b);
+  }
+
+  .sa-input:focus {
+    border-color: var(--login-accent, #f59e0b);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--login-accent, #f59e0b) 16%, transparent);
+  }
+
   .sa-dropdown,
   .sa-item {
-    background: var(--discover-surface-2);
+    background: #1f232a;
     color: var(--discover-text);
-    border-color: var(--discover-border);
+    border: 1px solid var(--discover-border);
   }
 
   .sa-item:hover,
   .sa-item.is-highlighted {
-    background: #3b4456;
+    background: #26314a;
   }
 
-  .taglist li {
-    border-color: var(--discover-border) !important;
-    background: var(--discover-surface) !important;
-    color: var(--discover-text) !important;
+  .user-promo__name {
+    color: var(--login-accent, #f59e0b);
   }
 
-  .user-promo,
+  .user-promo__subtext {
+    color: #94a3b8;
+  }
+
   .postImageCard__distance,
   .rating__text {
-    color: var(--discover-text);
+    color: #d1d5db;
   }
 
-  .user-promo__avatar {
-    background: #2b2e38;
-    color: #94a3b8;
+  .taglist button {
+    color: var(--login-accent, #f59e0b) !important;
   }
 }
 
