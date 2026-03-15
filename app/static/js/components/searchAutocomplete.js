@@ -75,7 +75,7 @@
       throw new Error("createSearchBarAutocomplete: items must be an array.");
     }
 
-    const cleanItems = items.filter(isValidItem);
+    let cleanItems = items.filter(isValidItem);
     const placeholder = opts.placeholder ?? "Search…";
 
     // Component state
@@ -302,7 +302,7 @@
       setItems(newItems) {
         if (!Array.isArray(newItems)) return;
         items = newItems;
-        // refresh using new list
+        cleanItems = newItems.filter(isValidItem);
         refresh();
       },
       getSelected() {

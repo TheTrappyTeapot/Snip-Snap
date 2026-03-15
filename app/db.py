@@ -16,6 +16,7 @@ def _get_conn():
     # Supabase Postgres requires SSL. Enforce if not present in the URL.
     if "sslmode=" not in db_url:
         sep = "&" if "?" in db_url else "?"
+        db_url = f"{db_url}{sep}sslmode=require"
 
     return psycopg2.connect(db_url)
 
@@ -133,9 +134,13 @@ def get_barber_public_by_user_id(user_id: int):
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT user_id, username, location_lat, location_lng, postcode, role
-                FROM App_User
-                WHERE user_id = %s
+                SELECT u.user_id, u.username, u.location_lat, u.location_lng,
+                       u.postcode, u.role,
+                       bs.location_lat AS shop_lat, bs.location_lng AS shop_lng
+                FROM App_User u
+                LEFT JOIN Barber b ON b.user_id = u.user_id
+                LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
+                WHERE u.user_id = %s
                 """,
                 (user_id,),
             )
@@ -155,6 +160,8 @@ def get_barber_public_by_user_id(user_id: int):
         "location_lng": row[3],
         "postcode": row[4],
         "role": role,
+        "shop_lat": row[6],
+        "shop_lng": row[7],
     }
 
 
@@ -415,6 +422,7 @@ def get_barbershops_for_map():
                     bs.website,
                     b.barber_id,
                     b.bio,
+                    u.user_id,
                     u.username,
                     pp.image_url AS profile_image_url
                 FROM Barbershop bs
@@ -444,6 +452,7 @@ def get_barbershops_for_map():
             shops[bid]["barbers"].append(
                 {
                     "barber_id": row["barber_id"],
+                    "user_id": row["user_id"],
                     "username": row["username"],
                     "profile_image_url": row["profile_image_url"],
                 }

@@ -1,16 +1,13 @@
-/* ── Make the main container full-width for the map page ── */
-main.container:has(#map-wrapper) {
-  max-width: 100%;
+/* ── Remove main padding so map fills edge-to-edge ── */
+main:has(#map-wrapper) {
   padding: 0;
-  margin: 0;
-  width: 100%;
 }
 
-/* ── Map wrapper fills the viewport below the nav ── */
+/* ── Map wrapper fills the full viewport height ── */
 #map-wrapper {
   position: relative;
   width: 100%;
-  height: calc(100vh - 52px);
+  height: 100vh;
 }
 
 #map {

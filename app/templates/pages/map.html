@@ -1,6 +1,51 @@
 {% extends "base.html" %}
 {% block title %}Map{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/map.css') }}">
+{% endblock %}
+
 {% block content %}
-<h1>Map</h1>
-<p>Map page placeholder.</p>
+<div id="map-wrapper">
+  <div id="map"></div>
+
+  <div id="map-search-bar"></div>
+
+  <button id="my-location-btn">My Location</button>
+
+  <div id="location-modal" class="hidden">
+    <div id="location-modal-content">
+      <button id="location-modal-close" aria-label="Close">&times;</button>
+      <h3 style="margin:0 0 4px">Where are you?</h3>
+      <p style="margin:0 0 10px;font-size:13px;color:#555">
+        Set your location to see barbershops near you.
+      </p>
+      <input
+        id="location-input"
+        type="text"
+        placeholder="Enter postcode or address"
+        autocomplete="off"
+      />
+      <button id="set-location-btn">Set Location</button>
+      <button id="use-current-location-btn">Use Current Location</button>
+    </div>
+  </div>
+
+  <div id="save-location-prompt" class="hidden">
+    <p>Save this as your default location?</p>
+    <div class="save-prompt-btns">
+      <button id="save-location-no">Not now</button>
+      <button id="save-location-yes">Save</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/map.js') }}"></script>
 {% endblock %}

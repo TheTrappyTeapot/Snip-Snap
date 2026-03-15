@@ -1,10 +1,19 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 
-from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location
+from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map
 from .supabase_storage import sign_storage_path
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
+
+
+@api_bp.get("/barbershops")
+def barbershops():
+    try:
+        shops = get_barbershops_for_map()
+        return jsonify(shops)
+    except Exception:
+        return jsonify({"error": "Could not load barbershops"}), 500
 
 
 @api_bp.get("/discover/search_items")

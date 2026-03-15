@@ -2,6 +2,11 @@
 {% extends "base.html" %}
 {% block title %}Barber profile{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
+{% endblock %}
+
 {% block content %}
 <h1>Barber profile</h1>
 
@@ -27,16 +32,60 @@
     {% endif %}
 
     {% if barber.location_lat is not none and barber.location_lng is not none %}
-      <p><strong>Location:</strong> {{ barber.location_lat }}, {{ barber.location_lng }}</p>
+      <p><strong>Location:</strong> <span id="location-display">Loading&hellip;</span></p>
     {% else %}
       <p><strong>Location:</strong> Not set</p>
     {% endif %}
 
     <p style="margin-top:12px;">
-      <!-- Placeholder CTA; you’ll wire booking later -->
+      <!-- Placeholder CTA; you'll wire booking later -->
       <button type="button" disabled>Book this barber (coming soon)</button>
     </p>
+
+    {% if barber.location_lat is not none and barber.location_lng is not none %}
+      <div id="map-widget-mount" style="margin-top:16px;"></div>
+    {% endif %}
   </div>
 {% endif %}
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/components/mapWidget.js') }}"></script>
+{% if barber and barber.location_lat is not none and barber.location_lng is not none %}
+<script>
+  (function () {
+    var lat = {{ barber.location_lat }};
+    var lng = {{ barber.location_lng }};
+    var shopLat = {{ barber.shop_lat if barber.shop_lat is not none else barber.location_lat }};
+    var shopLng = {{ barber.shop_lng if barber.shop_lng is not none else barber.location_lng }};
+
+    initMapWidget("#map-widget-mount", {
+      center: [shopLat, shopLng],
+      marker: [lat, lng],
+      zoom: 14
+    });
+
+    fetch(
+      "https://nominatim.openstreetmap.org/reverse?lat=" +
+        lat + "&lon=" + lng + "&format=json"
+    )
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var el = document.getElementById("location-display");
+        if (!el || !data.address) return;
+        var a = data.address;
+        el.textContent =
+          a.road
+            ? (a.road + (a.city || a.town || a.village ? ", " + (a.city || a.town || a.village) : ""))
+            : (a.city || a.town || a.village || a.county || data.display_name.split(",")[0]);
+      })
+      .catch(function () {
+        var el = document.getElementById("location-display");
+        if (el) el.textContent = "Location set";
+      });
+  })();
+</script>
+{% endif %}
 {% endblock %}
