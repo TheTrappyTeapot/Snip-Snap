@@ -15,17 +15,29 @@
 
     <form id="signupForm" class="login-form">
       <div class="login-field">
+        <label class="login-label" for="username">Username</label>
+        <input class="login-input" id="username" type="text" required autocomplete="username" placeholder="Choose a username">
+        <p id="usernameError" class="field-error"></p>
+      </div>
+
+      <div class="login-field">
         <label class="login-label" for="email">Email</label>
-        <input class="login-input" id="email" type="email" required autocomplete="email">
+        <input class="login-input" id="email" type="email" required autocomplete="email" placeholder="your@email.com">
+        <p id="emailError" class="field-error"></p>
       </div>
 
       <div class="login-field">
         <label class="login-label" for="password">Password</label>
-        <input class="login-input" id="password" type="password" required autocomplete="new-password">
+        <input class="login-input" id="password" type="password" required autocomplete="new-password" placeholder="At least 6 characters">
+        <p id="passwordError" class="field-error"></p>
+      </div>
+
+      <div class="login-field">
+        <p id="generalError" class="field-error"></p>
       </div>
 
       <div class="login-actions">
-        <button class="login-btn login-btn--primary" type="submit">Create account</button>
+        <button class="login-btn login-btn--primary" id="submitBtn" type="submit">Create account</button>
       </div>
     </form>
 
@@ -36,51 +48,13 @@
     <p id="msg" class="login-message"></p>
   </section>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "{{ supabase_url|e }}";
-  const SUPABASE_ANON_KEY = "{{ supabase_anon_key|e }}";
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const msg = document.getElementById("msg");
-
-  async function postTokenToFlask(access_token) {
-    const res = await fetch("{{ url_for('auth_callback') }}", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token }),
-    });
-    const json = await res.json();
-    if (!json.ok) throw new Error(json.error || "Auth callback failed");
-  }
-
-  document.getElementById("signupForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg.textContent = "Creating account…";
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) { msg.textContent = error.message; return; }
-
-    if (data.session?.access_token) {
-      await postTokenToFlask(data.session.access_token);
-      window.location.href = "{{ url_for('discover') }}";
-    } else {
-      msg.textContent = "Check your email to confirm your account, then log in.";
-    }
-  });
-
-  document.getElementById("googleBtn").addEventListener("click", async () => {
-    msg.textContent = "Redirecting to Google…";
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin + "{{ url_for('auth_redirect') }}",
-      },
-    });
-  });
-</script>
+<script 
+  src="{{ url_for('static', filename='js/pages/signup.js') }}"
+  data-supabase-url="{{ supabase_url|e }}"
+  data-supabase-anon-key="{{ supabase_anon_key|e }}"
+></script>
 {% endblock %}

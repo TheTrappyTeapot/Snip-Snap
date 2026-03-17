@@ -21,22 +21,46 @@ def _get_conn():
     return psycopg2.connect(db_url)
 
 
-def link_auth_user_id(email: str, auth_user_id: str) -> None:
+def create_app_user(email: str, username: str) -> int:
+    """
+    Create a new App_User record and return the user_id.
+    """
+    email = email.strip().lower()
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO App_User (email, username, role)
+                VALUES (%s, %s, 'customer')
+                RETURNING user_id
+                """,
+                (email, username),
+            )
+            user_id = cur.fetchone()[0]
+        conn.commit()
+    return user_id
+
+
+def link_auth_user_id(email: str, auth_user_id: str) -> bool:
     """
     Link Supabase auth user UUID to App_User row (only if not already linked).
+    Returns True if a row was actually updated, False otherwise.
     """
+    email = email.strip().lower()
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
                 UPDATE App_User
                 SET auth_user_id = %s
-                WHERE email = %s
+                WHERE LOWER(email) = %s
                   AND auth_user_id IS NULL
                 """,
                 (auth_user_id, email),
             )
+            rows_updated = cur.rowcount
         conn.commit()
+    return rows_updated > 0
 
 def get_app_user_by_auth_user_id(auth_user_id: str):
     with _get_conn() as conn:
@@ -63,13 +87,14 @@ def get_app_user_by_auth_user_id(auth_user_id: str):
     }
 
 def get_app_user_by_email(email: str):
+    email = email.strip().lower()
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
                 SELECT user_id, auth_user_id, email, username, role
                 FROM App_User
-                WHERE email = %s
+                WHERE LOWER(email) = %s
                 """,
                 (email,),
             )

@@ -1,10 +1,34 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 
-from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map
+from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map, create_app_user
 from .supabase_storage import sign_storage_path
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
+
+
+@api_bp.post("/auth/create-user")
+def create_user():
+    """Create a new App_User record for signup."""
+    try:
+        data = request.get_json(silent=True) or {}
+        email = data.get("email", "").strip().lower()
+        username = data.get("username", "").strip()
+        
+        if not email or not username:
+            return jsonify({"ok": False, "error": "Email and username required"}), 400
+        
+        user_id = create_app_user(email, username)
+        return jsonify({"ok": True, "user_id": user_id}), 201
+    except Exception as e:
+        error_msg = str(e)
+        print(f"Error creating app user: {error_msg}")
+        
+        # Check if it's a duplicate email error
+        if "duplicate key" in error_msg.lower() and "email" in error_msg.lower():
+            return jsonify({"ok": False, "error": "Email already in use"}), 400
+        
+        return jsonify({"ok": False, "error": error_msg}), 500
 
 
 @api_bp.get("/barbershops")

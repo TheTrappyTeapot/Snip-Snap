@@ -16,16 +16,22 @@
     <form id="loginForm" class="login-form">
       <div class="login-field">
         <label class="login-label" for="email">Email</label>
-        <input class="login-input" id="email" type="email" required autocomplete="email">
+        <input class="login-input" id="email" type="email" required autocomplete="email" placeholder="your@email.com">
+        <p id="emailError" class="field-error"></p>
       </div>
 
       <div class="login-field">
         <label class="login-label" for="password">Password</label>
-        <input class="login-input" id="password" type="password" required autocomplete="current-password">
+        <input class="login-input" id="password" type="password" required autocomplete="current-password" placeholder="Your password">
+        <p id="passwordError" class="field-error"></p>
+      </div>
+
+      <div class="login-field">
+        <p id="generalError" class="field-error"></p>
       </div>
 
       <div class="login-actions">
-        <button class="login-btn login-btn--primary" type="submit">Sign in</button>
+        <button class="login-btn login-btn--primary" id="submitBtn" type="submit">Sign in</button>
       </div>
     </form>
 
@@ -40,72 +46,9 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "{{ supabase_url|e }}";
-  const SUPABASE_ANON_KEY = "{{ supabase_anon_key|e }}";
-
-  window.__sb__ = window.__sb__ || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const sb = window.__sb__;
-
-  const msg = document.getElementById("msg");
-
-  async function postTokenToFlask(access_token) {
-    console.log("Posting token to Flask:", access_token ? "Token exists" : "No token");
-
-    const res = await fetch("{{ url_for('auth_callback') }}", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token }),
-    });
-
-    const json = await res.json();
-    console.log("Auth callback response:", json);
-
-    if (!json.ok) {
-      msg.textContent = "Server auth failed: " + (json.error || "unknown error");
-      throw new Error(json.error || "Auth callback failed");
-    }
-  }
-
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg.textContent = "Signing in…";
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    console.log("Attempting Supabase login for:", email);
-
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-
-    console.log("Supabase response:", data, error);
-
-    if (error) {
-      msg.textContent = error.message;
-      return;
-    }
-
-    if (!data.session) {
-      msg.textContent = "No session returned.";
-      console.log("No session returned!");
-      return;
-    }
-
-    await postTokenToFlask(data.session.access_token);
-
-    console.log("Redirecting to discover…");
-    window.location.href = "{{ url_for('discover') }}";
-  });
-
-  document.getElementById("googleBtn").addEventListener("click", async () => {
-    msg.textContent = "Redirecting to Google…";
-
-    await sb.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin + "{{ url_for('auth_redirect') }}",
-      },
-    });
-  });
-</script>
+<script 
+  src="{{ url_for('static', filename='js/pages/login.js') }}"
+  data-supabase-url="{{ supabase_url|e }}"
+  data-supabase-anon-key="{{ supabase_anon_key|e }}"
+></script>
 {% endblock %}

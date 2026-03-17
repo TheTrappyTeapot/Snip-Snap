@@ -171,3 +171,35 @@
 .login-message:not(:empty) {
   padding-top: 4px;
 }
+
+/* Error message styling */
+.field-error {
+  min-height: 22px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #ef4444;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-error {
+    color: #f87171;
+  }
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.login-input:has(+ .field-error:not(:empty)) {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .login-input:has(+ .field-error:not(:empty)) {
+    border-color: #f87171;
+    box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.12);
+  }
+}

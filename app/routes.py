@@ -71,13 +71,36 @@ def register_routes(app):
         print("JWT sub:", auth_user_id)
         print("JWT email:", email)
 
-        from .db import get_app_user_by_auth_user_id
+        from .db import get_app_user_by_auth_user_id, link_auth_user_id, get_app_user_by_email
 
+        # Try to get user by auth_user_id first
         app_user = get_app_user_by_auth_user_id(auth_user_id)
-        print("DB lookup result:", app_user)
+        print("DB lookup by auth_user_id:", app_user)
+
+        # If not found, try to link by email
+        if not app_user:
+            print("Not found by auth_user_id, attempting to link by email...")
+            try:
+                linked = link_auth_user_id(email, auth_user_id)
+                print(f"Link result: {linked}")
+                
+                # Try lookup again
+                app_user = get_app_user_by_auth_user_id(auth_user_id)
+                print("DB lookup after linking:", app_user)
+            except Exception as e:
+                print(f"Failed to link auth_user_id: {e}")
+
+        # Final fallback: lookup by email only
+        if not app_user:
+            print("Not found by auth_user_id, trying lookup by email...")
+            try:
+                app_user = get_app_user_by_email(email)
+                print("DB lookup by email:", app_user)
+            except Exception as e:
+                print(f"Failed lookup by email: {e}")
 
         if not app_user:
-            print("No App_User found for auth_user_id")
+            print("No App_User found for auth_user_id or email")
             return jsonify({"ok": False, "error": "User not found in App_User"}), 403
 
         session["user"] = {
