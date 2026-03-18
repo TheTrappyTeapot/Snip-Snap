@@ -101,10 +101,15 @@
   grid-template-columns: 100px 1fr;
   border-bottom: 1px solid #eee;
   min-height: 50px;
+  position: relative;
 }
 
 .hour-row:last-child {
   border-bottom: none;
+}
+
+.hour-row--closing-soon {
+  background: #fff8f0;
 }
 
 .hour-day {
@@ -115,6 +120,10 @@
   display: flex;
   align-items: center;
   border-right: 1px solid #eee;
+}
+
+.hour-row--closing-soon .hour-day {
+  background: #ffe4cc;
 }
 
 .hour-times {
@@ -133,6 +142,20 @@
   font-size: 0.9rem;
   color: #999;
   font-style: italic;
+}
+
+.hour-closing-badge {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #d97706;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .barbershop__barbers {

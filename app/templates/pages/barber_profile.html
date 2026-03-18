@@ -60,7 +60,7 @@
         <div class="barber-profile__shifts-timetable">
           {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
           {% for day_num in range(7) %}
-            <div class="shift-row">
+            <div class="shift-row {% if day_num == current_day and closing_info.closing_soon %}shift-row--closing-soon{% endif %}">
               <div class="shift-day">{{ days[day_num] }}</div>
               <div class="shift-times">
                 {% if day_num in shifts %}
@@ -71,6 +71,9 @@
                   <div class="shift-closed">Closed</div>
                 {% endif %}
               </div>
+              {% if day_num == current_day and closing_info.closing_soon %}
+                <div class="shift-closing-badge">Closing in {{ closing_info.mins_until_close }} min</div>
+              {% endif %}
             </div>
           {% endfor %}
         </div>

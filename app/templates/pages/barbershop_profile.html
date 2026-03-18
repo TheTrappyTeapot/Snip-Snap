@@ -58,7 +58,7 @@
           <div class="barbershop__hours-timetable">
             {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
             {% for day_num in range(7) %}
-              <div class="hour-row">
+              <div class="hour-row {% if day_num == current_day and closing_info.closing_soon %}hour-row--closing-soon{% endif %}">
                 <div class="hour-day">{{ days[day_num] }}</div>
                 <div class="hour-times">
                   {% if day_num in opening_hours %}
@@ -67,6 +67,9 @@
                     <div class="hour-closed">Closed</div>
                   {% endif %}
                 </div>
+                {% if day_num == current_day and closing_info.closing_soon %}
+                  <div class="hour-closing-badge">Closing in {{ closing_info.mins_until_close }} min</div>
+                {% endif %}
               </div>
             {% endfor %}
           </div>

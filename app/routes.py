@@ -4,7 +4,41 @@ from .auth import verify_supabase_jwt
 from .access import login_required, roles_required
 from .db import get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, time
+
+def get_closing_soon_info(close_time_str, current_day_num):
+    """
+    Check if a closing time is within the next 2 hours.
+    Returns dict with 'closing_soon' bool and 'mins_until_close' int.
+    """
+    try:
+        now = datetime.now()
+        current_mins = now.hour * 60 + now.minute
+        
+        # Parse close time (format: "HH:MM")
+        close_parts = close_time_str.split(':')
+        close_hour = int(close_parts[0])
+        close_min = int(close_parts[1])
+        close_mins = close_hour * 60 + close_min
+        
+        # Calculate minutes until close (same day)
+        mins_until_close = close_mins - current_mins
+        
+        # If negative, shop has already closed or closing is tomorrow
+        if mins_until_close < 0:
+            return {"closing_soon": False, "mins_until_close": 0}
+        
+        # Check if closing within next 2 hours (120 minutes)
+        if mins_until_close <= 120:
+            return {"closing_soon": True, "mins_until_close": mins_until_close}
+        
+        return {"closing_soon": False, "mins_until_close": 0}
+    except:
+        return {"closing_soon": False, "mins_until_close": 0}
+
+def get_current_day_num():
+    """Get current day of week (0=Monday, 6=Sunday)."""
+    return datetime.now().weekday()
 
 def register_routes(app):
 
@@ -194,7 +228,24 @@ def register_routes(app):
 
         barber_promo = get_user_promo(int(barber_id))
         shifts = get_shifts_for_barber(int(barber_id))
-        return render_template("pages/barber_profile.html", barber=barber, barber_promo=barber_promo, shifts=shifts, barber_id=barber_id)
+        current_day = get_current_day_num()
+        
+        # Calculate closing soon info for today's shifts
+        closing_info = {}
+        if current_day in shifts and shifts[current_day]:
+            # Get the last shift for today
+            last_shift = shifts[current_day][-1]
+            closing_info = get_closing_soon_info(last_shift["end_time"], current_day)
+        
+        return render_template(
+            "pages/barber_profile.html", 
+            barber=barber, 
+            barber_promo=barber_promo, 
+            shifts=shifts, 
+            barber_id=barber_id,
+            current_day=current_day,
+            closing_info=closing_info
+        )
 
 
     @app.get("/barber/<int:barber_id>")
@@ -219,7 +270,20 @@ def register_routes(app):
             )
 
         opening_hours = get_shop_opening_hours(barbershop_id)
-        return render_template("pages/barbershop_profile.html", shop=shop, opening_hours=opening_hours)
+        current_day = get_current_day_num()
+        
+        # Calculate closing soon info for today
+        closing_info = {}
+        if current_day in opening_hours:
+            closing_info = get_closing_soon_info(opening_hours[current_day]["close"], current_day)
+        
+        return render_template(
+            "pages/barbershop_profile.html", 
+            shop=shop, 
+            opening_hours=opening_hours,
+            current_day=current_day,
+            closing_info=closing_info
+        )
     
 
     @app.route("/dashboard", methods=["GET", "POST"])

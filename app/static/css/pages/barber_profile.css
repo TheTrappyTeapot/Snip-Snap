@@ -125,10 +125,15 @@
   grid-template-columns: 100px 1fr;
   border-bottom: 1px solid #eee;
   min-height: 50px;
+  position: relative;
 }
 
 .shift-row:last-child {
   border-bottom: none;
+}
+
+.shift-row--closing-soon {
+  background: #fff8f0;
 }
 
 .shift-day {
@@ -139,6 +144,10 @@
   display: flex;
   align-items: center;
   border-right: 1px solid #eee;
+}
+
+.shift-row--closing-soon .shift-day {
+  background: #ffe4cc;
 }
 
 .shift-times {
@@ -159,6 +168,20 @@
   font-size: 0.9rem;
   color: #999;
   font-style: italic;
+}
+
+.shift-closing-badge {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #d97706;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 @media (max-width: 480px) {
