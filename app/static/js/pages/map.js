@@ -10,6 +10,7 @@
   // ── State ────────────────────────────────────────────────────────────────────
   let userLat = null;
   let userLng = null;
+  let userMarker = null;
   let allShops = [];
 
   // ── Search bar (always visible, items populated after shops load) ─────────────
@@ -45,6 +46,21 @@
   const saveYesBtn = document.getElementById("save-location-yes");
   const locationModalClose = document.getElementById("location-modal-close");
 
+  // ── User location marker (red circle) ───────────────────────────────────────
+  function placeUserMarker(lat, lng) {
+    if (userMarker) userMarker.remove();
+    userMarker = L.circleMarker([lat, lng], {
+      radius: 9,
+      fillColor: "#e53e3e",
+      color: "#fff",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9,
+    })
+      .addTo(map)
+      .bindPopup("Your location");
+  }
+
   // ── Location modal ───────────────────────────────────────────────────────────
   function showModal() {
     locationModal.classList.remove("hidden");
@@ -56,7 +72,8 @@
     locationModal.classList.add("hidden");
   }
 
-  // If arriving from a barber profile widget, zoom straight to that location
+  // If arriving from barber profile widget, zoom straight to that location.
+  // Otherwise use saved DB location, otherwise show modal.
   var _params = new URLSearchParams(window.location.search);
   var _pLat = parseFloat(_params.get("lat"));
   var _pLng = parseFloat(_params.get("lng"));
@@ -64,6 +81,12 @@
     userLat = _pLat;
     userLng = _pLng;
     map.setView([userLat, userLng], LOCATION_ZOOM);
+    placeUserMarker(userLat, userLng);
+  } else if (window.__userLocation) {
+    userLat = window.__userLocation.lat;
+    userLng = window.__userLocation.lng;
+    map.setView([userLat, userLng], LOCATION_ZOOM);
+    placeUserMarker(userLat, userLng);
   } else {
     showModal();
   }
@@ -101,6 +124,7 @@
       userLat = parseFloat(data[0].lat);
       userLng = parseFloat(data[0].lon);
       map.setView([userLat, userLng], LOCATION_ZOOM);
+      placeUserMarker(userLat, userLng);
       hideModal();
       showSavePrompt();
     } catch (_) {
@@ -126,6 +150,7 @@
         userLat = pos.coords.latitude;
         userLng = pos.coords.longitude;
         map.setView([userLat, userLng], LOCATION_ZOOM);
+        placeUserMarker(userLat, userLng);
         hideModal();
         showSavePrompt();
         useCurrentBtn.textContent = "Use Current Location";
@@ -151,16 +176,17 @@
   saveNoBtn.addEventListener("click", hideSavePrompt);
 
   saveYesBtn.addEventListener("click", function () {
-    // TODO: POST to /api/user/location once auth is implemented
+    if (userLat !== null && userLng !== null) {
+      fetch("/api/user/location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: userLat, lng: userLng }),
+      }).catch(function () {});
+    }
     hideSavePrompt();
   });
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
-  function renderStars(rating) {
-    const full = Math.round(rating);
-    return "\u2605".repeat(full) + "\u2606".repeat(5 - full);
-  }
-
   function haversineKm(lat1, lng1, lat2, lng2) {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -177,46 +203,48 @@
     return km < 1 ? Math.round(km * 1000) + "m" : km.toFixed(1) + "km";
   }
 
-  // ── Barbershop markers ───────────────────────────────────────────────────────
+  // ── Barbershop popup (shows shop info, not individual barber) ────────────────
   function buildPopupHtml(shop) {
-    const barber = shop.barbers[0] || null;
-
     const distHtml =
       userLat !== null
-        ? '<span class="shop-popup-distance">\u25cf ' +
+        ? '<div class="shop-popup-distance">\u25cf ' +
           formatDistance(haversineKm(userLat, userLng, shop.lat, shop.lng)) +
-          "</span>"
+          "</div>"
         : "";
 
-    const photoHtml = barber
-      ? barber.profile_image_url
-        ? '<img src="' +
-          barber.profile_image_url +
-          '" alt="' +
-          barber.username +
-          '" class="shop-popup-photo" />'
-        : '<div class="shop-popup-photo-placeholder"></div>'
+    const addressHtml = shop.postcode
+      ? '<div class="shop-popup-meta">' + shop.postcode + "</div>"
       : "";
 
-    const barberHtml = barber
-      ? '<div class="shop-popup-barber">' +
-        photoHtml +
-        "<div>" +
-        '<div class="shop-popup-barber-name">' +
-        barber.username +
-        "</div>" +
-        '<div class="shop-popup-stars">' +
-        renderStars(barber.average_rating || 0) +
-        "</div>" +
-        "</div>" +
-        "</div>"
+    const phoneHtml = shop.phone
+      ? '<div class="shop-popup-meta"><a href="tel:' +
+        shop.phone +
+        '">' +
+        shop.phone +
+        "</a></div>"
       : "";
 
-    const linkHtml =
-      barber && barber.user_id
-        ? '<a class="shop-popup-btn" href="/barber/' +
-          barber.user_id +
-          '">View Barber</a>'
+    const websiteHtml = shop.website
+      ? '<div class="shop-popup-meta"><a href="' +
+        shop.website +
+        '" target="_blank" rel="noopener">Website</a></div>'
+      : "";
+
+    const barbersHtml =
+      shop.barbers.length > 0
+        ? '<div class="shop-popup-barbers">' +
+          shop.barbers
+            .map(function (b) {
+              return (
+                '<a class="shop-popup-barber-link" href="/barber/' +
+                b.user_id +
+                '">' +
+                b.username +
+                "</a>"
+              );
+            })
+            .join("") +
+          "</div>"
         : "";
 
     return (
@@ -225,18 +253,22 @@
       shop.name +
       "</div>" +
       distHtml +
-      barberHtml +
-      linkHtml +
+      addressHtml +
+      phoneHtml +
+      websiteHtml +
+      barbersHtml +
       "</div>"
     );
   }
 
+  // Bind popup once at creation (function form so distance recalculates on open).
+  // Leaflet handles click-to-open/close automatically.
   function addMarkers(shops) {
     shops.forEach(function (shop) {
       const marker = L.marker([shop.lat, shop.lng]).addTo(map);
-      marker.on("click", function () {
-        marker.bindPopup(buildPopupHtml(shop), { maxWidth: 220 }).openPopup();
-      });
+      marker.bindPopup(function () {
+        return buildPopupHtml(shop);
+      }, { maxWidth: 240 });
     });
   }
 
@@ -249,7 +281,6 @@
       allShops = shops;
       addMarkers(shops);
 
-      // Populate the search bar with the loaded shops
       const shopItems = shops.map(function (s) {
         return { id: s.barbershop_id, type: "barbershop", label: s.name };
       });

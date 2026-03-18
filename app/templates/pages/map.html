@@ -47,5 +47,6 @@
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+<script>window.__userLocation = {{ user_location | tojson }};</script>
 <script src="{{ url_for('static', filename='js/pages/map.js') }}"></script>
 {% endblock %}

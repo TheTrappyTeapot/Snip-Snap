@@ -194,71 +194,56 @@ main:has(#map-wrapper) {
 
 /* ── Barbershop popup card ── */
 .shop-popup {
-  width: 190px;
+  width: 200px;
   font-family: inherit;
 }
 
 .shop-popup-name {
   font-weight: 700;
   font-size: 14px;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .shop-popup-distance {
   font-size: 12px;
   color: #666;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-.shop-popup-barber {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+.shop-popup-meta {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 3px;
 }
 
-.shop-popup-photo {
-  width: 52px;
-  height: 52px;
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.shop-popup-photo-placeholder {
-  width: 52px;
-  height: 52px;
-  border-radius: 6px;
-  background: #e0e0e0;
-  flex-shrink: 0;
-}
-
-.shop-popup-barber-name {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.shop-popup-stars {
-  color: #f5a623;
-  font-size: 13px;
-  letter-spacing: 1px;
-}
-
-.shop-popup-btn {
-  display: block;
-  width: 100%;
-  padding: 8px 0;
-  background: #222;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  text-align: center;
+.shop-popup-meta a {
+  color: #4a90e2;
   text-decoration: none;
 }
 
-.shop-popup-btn:hover {
+.shop-popup-meta a:hover {
+  text-decoration: underline;
+}
+
+.shop-popup-barbers {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shop-popup-barber-link {
+  display: block;
+  padding: 6px 10px;
+  background: #222;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 12px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.shop-popup-barber-link:hover {
   background: #444;
 }
 

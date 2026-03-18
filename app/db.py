@@ -407,6 +407,16 @@ def fetch_discover_posts(
 
     return rows
 
+def update_user_location(user_id: int, lat: float, lng: float) -> None:
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE App_User SET location_lat = %s, location_lng = %s WHERE user_id = %s",
+                (lat, lng, user_id),
+            )
+        conn.commit()
+
+
 def get_user_location(user_id: int):
     with _get_conn() as conn:
         with conn.cursor() as cur:

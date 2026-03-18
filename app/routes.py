@@ -151,7 +151,10 @@ def register_routes(app):
     @app.route("/map")
     @login_required
     def map_page():
-        return render_template("pages/map.html")
+        u = session.get("user") or {}
+        uid = u.get("id")
+        loc = get_user_location(int(uid)) if uid else None
+        return render_template("pages/map.html", user_location=loc)
 
 
     @app.route("/profile")

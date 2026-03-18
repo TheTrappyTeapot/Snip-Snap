@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 
-from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map, create_app_user
+from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map, create_app_user, update_user_location
 from .supabase_storage import sign_storage_path
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -38,6 +38,20 @@ def barbershops():
         return jsonify(shops)
     except Exception:
         return jsonify({"error": "Could not load barbershops"}), 500
+
+
+@api_bp.post("/user/location")
+def save_user_location():
+    u = session.get("user")
+    if not u or not u.get("id"):
+        return jsonify({"error": "Not logged in"}), 401
+    data = request.get_json(silent=True) or {}
+    lat = data.get("lat")
+    lng = data.get("lng")
+    if lat is None or lng is None:
+        return jsonify({"error": "lat and lng required"}), 400
+    update_user_location(int(u["id"]), float(lat), float(lng))
+    return jsonify({"ok": True})
 
 
 @api_bp.get("/discover/search_items")
