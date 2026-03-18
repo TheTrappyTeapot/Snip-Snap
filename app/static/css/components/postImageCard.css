@@ -72,6 +72,37 @@
   padding: 8px 12px 0 12px;
 }
 
+.post-card__shop-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  margin: 8px 12px 0 12px;
+  background: #1b73e8;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+  text-align: center;
+  border: none;
+}
+
+.post-card__shop-button:hover {
+  background: #1557b0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .post-card__shop-button {
+    background: #2d4da3;
+  }
+
+  .post-card__shop-button:hover {
+    background: #1b73e8;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .postImageCard {
     background: var(--login-surface, #23262d);

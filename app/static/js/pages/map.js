@@ -203,7 +203,7 @@
     return km < 1 ? Math.round(km * 1000) + "m" : km.toFixed(1) + "km";
   }
 
-  // ── Barbershop popup (shows shop info, not individual barber) ────────────────
+  // ── Barbershop popup (shows shop info with go to shop button) ────────────────
   function buildPopupHtml(shop) {
     const distHtml =
       userLat !== null
@@ -230,22 +230,10 @@
         '" target="_blank" rel="noopener">Website</a></div>'
       : "";
 
-    const barbersHtml =
-      shop.barbers.length > 0
-        ? '<div class="shop-popup-barbers">' +
-          shop.barbers
-            .map(function (b) {
-              return (
-                '<a class="shop-popup-barber-link" href="/barber/' +
-                b.user_id +
-                '">' +
-                b.username +
-                "</a>"
-              );
-            })
-            .join("") +
-          "</div>"
-        : "";
+    const shopButtonHtml =
+      '<a href="/barbershop/' +
+      shop.barbershop_id +
+      '" class="shop-popup-button">View Shop</a>';
 
     return (
       '<div class="shop-popup">' +
@@ -256,7 +244,7 @@
       addressHtml +
       phoneHtml +
       websiteHtml +
-      barbersHtml +
+      shopButtonHtml +
       "</div>"
     );
   }

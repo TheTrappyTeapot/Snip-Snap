@@ -4,6 +4,7 @@ import psycopg2.extras
 from typing import List, Optional, Tuple, Dict, Any
 from datetime import datetime
 from dotenv import load_dotenv
+from .supabase_storage import sign_storage_path
 
 load_dotenv()
 
@@ -138,10 +139,8 @@ def get_user_promo(user_id: int):
 
     raw_url = row[2]
     image_url = None
-    if raw_url and "/profiles/" in raw_url:
-        image_url = raw_url.replace("/static/uploads/profiles/", "/static/uploads/profile_photos/")
-    elif raw_url:
-        image_url = raw_url
+    if raw_url:
+        image_url = sign_storage_path(raw_url)
 
     return {
         "name": row[0] or "Unknown",
@@ -188,6 +187,165 @@ def get_barber_public_by_user_id(user_id: int):
         "shop_lat": row[6],
         "shop_lng": row[7],
     }
+
+
+def get_barbershop_by_id(barbershop_id: int):
+    """
+    Get barbershop details including all barbers working there.
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            # Get barbershop info
+            cur.execute(
+                """
+                SELECT barbershop_id, name, postcode, location_lat, location_lng, phone, website
+                FROM Barbershop
+                WHERE barbershop_id = %s
+                """,
+                (barbershop_id,),
+            )
+            shop_row = cur.fetchone()
+
+    if not shop_row:
+        return None
+
+    shop = {
+        "barbershop_id": shop_row[0],
+        "name": shop_row[1],
+        "postcode": shop_row[2],
+        "location_lat": shop_row[3],
+        "location_lng": shop_row[4],
+        "phone": shop_row[5],
+        "website": shop_row[6],
+        "barbers": []
+    }
+
+    # Get all barbers at this shop
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT u.user_id, u.username, u.location_lat, u.location_lng,
+                       pp.image_url AS profile_image_url
+                FROM Barber b
+                LEFT JOIN App_User u ON u.user_id = b.user_id
+                LEFT JOIN ProfilePhoto pp ON pp.user_id = u.user_id
+                WHERE b.barbershop_id = %s
+                ORDER BY u.username
+                """,
+                (barbershop_id,),
+            )
+            barber_rows = cur.fetchall()
+
+    barbers = []
+    for row in barber_rows:
+        promo_data = None
+        if row[0]:  # if user_id exists
+            user_promo = get_user_promo(row[0])
+            if user_promo:
+                promo_data = user_promo
+
+        barbers.append({
+            "user_id": row[0],
+            "username": row[1],
+            "location_lat": row[2],
+            "location_lng": row[3],
+            "promo": promo_data or {
+                "name": row[1] or "Unknown",
+                "role": "barber",
+                "profile_image_url": sign_storage_path(row[4]) if row[4] else None,
+                "barbershop_name": shop["name"]
+            }
+        })
+
+    shop["barbers"] = barbers
+    return shop
+
+
+def get_shifts_for_barber(user_id: int):
+    """
+    Get all shifts for a barber, ordered by day of week.
+    Returns a dict mapping day_of_week to list of shifts.
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT s.shift_id, s.day_of_week, s.start_time, s.end_time
+                FROM Shift s
+                LEFT JOIN Barber b ON b.barber_id = s.barber_id
+                WHERE b.user_id = %s
+                ORDER BY s.day_of_week, s.start_time
+                """,
+                (user_id,),
+            )
+            rows = cur.fetchall()
+
+    if not rows:
+        return {}
+
+    shifts_by_day = {}
+    for row in rows:
+        day = row[1]
+        if day not in shifts_by_day:
+            shifts_by_day[day] = []
+        
+        # Format times
+        start_time = row[2]
+        end_time = row[3]
+        start_str = start_time.strftime("%H:%M") if start_time else ""
+        end_str = end_time.strftime("%H:%M") if end_time else ""
+        
+        shifts_by_day[day].append({
+            "shift_id": row[0],
+            "start_time": start_str,
+            "end_time": end_str
+        })
+
+    return shifts_by_day
+
+
+def get_shop_opening_hours(barbershop_id: int):
+    """
+    Get aggregate opening hours for a shop by analyzing all barbers' shifts.
+    Returns a dict mapping day_of_week to {open_time, close_time}.
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 
+                    s.day_of_week,
+                    MIN(s.start_time) AS earliest_start,
+                    MAX(s.end_time) AS latest_end
+                FROM Shift s
+                LEFT JOIN Barber b ON b.barber_id = s.barber_id
+                WHERE b.barbershop_id = %s
+                GROUP BY s.day_of_week
+                ORDER BY s.day_of_week
+                """,
+                (barbershop_id,),
+            )
+            rows = cur.fetchall()
+
+    if not rows:
+        return {}
+
+    hours_by_day = {}
+    for row in rows:
+        day = row[0]
+        open_time = row[1]
+        close_time = row[2]
+        
+        open_str = open_time.strftime("%H:%M") if open_time else ""
+        close_str = close_time.strftime("%H:%M") if close_time else ""
+        
+        hours_by_day[day] = {
+            "open": open_str,
+            "close": close_str
+        }
+
+    return hours_by_day
 
 
 def update_barber_profile(user_id: int, username: str | None, postcode: str | None, lat, lng) -> None:

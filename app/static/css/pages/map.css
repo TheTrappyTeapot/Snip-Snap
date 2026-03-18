@@ -225,26 +225,22 @@ main:has(#map-wrapper) {
   text-decoration: underline;
 }
 
-.shop-popup-barbers {
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.shop-popup-barber-link {
+.shop-popup-button {
   display: block;
-  padding: 6px 10px;
-  background: #222;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #1b73e8;
   color: #fff;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   text-decoration: none;
   text-align: center;
+  transition: background 0.2s ease;
 }
 
-.shop-popup-barber-link:hover {
-  background: #444;
+.shop-popup-button:hover {
+  background: #1557b0;
 }
 
 /* ── Utility ── */

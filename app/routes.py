@@ -2,7 +2,7 @@ import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
 from .auth import verify_supabase_jwt
 from .access import login_required, roles_required
-from .db import get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile
+from .db import get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours
 from uuid import uuid4
 from datetime import datetime
 
@@ -192,7 +192,9 @@ def register_routes(app):
                 error="No barber found with that id.",
             )
 
-        return render_template("pages/barber_profile.html", barber=barber, barber_id=barber_id)
+        barber_promo = get_user_promo(int(barber_id))
+        shifts = get_shifts_for_barber(int(barber_id))
+        return render_template("pages/barber_profile.html", barber=barber, barber_promo=barber_promo, shifts=shifts, barber_id=barber_id)
 
 
     @app.get("/barber/<int:barber_id>")
@@ -201,6 +203,23 @@ def register_routes(app):
         Convenience route: /barber/123
         """
         return redirect(url_for("barber_profile", barber_id=barber_id))
+
+
+    @app.get("/barbershop/<int:barbershop_id>")
+    def barbershop_profile(barbershop_id: int):
+        """
+        Public barbershop profile showing all barbers at this shop.
+        """
+        shop = get_barbershop_by_id(barbershop_id)
+        if not shop:
+            return render_template(
+                "pages/barbershop_profile.html",
+                shop=None,
+                error="Barbershop not found."
+            )
+
+        opening_hours = get_shop_opening_hours(barbershop_id)
+        return render_template("pages/barbershop_profile.html", shop=shop, opening_hours=opening_hours)
     
 
     @app.route("/dashboard", methods=["GET", "POST"])

@@ -1,20 +1,30 @@
 import { renderUserPromo } from "./userPromo.js";
 
-export function renderPostImageCard(item) {
+export function renderPostImageCard(item, options = {}) {
   const card = document.createElement("div");
   card.className = "postImageCard";
 
-  // Promo at top
+  // Promo at top or shop button
   const promoMount = document.createElement("div");
   promoMount.className = "post-card__promo";
   card.appendChild(promoMount);
 
-  renderUserPromo(promoMount, {
-    name: item.promo_name,
-    role: item.promo_role,
-    barbershop_name: item.promo_barbershop_name,
-    profile_image_url: item.promo_profile_image_url,
-  }, { avatarSize: 36 });
+  if (item.barbershop_id && options.showShopButton) {
+    // Show shop button
+    const shopBtn = document.createElement("a");
+    shopBtn.href = `/barbershop/${item.barbershop_id}`;
+    shopBtn.className = "post-card__shop-button";
+    shopBtn.textContent = "Visit Shop";
+    promoMount.appendChild(shopBtn);
+  } else {
+    // Show barber promo
+    renderUserPromo(promoMount, {
+      name: item.promo_name,
+      role: item.promo_role,
+      barbershop_name: item.promo_barbershop_name,
+      profile_image_url: item.promo_profile_image_url,
+    }, { avatarSize: 36 });
+  }
 
   // Image
   const media = document.createElement("div");

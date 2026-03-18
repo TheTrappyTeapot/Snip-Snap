@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Barbershop{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barbershop_profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="barbershop-container">
+  {% if error %}
+    <div class="barbershop__error">{{ error }}</div>
+  {% endif %}
+
+  {% if not shop %}
+    <div class="barbershop__empty">No barbershop found</div>
+  {% else %}
+    <section class="barbershop__header">
+      <h1 class="barbershop__name">{{ shop.name }}</h1>
+      
+      <div class="barbershop__info-grid">
+        {% if shop.postcode %}
+          <div class="barbershop__info-item">
+            <span class="barbershop__info-label">Postcode</span>
+            <span class="barbershop__info-value">{{ shop.postcode }}</span>
+          </div>
+        {% endif %}
+
+        {% if shop.phone %}
+          <div class="barbershop__info-item">
+            <span class="barbershop__info-label">Phone</span>
+            <span class="barbershop__info-value">{{ shop.phone }}</span>
+          </div>
+        {% endif %}
+
+        {% if shop.website %}
+          <div class="barbershop__info-item">
+            <span class="barbershop__info-label">Website</span>
+            <span class="barbershop__info-value">
+              <a href="{{ shop.website }}" target="_blank" rel="noopener">Visit</a>
+            </span>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if shop.location_lat is not none and shop.location_lng is not none %}
+        <section class="barbershop__map-section">
+          <h3 class="barbershop__map-title">Location</h3>
+          <div id="map-widget-mount"></div>
+        </section>
+      {% endif %}
+
+      {% if opening_hours %}
+        <section class="barbershop__hours-section">
+          <h3 class="barbershop__hours-title">Opening Hours</h3>
+          <div class="barbershop__hours-timetable">
+            {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+            {% for day_num in range(7) %}
+              <div class="hour-row">
+                <div class="hour-day">{{ days[day_num] }}</div>
+                <div class="hour-times">
+                  {% if day_num in opening_hours %}
+                    <div class="hour-time-block">{{ opening_hours[day_num].open }} - {{ opening_hours[day_num].close }}</div>
+                  {% else %}
+                    <div class="hour-closed">Closed</div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    </section>
+
+    <section class="barbershop__barbers">
+      <h2 class="barbershop__barbers-title">Our Barbers</h2>
+      
+      {% if shop.barbers %}
+        <div class="barbershop__barbers-grid">
+          {% for barber in shop.barbers %}
+            <div class="barbershop__barber-card">
+              <div class="barbershop__barber-promo" id="promo-{{ barber.user_id or loop.index }}"></div>
+              <a href="{{ url_for('barber_profile', barber_id=barber.user_id) }}" class="barbershop__barber-link">
+                View Profile
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="barbershop__no-barbers">No barbers listed yet</p>
+      {% endif %}
+    </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/components/mapWidget.js') }}"></script>
+<script type="module">
+  import { renderUserPromo } from "{{ url_for('static', filename='js/components/userPromo.js') }}";
+
+  {% if shop and shop.barbers %}
+    {% for barber in shop.barbers %}
+      const promoData{{ loop.index }} = {
+        name: "{{ barber.promo.name or barber.username or 'Unknown' }}",
+        role: "{{ barber.promo.role or 'barber' }}",
+        barbershop_name: "{{ barber.promo.barbershop_name or shop.name or '' }}",
+        profile_image_url: "{{ barber.promo.profile_image_url or '' }}"
+      };
+      
+      renderUserPromo("#promo-{{ barber.user_id or loop.index }}", promoData{{ loop.index }}, {
+        avatarSize: 48
+      });
+    {% endfor %}
+  {% endif %}
+
+  {% if shop and shop.location_lat is not none and shop.location_lng is not none %}
+    initMapWidget("#map-widget-mount", {
+      center: [{{ shop.location_lat }}, {{ shop.location_lng }}],
+      marker: [{{ shop.location_lat }}, {{ shop.location_lng }}],
+      zoom: 14
+    });
+  {% endif %}
+</script>
+{% endblock %}

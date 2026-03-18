@@ -5,54 +5,97 @@
 {% block styles %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barber_profile.css') }}">
 {% endblock %}
 
 {% block content %}
-<h1>Barber profile</h1>
+<div class="barber-profile-container">
+  {% if error %}
+    <div class="barber-profile__error">{{ error }}</div>
+  {% endif %}
 
-<form method="get" action="{{ url_for('barber_profile') }}" style="margin-bottom:16px;">
-  <label for="barber_id">Barber id</label><br />
-  <input id="barber_id" name="barber_id" value="{{ barber_id or '' }}" placeholder="e.g. 4" />
-  <button type="submit">View</button>
-</form>
+  {% if not barber %}
+    <div class="barber-profile__empty">No barber profile found</div>
+  {% else %}
+    <div class="barber-profile__header">
+      <div id="user-promo-mount"></div>
+    </div>
 
-{% if error %}
-  <p style="color:#b00020;"><strong>{{ error }}</strong></p>
-{% endif %}
+    <button class="barber-profile__cta-button" type="button" disabled>Book this barber (coming soon)</button>
 
-{% if not barber %}
-  <p>Enter a barber id to view their profile.</p>
-{% else %}
-  <div style="border:1px solid #ddd; padding:12px; border-radius:8px;">
-    <h2 style="margin-top:0;">{{ barber.username }}</h2>
-    <p><strong>User id:</strong> {{ barber.user_id }}</p>
+    <section class="barber-profile__info-section">
+      <div class="barber-profile__info-grid">
+        <div class="barber-profile__info-item">
+          <span class="barber-profile__info-label">User ID</span>
+          <span class="barber-profile__info-value">{{ barber.user_id }}</span>
+        </div>
 
-    {% if barber.postcode %}
-      <p><strong>Postcode:</strong> {{ barber.postcode }}</p>
-    {% endif %}
+        {% if barber.postcode %}
+          <div class="barber-profile__info-item">
+            <span class="barber-profile__info-label">Postcode</span>
+            <span class="barber-profile__info-value">{{ barber.postcode }}</span>
+          </div>
+        {% endif %}
+
+        {% if barber.location_lat is not none and barber.location_lng is not none %}
+          <div class="barber-profile__info-item">
+            <span class="barber-profile__info-label">Location</span>
+            <span class="barber-profile__info-value" id="location-display">Loading…</span>
+          </div>
+        {% endif %}
+      </div>
+    </section>
 
     {% if barber.location_lat is not none and barber.location_lng is not none %}
-      <p><strong>Location:</strong> <span id="location-display">Loading&hellip;</span></p>
-    {% else %}
-      <p><strong>Location:</strong> Not set</p>
+      <section class="barber-profile__map-section">
+        <h3 class="barber-profile__map-title">Shop Location</h3>
+        <div id="map-widget-mount"></div>
+      </section>
     {% endif %}
 
-    <p style="margin-top:12px;">
-      <!-- Placeholder CTA; you'll wire booking later -->
-      <button type="button" disabled>Book this barber (coming soon)</button>
-    </p>
-
-    {% if barber.location_lat is not none and barber.location_lng is not none %}
-      <div id="map-widget-mount" style="margin-top:16px;"></div>
+    {% if shifts %}
+      <section class="barber-profile__shifts-section">
+        <h3 class="barber-profile__shifts-title">Working Hours</h3>
+        <div class="barber-profile__shifts-timetable">
+          {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+          {% for day_num in range(7) %}
+            <div class="shift-row">
+              <div class="shift-day">{{ days[day_num] }}</div>
+              <div class="shift-times">
+                {% if day_num in shifts %}
+                  {% for shift in shifts[day_num] %}
+                    <div class="shift-time-block">{{ shift.start_time }} - {{ shift.end_time }}</div>
+                  {% endfor %}
+                {% else %}
+                  <div class="shift-closed">Closed</div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
     {% endif %}
-  </div>
-{% endif %}
-
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{{ url_for('static', filename='js/components/mapWidget.js') }}"></script>
+{% if barber %}
+<script type="module">
+  import { renderUserPromo } from "{{ url_for('static', filename='js/components/userPromo.js') }}";
+  renderUserPromo("#user-promo-mount", {
+    name: "{{ barber_promo.name or barber.username }}",
+    role: "{{ barber_promo.role or barber.role }}",
+    barbershop_name: "{{ barber_promo.barbershop_name or '' }}",
+    profile_image_url: "{{ barber_promo.profile_image_url or '' }}"
+  }, {
+    avatarSize: 56
+  });
+</script>
+{% endif %}
 {% if barber and barber.location_lat is not none and barber.location_lng is not none %}
 <script>
   (function () {
