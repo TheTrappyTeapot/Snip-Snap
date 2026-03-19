@@ -14,18 +14,30 @@ def create_user():
         data = request.get_json(silent=True) or {}
         email = data.get("email", "").strip().lower()
         username = data.get("username", "").strip()
+        role = data.get("role", "customer").strip().lower()
+        
+        print(f"[CREATE_USER] Received request: email={email}, username={username}, role={role}")
         
         if not email or not username:
+            print(f"[CREATE_USER] Validation failed: missing email or username")
             return jsonify({"ok": False, "error": "Email and username required"}), 400
         
-        user_id = create_app_user(email, username)
+        # Validate role
+        if role not in ["customer", "barber"]:
+            print(f"[CREATE_USER] Invalid role: {role}")
+            return jsonify({"ok": False, "error": "Invalid account type. Must be 'customer' or 'barber'"}), 400
+        
+        print(f"[CREATE_USER] Creating user in database...")
+        user_id = create_app_user(email, username, role)
+        print(f"[CREATE_USER] User created successfully with user_id={user_id}")
         return jsonify({"ok": True, "user_id": user_id}), 201
     except Exception as e:
         error_msg = str(e)
-        print(f"Error creating app user: {error_msg}")
+        print(f"[CREATE_USER] Error creating app user: {error_msg}")
         
         # Check if it's a duplicate email error
         if "duplicate key" in error_msg.lower() and "email" in error_msg.lower():
+            print(f"[CREATE_USER] Duplicate email detected")
             return jsonify({"ok": False, "error": "Email already in use"}), 400
         
         return jsonify({"ok": False, "error": error_msg}), 500

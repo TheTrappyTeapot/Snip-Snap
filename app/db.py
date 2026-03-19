@@ -22,20 +22,31 @@ def _get_conn():
     return psycopg2.connect(db_url)
 
 
-def create_app_user(email: str, username: str) -> int:
+def create_app_user(email: str, username: str, role: str = "customer") -> int:
     """
     Create a new App_User record and return the user_id.
+    
+    Args:
+        email: User's email address
+        username: User's username
+        role: User's role - 'customer' or 'barber' (default: 'customer')
     """
     email = email.strip().lower()
+    role = role.strip().lower()
+    
+    # Validate role
+    if role not in ["customer", "barber"]:
+        raise ValueError(f"Invalid role: {role}. Must be 'customer' or 'barber'")
+    
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
                 INSERT INTO App_User (email, username, role)
-                VALUES (%s, %s, 'customer')
+                VALUES (%s, %s, %s)
                 RETURNING user_id
                 """,
-                (email, username),
+                (email, username, role),
             )
             user_id = cur.fetchone()[0]
         conn.commit()

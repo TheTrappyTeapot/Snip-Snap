@@ -1,0 +1,132 @@
+/* ── Timetable Component ────────────────────────────────────────────────────── */
+
+/* Shared section and title styles */
+.barbershop__section,
+.barber-profile__section {
+  margin-top: 24px;
+}
+
+.barbershop__title,
+.barber-profile__title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+/* Timetable container */
+.barbershop__timetable,
+.barber-profile__timetable,
+.hour-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.hour-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  border-bottom: 1px solid #eee;
+  min-height: 50px;
+  position: relative;
+}
+
+/* Shifts table */
+.barber-profile__timetable {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.barber-profile__row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  border-bottom: 1px solid #eee;
+  min-height: 50px;
+  position: relative;
+}
+
+.barber-profile__row:last-child {
+  border-bottom: none;
+}
+
+.hour-row:last-child {
+  border-bottom: none;
+}
+
+/* Closing soon state */
+.hour-row--closing-soon,
+.barber-profile__row--closing-soon {
+  background: #fff8f0;
+}
+
+/* Day column */
+.hour-day,
+.barber-profile__day {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #eee;
+}
+
+.hour-row--closing-soon .hour-day,
+.barber-profile__row--closing-soon .barber-profile__day {
+  background: #ffe4cc;
+}
+
+/* Times column */
+.hour-times,
+.barber-profile__times {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.barber-profile__times {
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+/* Time blocks */
+.hour-time-block,
+.barber-profile__time-block {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Closed state */
+.hour-closed,
+.barber-profile__closed {
+  font-size: 0.9rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Closing indicator badge */
+.hour-closing-indicator,
+.barber-profile__closing-indicator {
+  display: inline-block;
+  background: #fbbf24;
+  color: #92400e;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 4px;
+  white-space: nowrap;
+}

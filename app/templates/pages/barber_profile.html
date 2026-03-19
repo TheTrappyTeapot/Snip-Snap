@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/timetable.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barber_profile.css') }}">
 {% endblock %}
 
@@ -55,29 +56,7 @@
     {% endif %}
 
     {% if shifts %}
-      <section class="barber-profile__shifts-section">
-        <h3 class="barber-profile__shifts-title">Working Hours</h3>
-        <div class="barber-profile__shifts-timetable">
-          {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
-          {% for day_num in range(7) %}
-            <div class="shift-row {% if day_num == current_day and closing_info.closing_soon %}shift-row--closing-soon{% endif %}">
-              <div class="shift-day">{{ days[day_num] }}</div>
-              <div class="shift-times">
-                {% if day_num in shifts %}
-                  {% for shift in shifts[day_num] %}
-                    <div class="shift-time-block">{{ shift.start_time }} - {{ shift.end_time }}</div>
-                  {% endfor %}
-                {% else %}
-                  <div class="shift-closed">Closed</div>
-                {% endif %}
-              </div>
-              {% if day_num == current_day and closing_info.closing_soon %}
-                <div class="shift-closing-badge">Closing in {{ closing_info.mins_until_close }} min</div>
-              {% endif %}
-            </div>
-          {% endfor %}
-        </div>
-      </section>
+      <div id="barber-shifts-mount"></div>
     {% endif %}
   {% endif %}
 </div>
@@ -96,6 +75,22 @@
     profile_image_url: "{{ barber_promo.profile_image_url or '' }}"
   }, {
     avatarSize: 56
+  });
+</script>
+{% endif %}
+{% if shifts %}
+<script type="module">
+  import { renderTimetable } from "{{ url_for('static', filename='js/components/timetable.js') }}";
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  renderTimetable("#barber-shifts-mount", {
+    title: "Working Hours",
+    schedule: {{ shifts|tojson }},
+    dayLabels: daysOfWeek,
+    currentDay: {{ current_day|default(0) }},
+    closingInfo: {{ closing_info|tojson if closing_info else 'null' }},
+    cssPrefix: "barber-profile__",
+    scheduleType: "shifts"
   });
 </script>
 {% endif %}

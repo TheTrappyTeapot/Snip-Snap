@@ -15,6 +15,21 @@
 
     <form id="signupForm" class="login-form">
       <div class="login-field">
+        <label class="login-label">Account Type</label>
+        <div style="display: flex; gap: 16px; margin-top: 8px; margin-bottom: 8px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+            <input type="radio" name="accountType" value="customer" required style="width: 18px; height: 18px;">
+            <span>Customer</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+            <input type="radio" name="accountType" value="barber" required style="width: 18px; height: 18px;">
+            <span>Barber</span>
+          </label>
+        </div>
+        <p id="accountTypeError" class="field-error"></p>
+      </div>
+
+      <div class="login-field">
         <label class="login-label" for="username">Username</label>
         <input class="login-input" id="username" type="text" required autocomplete="username" placeholder="Choose a username">
         <p id="usernameError" class="field-error"></p>

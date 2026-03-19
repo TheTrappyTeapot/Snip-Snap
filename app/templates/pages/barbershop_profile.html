@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/timetable.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barbershop_profile.css') }}">
 {% endblock %}
 
@@ -53,27 +54,7 @@
       {% endif %}
 
       {% if opening_hours %}
-        <section class="barbershop__hours-section">
-          <h3 class="barbershop__hours-title">Opening Hours</h3>
-          <div class="barbershop__hours-timetable">
-            {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
-            {% for day_num in range(7) %}
-              <div class="hour-row {% if day_num == current_day and closing_info.closing_soon %}hour-row--closing-soon{% endif %}">
-                <div class="hour-day">{{ days[day_num] }}</div>
-                <div class="hour-times">
-                  {% if day_num in opening_hours %}
-                    <div class="hour-time-block">{{ opening_hours[day_num].open }} - {{ opening_hours[day_num].close }}</div>
-                  {% else %}
-                    <div class="hour-closed">Closed</div>
-                  {% endif %}
-                </div>
-                {% if day_num == current_day and closing_info.closing_soon %}
-                  <div class="hour-closing-badge">Closing in {{ closing_info.mins_until_close }} min</div>
-                {% endif %}
-              </div>
-            {% endfor %}
-          </div>
-        </section>
+        <div id="barbershop-hours-mount"></div>
       {% endif %}
     </section>
 
@@ -104,6 +85,7 @@
 <script src="{{ url_for('static', filename='js/components/mapWidget.js') }}"></script>
 <script type="module">
   import { renderUserPromo } from "{{ url_for('static', filename='js/components/userPromo.js') }}";
+  import { renderTimetable } from "{{ url_for('static', filename='js/components/timetable.js') }}";
 
   {% if shop and shop.barbers %}
     {% for barber in shop.barbers %}
@@ -125,6 +107,23 @@
       center: [{{ shop.location_lat }}, {{ shop.location_lng }}],
       marker: [{{ shop.location_lat }}, {{ shop.location_lng }}],
       zoom: 14
+    });
+  {% endif %}
+
+  {% if opening_hours %}
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    renderTimetable("#barbershop-hours-mount", {
+      title: "Opening Hours",
+      schedule: {
+        {% for day_num, hours in opening_hours.items() %}
+          {{ day_num }}: { open: "{{ hours.open }}", close: "{{ hours.close }}" }{{ "," if not loop.last else "" }}
+        {% endfor %}
+      },
+      dayLabels: daysOfWeek,
+      currentDay: {{ current_day|default(0) }},
+      closingInfo: {{ closing_info|tojson if closing_info else 'null' }},
+      cssPrefix: "barbershop__",
+      scheduleType: "opening_hours"
     });
   {% endif %}
 </script>
