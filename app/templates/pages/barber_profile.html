@@ -104,8 +104,8 @@
 
     initMapWidget("#map-widget-mount", {
       center: [shopLat, shopLng],
-      marker: [lat, lng],
-      zoom: 14
+      zoom: 14,
+      shops: [{ lat: shopLat, lng: shopLng }]
     });
 
     fetch(

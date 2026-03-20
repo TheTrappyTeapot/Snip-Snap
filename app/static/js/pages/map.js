@@ -78,10 +78,13 @@
   var _pLat = parseFloat(_params.get("lat"));
   var _pLng = parseFloat(_params.get("lng"));
   if (!isNaN(_pLat) && !isNaN(_pLng)) {
-    userLat = _pLat;
-    userLng = _pLng;
-    map.setView([userLat, userLng], LOCATION_ZOOM);
-    placeUserMarker(userLat, userLng);
+    // Just pan to the requested location — do NOT treat it as the user's location
+    map.setView([_pLat, _pLng], LOCATION_ZOOM);
+    if (window.__userLocation) {
+      userLat = window.__userLocation.lat;
+      userLng = window.__userLocation.lng;
+      placeUserMarker(userLat, userLng);
+    }
   } else if (window.__userLocation) {
     userLat = window.__userLocation.lat;
     userLng = window.__userLocation.lng;

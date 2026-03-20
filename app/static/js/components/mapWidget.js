@@ -56,35 +56,26 @@
     }).addTo(miniMap);
 
     // ── Load barbershop pins ───────────────────────────────────────────────────
-    fetch("/api/barbershops")
-      .then(function (res) {
-        return res.json();
-      })
-      .then(function (shops) {
-        if (!Array.isArray(shops) || shops.length === 0) return;
-
-        shops.forEach(function (shop) {
-          L.marker([shop.lat, shop.lng]).addTo(miniMap);
-        });
-
-        // Only auto-fit if no explicit center was given
-        if (!opts.center) {
-          const bounds = L.latLngBounds(
-            shops.map(function (s) {
-              return [s.lat, s.lng];
-            })
-          );
-          miniMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 14 });
-        }
-
-        // Show a highlighted pin at the specific location if provided
-        if (opts.marker) {
-          L.marker(opts.marker).addTo(miniMap);
-        }
-      })
-      .catch(function () {
-        // Silently fail — widget still shows map tiles
+    function renderShops(shops) {
+      if (!Array.isArray(shops) || shops.length === 0) return;
+      shops.forEach(function (shop) {
+        L.marker([shop.lat, shop.lng]).addTo(miniMap);
       });
+      if (!opts.center) {
+        var bounds = L.latLngBounds(shops.map(function (s) { return [s.lat, s.lng]; }));
+        miniMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 14 });
+      }
+    }
+
+    if (opts.shops) {
+      // Caller supplied shops directly — no API call needed
+      renderShops(opts.shops);
+    } else {
+      fetch("/api/barbershops")
+        .then(function (res) { return res.json(); })
+        .then(renderShops)
+        .catch(function () {});
+    }
 
     // ── Click overlay → go to map page (with coords if available) ─────────────
     overlay.addEventListener("click", function () {
