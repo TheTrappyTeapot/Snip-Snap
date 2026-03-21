@@ -296,12 +296,25 @@ def register_routes(app):
             username = (request.form.get("username") or "").strip() or None
             postcode = (request.form.get("postcode") or "").strip() or None
 
+            if username and len(username) > 50:
+                username = username[:50]
+            if postcode and len(postcode) > 10:
+                return render_template("pages/dashboard.html", error="Postcode too long.")
+
             # Allow blanks to mean NULL
             lat_raw = (request.form.get("location_lat") or "").strip()
             lng_raw = (request.form.get("location_lng") or "").strip()
 
-            lat = float(lat_raw) if lat_raw else None
-            lng = float(lng_raw) if lng_raw else None
+            lat = None
+            lng = None
+            if lat_raw and lng_raw:
+                try:
+                    lat = float(lat_raw)
+                    lng = float(lng_raw)
+                    if not (-90 <= lat <= 90) or not (-180 <= lng <= 180):
+                        return render_template("pages/dashboard.html", error="Invalid coordinates.")
+                except ValueError:
+                    return render_template("pages/dashboard.html", error="Coordinates must be numbers.")
 
             update_barber_profile(user_id=user_id, username=username, postcode=postcode, lat=lat, lng=lng)
             return redirect(url_for("dashboard"))

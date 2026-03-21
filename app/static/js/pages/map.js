@@ -206,6 +206,16 @@
     return km < 1 ? Math.round(km * 1000) + "m" : km.toFixed(1) + "km";
   }
 
+  // ── HTML escaping to prevent XSS in popups ───────────────────────────────────
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   // ── Barbershop popup (shows shop info with go to shop button) ────────────────
   function buildPopupHtml(shop) {
     const distHtml =
@@ -216,32 +226,32 @@
         : "";
 
     const addressHtml = shop.postcode
-      ? '<div class="shop-popup-meta">' + shop.postcode + "</div>"
+      ? '<div class="shop-popup-meta">' + escapeHtml(shop.postcode) + "</div>"
       : "";
 
     const phoneHtml = shop.phone
       ? '<div class="shop-popup-meta"><a href="tel:' +
-        shop.phone +
+        escapeHtml(shop.phone) +
         '">' +
-        shop.phone +
+        escapeHtml(shop.phone) +
         "</a></div>"
       : "";
 
     const websiteHtml = shop.website
       ? '<div class="shop-popup-meta"><a href="' +
-        shop.website +
+        escapeHtml(shop.website) +
         '" target="_blank" rel="noopener">Website</a></div>'
       : "";
 
-    const shopButtonHtml =
-      '<a href="/barbershop/' +
-      shop.barbershop_id +
-      '" class="shop-popup-button">View Shop</a>';
+    const shopId = parseInt(shop.barbershop_id, 10);
+    const shopButtonHtml = !isNaN(shopId)
+      ? '<a href="/barbershop/' + shopId + '" class="shop-popup-button">View Shop</a>'
+      : "";
 
     return (
       '<div class="shop-popup">' +
       '<div class="shop-popup-name">' +
-      shop.name +
+      escapeHtml(shop.name) +
       "</div>" +
       distHtml +
       addressHtml +

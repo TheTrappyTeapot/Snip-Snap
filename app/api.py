@@ -11,17 +11,27 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 def create_user():
     """Create a new App_User record for signup."""
     try:
+        import re
         data = request.get_json(silent=True) or {}
         email = data.get("email", "").strip().lower()
         username = data.get("username", "").strip()
         role = data.get("role", "customer").strip().lower()
-        
+
         print(f"[CREATE_USER] Received request: email={email}, username={username}, role={role}")
-        
+
         if not email or not username:
             print(f"[CREATE_USER] Validation failed: missing email or username")
             return jsonify({"ok": False, "error": "Email and username required"}), 400
-        
+
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+            return jsonify({"ok": False, "error": "Invalid email address"}), 400
+
+        if len(username) > 50:
+            return jsonify({"ok": False, "error": "Username must be 50 characters or fewer"}), 400
+
+        if len(username) < 2:
+            return jsonify({"ok": False, "error": "Username must be at least 2 characters"}), 400
+
         # Validate role
         if role not in ["customer", "barber"]:
             print(f"[CREATE_USER] Invalid role: {role}")
@@ -62,7 +72,14 @@ def save_user_location():
     lng = data.get("lng")
     if lat is None or lng is None:
         return jsonify({"error": "lat and lng required"}), 400
-    update_user_location(int(u["id"]), float(lat), float(lng))
+    try:
+        lat = float(lat)
+        lng = float(lng)
+    except (TypeError, ValueError):
+        return jsonify({"error": "lat and lng must be numbers"}), 400
+    if not (-90 <= lat <= 90) or not (-180 <= lng <= 180):
+        return jsonify({"error": "Coordinates out of range"}), 400
+    update_user_location(int(u["id"]), lat, lng)
     return jsonify({"ok": True})
 
 
@@ -109,11 +126,27 @@ def _make_next_cursor(items):
 def gallery_posts():
     payload = request.get_json(silent=True) or {}
 
-    tag_ids = payload.get("tag_ids") or []
-    barber_ids = payload.get("barber_ids") or []
-    barbershop_ids = payload.get("barbershop_ids") or []
+    ALLOWED_SORTS = {"most_recent", "nearest", "highest_rated"}
+
+    raw_tag_ids = payload.get("tag_ids") or []
+    raw_barber_ids = payload.get("barber_ids") or []
+    raw_barbershop_ids = payload.get("barbershop_ids") or []
+
+    try:
+        tag_ids = [int(x) for x in raw_tag_ids if str(x).lstrip("-").isdigit()]
+        barber_ids = [int(x) for x in raw_barber_ids if str(x).lstrip("-").isdigit()]
+        barbershop_ids = [int(x) for x in raw_barbershop_ids if str(x).lstrip("-").isdigit()]
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid filter values"}), 400
+
     effective_sort = (payload.get("effective_sort") or "most_recent").strip().lower()
-    limit = int(payload.get("limit") or 18)
+    if effective_sort not in ALLOWED_SORTS:
+        effective_sort = "most_recent"
+
+    try:
+        limit = max(1, min(int(payload.get("limit") or 18), 100))
+    except (TypeError, ValueError):
+        limit = 18
 
     cursor_raw = payload.get("cursor")
     cursor = _parse_cursor(cursor_raw) if isinstance(cursor_raw, str) else None
