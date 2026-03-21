@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 
 from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map, create_app_user, update_user_location
+from .input_sanitization import sanitize_input
 from .supabase_storage import sign_storage_path
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -31,6 +32,10 @@ def create_user():
 
         if len(username) < 2:
             return jsonify({"ok": False, "error": "Username must be at least 2 characters"}), 400
+
+        err = sanitize_input(username)
+        if err:
+            return jsonify({"ok": False, "error": err}), 400
 
         # Validate role
         if role not in ["customer", "barber"]:

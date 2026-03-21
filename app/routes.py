@@ -1,6 +1,7 @@
 import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
 from .auth import verify_supabase_jwt
+from .input_sanitization import sanitize_input
 from .access import login_required, roles_required
 from .db import get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours
 from uuid import uuid4
@@ -300,6 +301,10 @@ def register_routes(app):
                 username = username[:50]
             if postcode and len(postcode) > 10:
                 return render_template("pages/dashboard.html", error="Postcode too long.")
+            if username:
+                err = sanitize_input(username)
+                if err:
+                    return render_template("pages/dashboard.html", error=err)
 
             # Allow blanks to mean NULL
             lat_raw = (request.form.get("location_lat") or "").strip()
