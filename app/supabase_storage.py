@@ -26,3 +26,36 @@ def sign_storage_path(path: str, expires_in: int = 3600) -> str | None:
     if isinstance(res, dict):
         return res.get("signedURL") or res.get("signedUrl") or res.get("signed_url")
     return getattr(res, "signed_url", None) or getattr(res, "signedURL", None)
+
+def upload_photo_to_storage(barber_id: int, file_data: bytes, filename: str) -> str | None:
+    """
+    Upload a photo to Supabase storage and return the storage path.
+    
+    Args:
+        barber_id: The barber's ID
+        file_data: The file content as bytes
+        filename: Original filename (used to get extension)
+    
+    Returns:
+        Storage path (e.g., 'barber_12/photo_123.jpg') or None if upload fails
+    """
+    bucket = os.environ.get("SUPABASE_STORAGE_BUCKET", "haircuts")
+    if not file_data:
+        return None
+    
+    # Generate storage path: barber_<id>/<uuid>.<ext>
+    import uuid
+    file_ext = os.path.splitext(filename)[1].lower()
+    storage_filename = f"{uuid.uuid4()}{file_ext}"
+    storage_path = f"barber_{barber_id}/{storage_filename}"
+    
+    try:
+        sb = get_supabase()
+        res = sb.storage.from_(bucket).upload(storage_path, file_data)
+        # Return the path if upload was successful
+        if res:
+            return storage_path
+        return None
+    except Exception as e:
+        print(f"[UPLOAD_PHOTO] Error uploading to Supabase: {e}")
+        return None

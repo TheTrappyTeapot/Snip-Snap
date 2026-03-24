@@ -12,9 +12,10 @@ from .db import (
     get_barber_barbershop,
     update_user_profile,
     update_barber_barbershop,
+    create_haircut_post,
 )
 from .input_sanitization import sanitize_input
-from .supabase_storage import sign_storage_path
+from .supabase_storage import sign_storage_path, upload_photo_to_storage
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -336,3 +337,85 @@ def get_current_barbershop():
     except Exception as e:
         print(f"[GET_CURRENT_BARBERSHOP] Error: {e}")
         return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.post("/photos/upload")
+def upload_photo():
+    """Upload a photo post. Only barbers can upload."""
+    u = session.get("user")
+    if not u or not u.get("id"):
+        return jsonify({"ok": False, "error": "Not logged in"}), 401
+    
+    user_id = int(u["id"])
+    role = u.get("role", "customer")
+    
+    if role != "barber":
+        return jsonify({"ok": False, "error": "Only barbers can upload photos"}), 403
+    
+    # Get barber_id from user_id
+    from .db import _get_conn
+    try:
+        with _get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT barber_id FROM Barber WHERE user_id = %s", (user_id,))
+                result = cur.fetchone()
+                if not result:
+                    return jsonify({"ok": False, "error": "Barber profile not found"}), 404
+                barber_id = result[0]
+    except Exception as e:
+        print(f"[UPLOAD_PHOTO] Error getting barber: {e}")
+        return jsonify({"ok": False, "error": "Could not find barber profile"}), 500
+    
+    # Get file from request
+    file = request.files.get("photo")
+    if not file or file.filename == "":
+        return jsonify({"ok": False, "error": "No photo provided"}), 400
+    
+    # Validate file type
+    ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
+    file_ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+    if file_ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"ok": False, "error": "File type not allowed. Use jpg, jpeg, png, gif, or webp"}), 400
+    
+    # Get image dimensions
+    width_px = request.form.get("width", type=int)
+    height_px = request.form.get("height", type=int)
+    
+    if not width_px or not height_px:
+        return jsonify({"ok": False, "error": "Image dimensions required"}), 400
+    
+    # Get selected tag IDs
+    tag_ids_str = request.form.get("tag_ids", "")
+    tag_ids = []
+    if tag_ids_str:
+        try:
+            tag_ids = [int(x) for x in tag_ids_str.split(",") if x.strip().isdigit()]
+        except (ValueError, TypeError):
+            return jsonify({"ok": False, "error": "Invalid tag IDs"}), 400
+    
+    try:
+        # Read file data
+        file_data = file.read()
+        if not file_data:
+            return jsonify({"ok": False, "error": "File is empty"}), 400
+        
+        # Upload to Supabase storage
+        storage_path = upload_photo_to_storage(barber_id, file_data, file.filename)
+        if not storage_path:
+            return jsonify({"ok": False, "error": "Failed to upload photo to storage"}), 500
+        
+        # Create database record
+        photo_id = create_haircut_post(barber_id, storage_path, width_px, height_px, tag_ids)
+        
+        print(f"[UPLOAD_PHOTO] Photo uploaded successfully: photo_id={photo_id}, barber_id={barber_id}")
+        
+        return jsonify({
+            "ok": True,
+            "photo_id": photo_id,
+            "storage_path": storage_path,
+        }), 201
+        
+    except Exception as e:
+        error_msg = str(e)
+        print(f"[UPLOAD_PHOTO] Error uploading photo: {error_msg}")
+        return jsonify({"ok": False, "error": error_msg}), 500
