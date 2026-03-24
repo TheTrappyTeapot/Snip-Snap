@@ -64,22 +64,47 @@ def upload_photo_to_storage(barber_id: int, file_data: bytes, filename: str) -> 
         mime_type = mime_mapping.get(file_ext, 'application/octet-stream')
     
     print(f"[UPLOAD_PHOTO] Uploading {filename} (MIME: {mime_type}) to {storage_path}")
+    print(f"[UPLOAD_PHOTO] Bucket: {bucket}, Barber ID: {barber_id}, File size: {len(file_data)} bytes")
     
     try:
         sb = get_supabase()
-        # Upload with explicit content type
-        res = sb.storage.from_(bucket).upload(
-            storage_path, 
-            file_data,
-            file_options={"contentType": mime_type}
-        )
-        print(f"[UPLOAD_PHOTO] Upload response: {res}")
-        # Return the path if upload was successful
-        if res:
-            return storage_path
+        
+        # Ensure the barber folder path exists by attempting upload with proper metadata
+        print(f"[UPLOAD_PHOTO] Attempting upload with contentType in file_options")
+        
+        # Try uploading with file_options parameter (contentType)
+        try:
+            res = sb.storage.from_(bucket).upload(
+                storage_path, 
+                file_data,
+                file_options={"contentType": mime_type}
+            )
+            print(f"[UPLOAD_PHOTO] Upload with file_options succeeded. Response: {res}")
+            if res:
+                return storage_path
+        except TypeError as te:
+            # If file_options parameter doesn't exist, try without it
+            print(f"[UPLOAD_PHOTO] file_options parameter not supported: {te}")
+            print(f"[UPLOAD_PHOTO] Attempting upload without file_options")
+            
+            res = sb.storage.from_(bucket).upload(storage_path, file_data)
+            print(f"[UPLOAD_PHOTO] Upload without file_options response: {res}")
+            if res:
+                return storage_path
+        
         return None
+        
     except Exception as e:
         print(f"[UPLOAD_PHOTO] Error uploading to Supabase: {e}")
+        print(f"[UPLOAD_PHOTO] Error type: {type(e).__name__}")
         import traceback
         print(f"[UPLOAD_PHOTO] Traceback: {traceback.format_exc()}")
+        
+        # Log additional debug info
+        print(f"[UPLOAD_PHOTO] Debug info:")
+        print(f"  - Storage path: {storage_path}")
+        print(f"  - MIME type: {mime_type}")
+        print(f"  - File extension: {file_ext}")
+        print(f"  - File data length: {len(file_data)}")
+        
         return None
