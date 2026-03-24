@@ -50,7 +50,8 @@
           <!-- Tag Selection -->
           <div class="form-group">
             <label>Haircut Tags (Select at least one)</label>
-            <div class="tag-selector" id="tagSelector"></div>
+            <div id="tagSearchContainer"></div>
+            <div id="selectedTagsContainer" style="margin-top: 12px;"></div>
           </div>
 
           <!-- Form Actions -->
@@ -81,5 +82,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/components/tagList.js') }}"></script>
 <script src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
 {% endblock %}

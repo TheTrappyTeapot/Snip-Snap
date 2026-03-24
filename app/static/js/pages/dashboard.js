@@ -4,6 +4,10 @@ const openBtn = document.getElementById('openUploadBtn');
 const closeBtn = document.getElementById('closeUploadBtn');
 const cancelBtn = document.getElementById('cancelUploadBtn');
 
+// Tag management with autocomplete and tag list
+let tagAutocomplete = null;
+let tagList = null;
+
 console.log('[MODAL DEBUG] Modal elements found:', {
   modal: !!modal,
   openBtn: !!openBtn,
@@ -85,7 +89,7 @@ photoInput.addEventListener('change', function() {
   }
 });
 
-// Load tags from API
+// Load tags from API and initialize autocomplete + tag list
 async function loadTags() {
   console.log('[LOAD_TAGS DEBUG] Starting to load tags');
   try {
@@ -97,18 +101,34 @@ async function loadTags() {
     const tags = data.items.filter(item => item.type === 'tag');
     console.log('[LOAD_TAGS DEBUG] Filtered tags:', tags);
     
-    const tagSelector = document.getElementById('tagSelector');
-    tagSelector.innerHTML = '';
+    // Initialize tag list (display of selected tags)
+    if (!tagList) {
+      tagList = new window.TagList({
+        mountEl: document.getElementById('selectedTagsContainer'),
+        initialItems: []
+      });
+      console.log('[LOAD_TAGS DEBUG] TagList initialized');
+    }
     
-    tags.forEach(tag => {
-      const tagItem = document.createElement('div');
-      tagItem.className = 'tag-item';
-      tagItem.innerHTML = `
-        <input type="checkbox" id="tag-${tag.id}" value="${tag.id}" class="tag-checkbox">
-        <label for="tag-${tag.id}">${tag.label}</label>
-      `;
-      tagSelector.appendChild(tagItem);
-    });
+    // Initialize autocomplete
+    if (!tagAutocomplete) {
+      tagAutocomplete = window.createSearchBarAutocomplete(
+        document.getElementById('tagSearchContainer'),
+        (selectedItem) => {
+          console.log('[LOAD_TAGS DEBUG] Tag selected from autocomplete:', selectedItem);
+          // Add to tag list
+          tagList.add_item(selectedItem);
+        },
+        tags,
+        { placeholder: 'Search and select tags...' }
+      );
+      console.log('[LOAD_TAGS DEBUG] Search autocomplete initialized with', tags.length, 'tags');
+    } else {
+      // Update existing autocomplete with new items
+      tagAutocomplete.setItems(tags);
+      console.log('[LOAD_TAGS DEBUG] Search autocomplete updated with', tags.length, 'tags');
+    }
+    
     console.log('[LOAD_TAGS DEBUG] Tags loaded successfully');
   } catch (error) {
     console.error('[LOAD_TAGS DEBUG] Error loading tags:', error);
@@ -138,8 +158,8 @@ uploadForm.addEventListener('submit', async (e) => {
   });
   
   // Validate tags
-  const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked'));
-  console.log('[FORM_SUBMIT DEBUG] Selected tags:', selectedTags.length, selectedTags.map(t => ({id: t.value, label: t.nextElementSibling.textContent})));
+  const selectedTags = tagList ? tagList.get_items() : [];
+  console.log('[FORM_SUBMIT DEBUG] Selected tags:', selectedTags.length, selectedTags);
   
   if (!selectedTags.length) {
     console.warn('[FORM_SUBMIT DEBUG] No tags selected');
@@ -151,7 +171,7 @@ uploadForm.addEventListener('submit', async (e) => {
   const img = new Image();
   img.onload = () => {
     console.log('[FORM_SUBMIT DEBUG] Image loaded, dimensions:', {width: img.width, height: img.height});
-    submitUpload(file, selectedTags.map(t => t.value), img.width, img.height);
+    submitUpload(file, selectedTags.map(t => t.id), img.width, img.height);
   };
   img.onerror = () => {
     console.error('[FORM_SUBMIT DEBUG] Failed to load image');
@@ -266,5 +286,16 @@ function resetForm() {
   preview.innerHTML = '';
   hideMessages();
   showLoading(false);
-  document.querySelectorAll('.tag-checkbox').forEach(el => el.checked = false);
+  
+  // Clear tag list and search
+  if (tagList) {
+    tagList.set_items([]);
+  }
+  if (tagAutocomplete) {
+    // Clear the search input
+    const searchInput = document.querySelector('.sa-input');
+    if (searchInput) {
+      searchInput.value = '';
+    }
+  }
 }
