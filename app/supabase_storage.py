@@ -72,12 +72,12 @@ def upload_photo_to_storage(barber_id: int, file_data: bytes, filename: str) -> 
         # Ensure the barber folder path exists by attempting upload with proper metadata
         print(f"[UPLOAD_PHOTO] Attempting upload with contentType in file_options")
         
-        # Try uploading with file_options parameter (contentType)
+        # Try uploading with file_options parameter (content-type)
         try:
             res = sb.storage.from_(bucket).upload(
                 storage_path, 
                 file_data,
-                file_options={"contentType": mime_type}
+                file_options={"content-type": mime_type}
             )
             print(f"[UPLOAD_PHOTO] Upload with file_options succeeded. Response: {res}")
             if res:
