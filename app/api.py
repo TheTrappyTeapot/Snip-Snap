@@ -342,6 +342,12 @@ def get_current_barbershop():
 @api_bp.post("/photos/upload")
 def upload_photo():
     """Upload a photo post. Only barbers can upload."""
+    print("[UPLOAD_PHOTO] Starting upload_photo request")
+    print(f"[UPLOAD_PHOTO] Request method: {request.method}")
+    print(f"[UPLOAD_PHOTO] Request content-type: {request.content_type}")
+    print(f"[UPLOAD_PHOTO] Request files keys: {list(request.files.keys())}")
+    print(f"[UPLOAD_PHOTO] Request form keys: {list(request.form.keys())}")
+    
     u = session.get("user")
     if not u or not u.get("id"):
         return jsonify({"ok": False, "error": "Not logged in"}), 401
@@ -368,18 +374,30 @@ def upload_photo():
     
     # Get file from request
     file = request.files.get("photo")
+    print(f"[UPLOAD_PHOTO] File object: {file}")
+    if file:
+        print(f"[UPLOAD_PHOTO] File details: name={file.filename}, content_type={file.content_type}, size={len(file.read())} bytes")
+        file.seek(0)  # Reset file pointer after reading size
+    
     if not file or file.filename == "":
         return jsonify({"ok": False, "error": "No photo provided"}), 400
+    
+    print(f"[UPLOAD_PHOTO] File received: {file.filename}")
+    print(f"[UPLOAD_PHOTO] File content-type from request: {file.content_type}")
     
     # Validate file type
     ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
     file_ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+    print(f"[UPLOAD_PHOTO] File extension: {file_ext}")
+    
     if file_ext not in ALLOWED_EXTENSIONS:
         return jsonify({"ok": False, "error": "File type not allowed. Use jpg, jpeg, png, gif, or webp"}), 400
     
     # Get image dimensions
     width_px = request.form.get("width", type=int)
     height_px = request.form.get("height", type=int)
+    
+    print(f"[UPLOAD_PHOTO] Image dimensions: {width_px}x{height_px}")
     
     if not width_px or not height_px:
         return jsonify({"ok": False, "error": "Image dimensions required"}), 400
@@ -393,13 +411,25 @@ def upload_photo():
         except (ValueError, TypeError):
             return jsonify({"ok": False, "error": "Invalid tag IDs"}), 400
     
+    print(f"[UPLOAD_PHOTO] Tag IDs: {tag_ids}")
+    
     try:
         # Read file data
         file_data = file.read()
+        print(f"[UPLOAD_PHOTO] File data read: {len(file_data)} bytes")
+        print(f"[UPLOAD_PHOTO] File data type: {type(file_data)}")
+        if file_data:
+            print(f"[UPLOAD_PHOTO] First 50 bytes: {file_data[:50]}")
+        
         if not file_data:
             return jsonify({"ok": False, "error": "File is empty"}), 400
         
         # Upload to Supabase storage
+        print(f"[UPLOAD_PHOTO] Calling upload_photo_to_storage with:")
+        print(f"  - barber_id: {barber_id}")
+        print(f"  - file_data length: {len(file_data)}")
+        print(f"  - filename: {file.filename}")
+        
         storage_path = upload_photo_to_storage(barber_id, file_data, file.filename)
         if not storage_path:
             return jsonify({"ok": False, "error": "Failed to upload photo to storage"}), 500
@@ -407,7 +437,7 @@ def upload_photo():
         # Create database record
         photo_id = create_haircut_post(barber_id, storage_path, width_px, height_px, tag_ids)
         
-        print(f"[UPLOAD_PHOTO] Photo uploaded successfully: photo_id={photo_id}, barber_id={barber_id}")
+        print(f"[UPLOAD_PHOTO] Photo uploaded successfully: photo_id={photo_id}, barber_id={barber_id}, path={storage_path}")
         
         return jsonify({
             "ok": True,
@@ -418,4 +448,6 @@ def upload_photo():
     except Exception as e:
         error_msg = str(e)
         print(f"[UPLOAD_PHOTO] Error uploading photo: {error_msg}")
+        import traceback
+        print(f"[UPLOAD_PHOTO] Traceback: {traceback.format_exc()}")
         return jsonify({"ok": False, "error": error_msg}), 500
