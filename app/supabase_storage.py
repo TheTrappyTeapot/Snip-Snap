@@ -1,4 +1,5 @@
 import os
+import mimetypes
 from supabase import create_client
 
 _supabase = None
@@ -49,13 +50,36 @@ def upload_photo_to_storage(barber_id: int, file_data: bytes, filename: str) -> 
     storage_filename = f"{uuid.uuid4()}{file_ext}"
     storage_path = f"barber_{barber_id}/{storage_filename}"
     
+    # Determine MIME type from file extension
+    mime_type, _ = mimetypes.guess_type(filename)
+    if not mime_type:
+        # Default to common image types based on extension
+        mime_mapping = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.webp': 'image/webp'
+        }
+        mime_type = mime_mapping.get(file_ext, 'application/octet-stream')
+    
+    print(f"[UPLOAD_PHOTO] Uploading {filename} (MIME: {mime_type}) to {storage_path}")
+    
     try:
         sb = get_supabase()
-        res = sb.storage.from_(bucket).upload(storage_path, file_data)
+        # Upload with explicit content type
+        res = sb.storage.from_(bucket).upload(
+            storage_path, 
+            file_data,
+            file_options={"contentType": mime_type}
+        )
+        print(f"[UPLOAD_PHOTO] Upload response: {res}")
         # Return the path if upload was successful
         if res:
             return storage_path
         return None
     except Exception as e:
         print(f"[UPLOAD_PHOTO] Error uploading to Supabase: {e}")
+        import traceback
+        print(f"[UPLOAD_PHOTO] Traceback: {traceback.format_exc()}")
         return None
