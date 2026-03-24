@@ -3,13 +3,12 @@
 .sa-root {
   position: relative;
   width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
 }
 
 .sa-field {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .sa-input {
@@ -21,14 +20,12 @@
   font-size: 14px;
   background: #fff;
   color: var(--text-color, #1f2937);
+  box-sizing: border-box;
 }
 
 .sa-input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-}
-.sa-input:focus {
-  border-color: #9b9b9b;
 }
 
 .sa-dropdown {
@@ -41,8 +38,10 @@
   border-radius: 12px;
   background: #fff;
   overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
-  z-index: 50;
+  z-index: 1001;
 }
 
 .sa-dropdown.is-open {
