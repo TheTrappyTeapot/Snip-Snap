@@ -1,0 +1,203 @@
+:root {
+  --profile-bg: #f5f7fb;
+  --profile-surface: #ffffff;
+  --profile-surface-2: #f8fafc;
+  --profile-text: #1f2937;
+  --profile-muted: #6b7280;
+  --profile-border: #dbe3ef;
+  --profile-accent: #2563eb;
+  --profile-accent-hover: #1d4ed8;
+  --profile-divider: #e5e7eb;
+  --profile-input-bg: #ffffff;
+  --profile-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --profile-bg: #181a1f;
+    --profile-surface: #23262d;
+    --profile-surface-2: #2b2f37;
+    --profile-text: #f3f4f6;
+    --profile-muted: #b5bbc6;
+    --profile-border: #3a404b;
+    --profile-accent: #f59e0b;
+    --profile-accent-hover: #d97706;
+    --profile-divider: #3a404b;
+    --profile-input-bg: #1f232a;
+    --profile-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.profile-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 30%),
+    var(--profile-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .profile-page {
+    background:
+      radial-gradient(circle at top left, rgba(245, 158, 11, 0.10), transparent 30%),
+      var(--profile-bg);
+  }
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 500px;
+  background: var(--profile-surface);
+  border: 1px solid var(--profile-border);
+  border-radius: 20px;
+  box-shadow: var(--profile-shadow);
+  padding: 28px;
+}
+
+.profile-card__header {
+  margin-bottom: 24px;
+}
+
+.profile-card__title {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--profile-text);
+}
+
+.profile-card__subtitle {
+  margin: 0;
+  color: var(--profile-muted);
+  font-size: 0.98rem;
+}
+
+.profile-form {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-field {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--profile-text);
+}
+
+.profile-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--profile-border);
+  border-radius: 12px;
+  background: var(--profile-input-bg);
+  color: var(--profile-text);
+  font: inherit;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.profile-input:focus {
+  border-color: var(--profile-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--profile-accent) 16%, transparent);
+}
+
+.profile-input--readonly {
+  background: var(--profile-surface-2);
+  color: var(--profile-muted);
+  cursor: not-allowed;
+  border-color: var(--profile-border);
+}
+
+.profile-input--readonly:focus {
+  border-color: var(--profile-border);
+  box-shadow: none;
+}
+
+.profile-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--profile-muted);
+}
+
+.profile-actions {
+  margin-top: 4px;
+}
+
+.profile-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease, opacity 0.18s ease;
+}
+
+.profile-btn:hover {
+  transform: translateY(-1px);
+}
+
+.profile-btn:active {
+  transform: translateY(0);
+}
+
+.profile-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-btn--primary {
+  background: var(--profile-accent);
+  color: #ffffff;
+}
+
+.profile-btn--primary:hover:not(:disabled) {
+  background: var(--profile-accent-hover);
+}
+
+/* Error message styling */
+.field-error {
+  min-height: 22px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #ef4444;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-error {
+    color: #f87171;
+  }
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.profile-input:has(+ .field-error:not(:empty)) {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .profile-input:has(+ .field-error:not(:empty)) {
+    border-color: #f87171;
+    box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.12);
+  }
+}
+
+/* Autocomplete integration */
+.sa-root {
+  position: relative;
+}
+
+.sa-field {
+  position: relative;
+}

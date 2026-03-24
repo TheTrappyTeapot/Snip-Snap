@@ -1,7 +1,18 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 
-from .db import fetch_discover_posts, fetch_discover_search_items, get_user_location, get_barbershops_for_map, create_app_user, update_user_location
+from .db import (
+    fetch_discover_posts, 
+    fetch_discover_search_items, 
+    get_user_location, 
+    get_barbershops_for_map, 
+    create_app_user, 
+    update_user_location,
+    get_all_barbershops,
+    get_barber_barbershop,
+    update_user_profile,
+    update_barber_barbershop,
+)
 from .input_sanitization import sanitize_input
 from .supabase_storage import sign_storage_path
 
@@ -203,3 +214,125 @@ def gallery_posts():
             "has_more": has_more,
         }
     )
+
+
+@api_bp.post("/user/profile")
+def update_profile():
+    """Update user profile (username, location, role, latitude, longitude, and barbershop for barbers)."""
+    u = session.get("user")
+    if not u or not u.get("id"):
+        return jsonify({"ok": False, "error": "Not logged in"}), 401
+
+    user_id = int(u["id"])
+    current_role = u.get("role", "customer")
+
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "").strip()
+    location = data.get("location", "").strip() if data.get("location") else None
+    role = data.get("role", "").strip().lower()
+    barbershop_id = data.get("barbershop_id")
+    lat = data.get("lat")
+    lng = data.get("lng")
+
+    # Validation
+    if not username:
+        return jsonify({"ok": False, "error": "Username is required"}), 400
+
+    if len(username) < 2 or len(username) > 50:
+        return jsonify({"ok": False, "error": "Username must be 2-50 characters"}), 400
+
+    err = sanitize_input(username)
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
+
+    if not role or role not in ["customer", "barber"]:
+        return jsonify({"ok": False, "error": "Invalid role"}), 400
+
+    if location and len(location) > 10:
+        return jsonify({"ok": False, "error": "Location must be 10 characters or fewer"}), 400
+
+    # Validate latitude/longitude if provided
+    if lat is not None:
+        try:
+            lat = float(lat)
+            if not (-90 <= lat <= 90):
+                return jsonify({"ok": False, "error": "Latitude must be between -90 and 90"}), 400
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "Latitude must be a valid number"}), 400
+
+    if lng is not None:
+        try:
+            lng = float(lng)
+            if not (-180 <= lng <= 180):
+                return jsonify({"ok": False, "error": "Longitude must be between -180 and 180"}), 400
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "Longitude must be a valid number"}), 400
+
+    # For barbers, barbershop is required
+    if role == "barber" and (barbershop_id is None or not isinstance(barbershop_id, int)):
+        return jsonify({"ok": False, "error": "Barbershop ID is required for barbers"}), 400
+
+    try:
+        # Update user profile with location coordinates
+        update_user_profile(user_id, username, location, role, lat, lng)
+        print(f"[PROFILE_UPDATE] Updated user {user_id}: username={username}, role={role}, lat={lat}, lng={lng}")
+
+        # If barber, update barbershop
+        if role == "barber":
+            try:
+                update_barber_barbershop(user_id, barbershop_id)
+                print(f"[PROFILE_UPDATE] Updated barber {user_id}: barbershop_id={barbershop_id}")
+            except Exception as e:
+                print(f"[PROFILE_UPDATE] Error updating barbershop: {e}")
+                return jsonify({"ok": False, "error": f"Error updating barbershop: {str(e)}"}), 500
+
+        # Update session
+        session["user"]["username"] = username
+        session["user"]["role"] = role
+        session.modified = True
+
+        return jsonify({"ok": True}), 200
+
+    except Exception as e:
+        error_msg = str(e)
+        print(f"[PROFILE_UPDATE] Error: {error_msg}")
+        
+        if "duplicate" in error_msg.lower() and "username" in error_msg.lower():
+            return jsonify({"ok": False, "error": "Username already in use"}), 400
+
+        return jsonify({"ok": False, "error": error_msg}), 500
+
+
+@api_bp.get("/user/barbershops")
+def get_barbershops():
+    """Get all barbershops for autocomplete in profile."""
+    try:
+        barbershops = get_all_barbershops()
+        return jsonify({"barbershops": barbershops}), 200
+    except Exception as e:
+        print(f"[GET_BARBERSHOPS] Error: {e}")
+        return jsonify({"error": "Could not load barbershops"}), 500
+
+
+@api_bp.get("/user/current-barbershop")
+def get_current_barbershop():
+    """Get the current barber's barbershop."""
+    u = session.get("user")
+    if not u or not u.get("id"):
+        return jsonify({"ok": False, "error": "Not logged in"}), 401
+
+    user_id = int(u["id"])
+    current_role = u.get("role", "customer")
+
+    if current_role != "barber":
+        return jsonify({"ok": False, "error": "Only barbers have a barbershop"}), 400
+
+    try:
+        barbershop = get_barber_barbershop(user_id)
+        if not barbershop:
+            return jsonify({"ok": False, "error": "Barber barbershop not found"}), 404
+        
+        return jsonify({"barbershop": barbershop}), 200
+    except Exception as e:
+        print(f"[GET_CURRENT_BARBERSHOP] Error: {e}")
+        return jsonify({"ok": False, "error": str(e)}), 500

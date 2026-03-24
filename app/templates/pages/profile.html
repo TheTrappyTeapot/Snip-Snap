@@ -1,8 +1,84 @@
 {% extends "base.html" %}
 {% block title %}My profile{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/profile.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
+{% endblock %}
+
 {% block content %}
-<h1>My profile</h1>
-<p>Email: {{ session["user"].get("email") }}</p>
-<p>Username: {{ session["user"].get("username") }}</p>
-<p>Role: {{ session["user"].get("role") }}</p>
+<div class="profile-page">
+  <section class="profile-card">
+    <div class="profile-card__header">
+      <h1 class="profile-card__title">My profile</h1>
+      <p class="profile-card__subtitle">Update your profile information</p>
+    </div>
+
+    <form id="profileForm" class="profile-form">
+      <!-- Email (read-only) -->
+      <div class="profile-field">
+        <label class="profile-label" for="email">Email</label>
+        <input class="profile-input profile-input--readonly" id="email" type="email" readonly value="{{ session["user"].get("email") }}">
+        <p class="profile-text">Email cannot be changed</p>
+      </div>
+
+      <!-- Username -->
+      <div class="profile-field">
+        <label class="profile-label" for="username">Username</label>
+        <input class="profile-input" id="username" type="text" required placeholder="Your username" value="{{ session["user"].get("username") }}">
+        <p id="usernameError" class="field-error"></p>
+      </div>
+
+      <!-- Location -->
+      <div class="profile-field">
+        <label class="profile-label" for="location">Location (Postcode)</label>
+        <input class="profile-input" id="location" type="text" placeholder="Enter your postcode" value="{{ user_postcode if user_postcode else '' }}">
+        <p id="locationError" class="field-error"></p>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="profile-field">
+        <label class="profile-label">Account Type</label>
+        <div style="display: flex; gap: 16px; margin-top: 8px; margin-bottom: 8px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+            <input type="radio" name="role" value="customer" required style="width: 18px; height: 18px;">
+            <span>Customer</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+            <input type="radio" name="role" value="barber" required style="width: 18px; height: 18px;">
+            <span>Barber</span>
+          </label>
+        </div>
+        <p id="roleError" class="field-error"></p>
+      </div>
+
+      <!-- Barbershop Selection (Barber only) -->
+      <div id="barbershopField" class="profile-field" style="display: none;">
+        <label class="profile-label" for="barbershopSearch">Barbershop</label>
+        <div id="barbershopSearchContainer"></div>
+        <p id="barbershopError" class="field-error"></p>
+      </div>
+
+      <!-- Error Messages -->
+      <div class="profile-field">
+        <p id="generalError" class="field-error"></p>
+      </div>
+
+      <!-- Save Button -->
+      <div class="profile-actions">
+        <button class="profile-btn profile-btn--primary" id="submitBtn" type="submit">Save changes</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<!-- Hidden data attribute to pass current role to JS -->
+<div id="sessionData" data-current-role="{{ session["user"].get("role") }}" style="display: none;"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>window.__userPostcode = {{ user_postcode | tojson }};</script>
+<script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/profile.js') }}"></script>
 {% endblock %}

@@ -213,7 +213,8 @@ if (window.__signupJsLoaded) {
       console.log("Signup successful, session:", data.session?.access_token ? "Has token" : "No token");
       if (data.session?.access_token) {
         await postTokenToFlask(data.session.access_token);
-        window.location.href = "/discover";
+        console.log("Token posted to Flask, redirecting to profile page...");
+        window.location.href = "/profile";
       } else {
         generalError.textContent = "Account created! Check your email to confirm, then log in.";
         submitBtn.disabled = false;

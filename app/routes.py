@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, session, url_for, jsonify,
 from .auth import verify_supabase_jwt
 from .input_sanitization import sanitize_input
 from .access import login_required, roles_required
-from .db import get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours
+from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours
 from uuid import uuid4
 from datetime import datetime, time
 
@@ -195,7 +195,10 @@ def register_routes(app):
     @app.route("/profile")
     @roles_required("customer", "barber")   # guests cannot access
     def profile():
-        return render_template("pages/profile.html")
+        u = session.get("user") or {}
+        uid = u.get("id")
+        pstCd = get_user_postcode(int(uid)) if uid else None
+        return render_template("pages/profile.html", user_postcode=pstCd)
     
 
     @app.get("/barber")

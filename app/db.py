@@ -598,6 +598,30 @@ def get_user_location(user_id: int):
         return None
     return {"lat": float(lat), "lng": float(lng)}
 
+
+def update_user_postcode(user_id: int, postcode: str) -> None:
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE App_User SET postcode = %s WHERE user_id = %s",
+                (postcode.strip(), user_id),
+            )
+        conn.commit()
+
+def get_user_postcode(user_id: int):
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT postcode FROM App_User WHERE user_id = %s", (user_id,))
+            row = cur.fetchone()
+    if not row:
+        return None
+    postcode = row[0]
+    if isinstance(postcode, str):
+        return postcode.strip()
+    return None
+
+
+
 def _pick_label(row: Dict[str, Any], preferred_keys: List[str]) -> str:
     for k in preferred_keys:
         v = row.get(k)
@@ -698,3 +722,111 @@ def fetch_discover_search_items():
                 )
 
     return items
+
+
+def get_all_barbershops():
+    """Get all barbershops for autocomplete in profile."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT barbershop_id, name, postcode, location_lat, location_lng
+                FROM Barbershop
+                ORDER BY name ASC
+                """
+            )
+            rows = cur.fetchall()
+    
+    return [
+        {
+            "barbershop_id": row["barbershop_id"],
+            "name": row["name"],
+            "postcode": row["postcode"].strip() if row["postcode"] else "",
+            "location_lat": row["location_lat"],
+            "location_lng": row["location_lng"],
+        }
+        for row in rows
+    ]
+
+
+def get_barber_barbershop(user_id: int):
+    """Get the barbershop that a barber works at."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT bs.barbershop_id, bs.name, bs.postcode, bs.location_lat, bs.location_lng
+                FROM Barber b
+                LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
+                WHERE b.user_id = %s
+                """,
+                (user_id,),
+            )
+            row = cur.fetchone()
+
+    if not row or row["barbershop_id"] is None:
+        return None
+
+    return {
+        "barbershop_id": row["barbershop_id"],
+        "name": row["name"],
+        "postcode": row["postcode"].strip() if row["postcode"] else "",
+        "location_lat": row["location_lat"],
+        "location_lng": row["location_lng"],
+    }
+
+
+def update_user_profile(user_id: int, username: str | None, postcode: str | None, role: str | None, lat: float | None = None, lng: float | None = None) -> None:
+    """
+    Update user profile (username, postcode, role, and optionally latitude/longitude).
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE App_User
+                SET
+                  username = COALESCE(%s, username),
+                  postcode = COALESCE(%s, postcode),
+                  role = COALESCE(%s, role),
+                  location_lat = COALESCE(%s, location_lat),
+                  location_lng = COALESCE(%s, location_lng)
+                WHERE user_id = %s
+                """,
+                (username, postcode, role, lat, lng, user_id),
+            )
+        conn.commit()
+
+
+def create_or_update_barber(user_id: int, barbershop_id: int) -> None:
+    """
+    Create a barber record if it doesn't exist, or update the barbershop if it does.
+    This is used when a barber first picks their shop or changes shops.
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            # First, check if barber record exists
+            cur.execute("SELECT barber_id FROM Barber WHERE user_id = %s", (user_id,))
+            barber_record = cur.fetchone()
+
+            if barber_record:
+                # Update existing barber record
+                cur.execute(
+                    "UPDATE Barber SET barbershop_id = %s WHERE user_id = %s",
+                    (barbershop_id, user_id),
+                )
+            else:
+                # Create new barber record
+                cur.execute(
+                    "INSERT INTO Barber (user_id, barbershop_id) VALUES (%s, %s)",
+                    (user_id, barbershop_id),
+                )
+        conn.commit()
+
+
+def update_barber_barbershop(user_id: int, barbershop_id: int) -> None:
+    """
+    Update the barbershop that a barber works at.
+    Will create a barber record if it doesn't exist.
+    """
+    create_or_update_barber(user_id, barbershop_id)
