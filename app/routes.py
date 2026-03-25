@@ -45,6 +45,33 @@ def register_routes(app):
 
     print("SUPABASE_URL =", os.getenv("SUPABASE_URL"))
 
+    @app.get("/api/reviews/<int:barber_id>")
+    def get_barber_reviews(barber_id: int):
+        """API to fetch reviews for a specific barber."""
+        reviews = get_reviews_for_barber(barber_id)
+        # Convert datetime objects to strings so JavaScript can read them
+        for r in reviews:
+            r['created_at'] = r['created_at'].isoformat()
+        return jsonify(reviews)
+
+    @app.post("/api/reviews/submit")
+    @login_required
+    def post_review():
+        """API to save a new review from the widget."""
+        data = request.json
+        user_id = session["user"]["id"]
+        
+        try:
+            review_id = submit_barber_review(
+                barber_id=data['barber_id'],
+                customer_id=user_id,
+                rating=data['rating'],
+                comment=data['comment']
+            )
+            return jsonify({"ok": True, "review_id": review_id})
+        except Exception as e:
+            return jsonify({"ok": False, "error": str(e)}), 400
+
     @app.route("/")
     def home():
         return render_template("pages/welcome.html")
