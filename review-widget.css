@@ -1,0 +1,19 @@
+.widget-container { width:100%; max-width:500px; background:#fff; border:1px solid #d1d5db; border-radius:16px; overflow:hidden; }
+.widget-header { padding:16px; font-weight:700; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center; }
+.add-review-btn { width:32px; height:32px; border:1px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.review-list { max-height:400px; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:15px; }
+.review-card { border:1px solid #e5e7eb; border-radius:12px; padding:12px; }
+.review-stars { color:#fbbf24; font-size:14px; }
+.review-text { font-size:14px; margin:8px 0; }
+.faded-actions { font-size:12px; opacity:0.4; cursor:pointer; display:flex; gap:10px; font-weight:600; }
+.faded-actions:hover { opacity:1; }
+.replies-list { margin-left:15px; border-left:2px solid #f3f4f6; padding-left:10px; margin-top:10px; }
+.reply-item { background:#f9fafb; padding:8px; border-radius:8px; margin-top:5px; font-size:13px; }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; padding:20px; z-index:1000; }
+.modal-content { background:#fff; padding:20px; border-radius:16px; width:100%; max-width:400px; display:flex; flex-direction:column; gap:10px; }
+.star-input span { font-size:30px; cursor:pointer; color:#d1d5db; }
+.star-input .active { color:#fbbf24; }
+.btn-save { background:#333; color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-top:5px; }
+.btn-upload { background:#addf7c; border:none; padding:10px; border-radius:20px; font-weight:700; cursor:pointer; }
+.btn-cancel { background:#f87171; border:none; padding:10px; border-radius:20px; color:#fff; cursor:pointer; }
+.input-box { display:flex; flex-direction:column; margin-top:10px; }
