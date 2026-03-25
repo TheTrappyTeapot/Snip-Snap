@@ -830,3 +830,37 @@ def update_barber_barbershop(user_id: int, barbershop_id: int) -> None:
     Will create a barber record if it doesn't exist.
     """
     create_or_update_barber(user_id, barbershop_id)
+
+
+
+def get_reviews_for_barber(barber_profile_id: int):
+    """Fetch all reviews for a specific barber from the database."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT r.review_id, r.rating, r.comment, r.created_at, u.username
+                FROM Reviews r
+                JOIN Users u ON r.customer_user_id = u.user_id
+                WHERE r.barber_profile_id = %s
+                ORDER BY r.created_at DESC
+                """,
+                (barber_profile_id,),
+            )
+            return cur.fetchall()
+
+def submit_barber_review(barber_id: int, customer_id: int, rating: int, comment: str):
+    """Insert a new review into the Reviews table."""
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO Reviews (barber_profile_id, customer_user_id, rating, comment)
+                VALUES (%s, %s, %s, %s)
+                RETURNING review_id
+                """,
+                (barber_id, customer_id, rating, comment),
+            )
+            review_id = cur.fetchone()[0]
+        conn.commit()
+    return review_id
