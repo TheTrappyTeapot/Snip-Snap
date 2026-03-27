@@ -864,3 +864,155 @@ def submit_barber_review(barber_id: int, customer_id: int, rating: int, comment:
             review_id = cur.fetchone()[0]
         conn.commit()
     return review_id
+
+
+def postcode_to_coordinates(postcode: str) -> tuple | None:
+    """
+    Convert UK postcode to latitude/longitude using postcodes.io API.
+    
+    Args:
+        postcode: UK postcode (e.g., "SW1A 1AA")
+        
+    Returns:
+        Tuple (lat, lng) or None if not found
+    """
+    import requests
+    
+    try:
+        response = requests.get(
+            "https://api.postcodes.io/postcodes",
+            params={"q": postcode.strip()},
+            timeout=10
+        )
+        
+        if not response.ok:
+            print(f"[POSTCODE_TO_COORDS] API error (HTTP {response.status_code}) for '{postcode}'")
+            return None
+        
+        data = response.json()
+        
+        # Check if we got results
+        if data.get("status") != 200 or not data.get("result"):
+            print(f"[POSTCODE_TO_COORDS] No results found for '{postcode}'")
+            return None
+        
+        # Extract coordinates from first result
+        result = data["result"][0]
+        lat = result.get("latitude")
+        lng = result.get("longitude")
+        
+        if lat is not None and lng is not None:
+            print(f"[POSTCODE_TO_COORDS] {postcode} → ({lat}, {lng})")
+            return (lat, lng)
+        else:
+            print(f"[POSTCODE_TO_COORDS] No coordinates in result for '{postcode}'")
+            return None
+            
+    except requests.RequestException as e:
+        print(f"[POSTCODE_TO_COORDS] API error for '{postcode}': {e}")
+        return None
+    except Exception as e:
+        print(f"[POSTCODE_TO_COORDS] Unexpected error for '{postcode}': {e}")
+        return None
+
+
+def create_barbershop(name: str, postcode: str, location_lat: float, location_lng: float) -> int:
+    """
+    Create a new barbershop in the database.
+    
+    Args:
+        name: Barbershop name
+        postcode: UK postcode
+        location_lat: Latitude coordinate
+        location_lng: Longitude coordinate
+        
+    Returns:
+        barbershop_id of the newly created barbershop
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO Barbershop (name, postcode, location_lat, location_lng)
+                VALUES (%s, %s, %s, %s)
+                RETURNING barbershop_id
+                """,
+                (name.strip(), postcode.strip(), location_lat, location_lng),
+            )
+            barbershop_id = cur.fetchone()[0]
+        conn.commit()
+    
+    print(f"[CREATE_BARBERSHOP] Created barbershop (ID: {barbershop_id}): {name} @ {postcode} ({location_lat}, {location_lng})")
+    return barbershop_id
+
+
+def update_or_create_profile_photo(user_id: int, image_url: str, width_px: int, height_px: int) -> int:
+    """
+    Create or update a ProfilePhoto record for a user.
+    
+    Uses PostgreSQL INSERT...ON CONFLICT to handle the UNIQUE constraint on user_id.
+    If a record already exists, it updates the image_url, width_px, and height_px.
+    
+    Args:
+        user_id: User ID (must exist in Users table)
+        image_url: Storage path to the image (e.g., "profile_123_abc123.png")
+        width_px: Image width in pixels
+        height_px: Image height in pixels
+        
+    Returns:
+        photo_id of the created or updated ProfilePhoto record
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO ProfilePhoto (user_id, image_url, width_px, height_px)
+                VALUES (%s, %s, %s, %s)
+                ON CONFLICT (user_id)
+                DO UPDATE SET
+                    image_url = EXCLUDED.image_url,
+                    width_px = EXCLUDED.width_px,
+                    height_px = EXCLUDED.height_px
+                RETURNING photo_id
+                """,
+                (user_id, image_url, width_px, height_px),
+            )
+            photo_id = cur.fetchone()[0]
+        conn.commit()
+    
+    print(f"[UPDATE_OR_CREATE_PROFILE_PHOTO] Updated profile photo for user {user_id} (ID: {photo_id}): {image_url} ({width_px}x{height_px})")
+    return photo_id
+
+
+def get_profile_photo(user_id: int) -> dict | None:
+    """
+    Fetch the ProfilePhoto record for a user.
+    
+    Args:
+        user_id: User ID
+        
+    Returns:
+        Dict with {photo_id, user_id, image_url, width_px, height_px} or None if no photo
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT photo_id, user_id, image_url, width_px, height_px
+                FROM ProfilePhoto
+                WHERE user_id = %s
+                """,
+                (user_id,),
+            )
+            result = cur.fetchone()
+            
+            if not result:
+                return None
+            
+            return {
+                "photo_id": result[0],
+                "user_id": result[1],
+                "image_url": result[2],
+                "width_px": result[3],
+                "height_px": result[4],
+            }

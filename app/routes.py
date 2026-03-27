@@ -3,7 +3,8 @@ from flask import render_template, request, redirect, session, url_for, jsonify,
 from .auth import verify_supabase_jwt
 from .input_sanitization import sanitize_input
 from .access import login_required, roles_required
-from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours,get_reviews_for_barber, submit_barber_review
+from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo
+from .supabase_storage import sign_storage_path
 from uuid import uuid4
 from datetime import datetime, time
 
@@ -225,7 +226,35 @@ def register_routes(app):
         u = session.get("user") or {}
         uid = u.get("id")
         pstCd = get_user_postcode(int(uid)) if uid else None
-        return render_template("pages/profile.html", user_postcode=pstCd)
+        
+        # Get user's barbershop if they're a barber
+        barbershop_name = None
+        if u.get("role") == "barber":
+            from .db import get_barber_barbershop
+            barber_shop = get_barber_barbershop(int(uid)) if uid else None
+            if barber_shop:
+                barbershop_name = barber_shop.get("name")
+        
+        # Get user's profile photo if it exists
+        profile_image_url = ""
+        if uid:
+            profile_photo = get_profile_photo(int(uid))
+            if profile_photo and profile_photo.get("image_url"):
+                # Generate signed URL for the stored image
+                try:
+                    profile_image_url = sign_storage_path(profile_photo["image_url"], expires_in=3600)
+                except Exception as e:
+                    print(f"[PROFILE] Error generating signed URL for photo: {e}")
+        
+        user_data = {
+            "username": u.get("username", ""),
+            "email": u.get("email", ""),
+            "role": u.get("role", "customer"),
+            "profile_image_url": profile_image_url,
+            "barbershop_name": barbershop_name,
+        }
+        
+        return render_template("pages/profile.html", user_postcode=pstCd, user_data=user_data)
     
 
     @app.get("/barber")

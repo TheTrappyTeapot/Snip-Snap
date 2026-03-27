@@ -1,0 +1,217 @@
+/* Editable User Promo Component */
+
+.hidden {
+  display: none !important;
+}
+
+.editable-user-promo {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+  background: var(--profile-surface-2);
+  border-radius: 12px;
+  border: 1px solid var(--profile-border);
+}
+
+.editable-user-promo__avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.editable-user-promo__avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--profile-surface);
+  border: 2px solid var(--profile-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease;
+}
+
+.editable-user-promo__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.editable-user-promo__avatar svg {
+  color: var(--profile-muted);
+}
+
+.editable-user-promo__avatar-wrapper:hover .editable-user-promo__avatar {
+  border-color: var(--profile-accent);
+}
+
+.editable-user-promo__edit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.editable-user-promo__avatar-wrapper:hover .editable-user-promo__edit-overlay {
+  opacity: 1;
+}
+
+.editable-user-promo__edit-icon {
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editable-user-promo__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editable-user-promo__username {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editable-user-promo__username-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--profile-text);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.editable-user-promo__username-text:hover {
+  background: var(--profile-surface);
+  border-color: var(--profile-accent);
+}
+
+.editable-user-promo__username-input {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--profile-text);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 2px solid var(--profile-accent);
+  background: var(--profile-surface);
+  font: inherit;
+  outline: none;
+  width: 100%;
+  max-width: 200px;
+}
+
+.editable-user-promo__username-input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--profile-accent) 16%, transparent);
+}
+
+.editable-user-promo__edit-hint {
+  font-size: 0.8rem;
+  color: var(--profile-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editable-user-promo__subtext {
+  font-size: 0.95rem;
+  color: var(--profile-muted);
+}
+
+/* Photo upload popup integration */
+.editable-user-promo .photo-upload-popup {
+  position: absolute;
+  top: 90px;
+  left: 0;
+  z-index: 100;
+  background: var(--profile-surface);
+  border: 1px solid var(--profile-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .editable-user-promo .photo-upload-popup {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.editable-user-promo .photo-upload-input {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.editable-user-promo .photo-upload-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.editable-user-promo .preview-wrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--profile-surface-2);
+  aspect-ratio: 1;
+}
+
+.editable-user-promo .preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.editable-user-promo .remove-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.editable-user-promo .remove-btn:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+.editable-user-promo .photo-upload-limit-message {
+  font-size: 0.85rem;
+  color: var(--profile-muted);
+  margin-bottom: 8px;
+  min-height: 18px;
+}
