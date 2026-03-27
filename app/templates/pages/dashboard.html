@@ -1,33 +1,93 @@
 {% extends "base.html" %}
 {% block title %}Barber Dashboard{% endblock %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/tagList.css') }}">
+{% endblock %}
+
 {% block content %}
-<h1>Edit barber profile</h1>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Barber Dashboard</h1>
+    <p>Manage your barber profile and haircut posts</p>
+  </div>
 
-{% if not barber %}
-  <p>Could not load barber profile data.</p>
-{% else %}
-  <p>
-    Public link:
-    <a href="{{ url_for('barber_profile', barber_id=barber.user_id) }}">
-      View my public profile
-    </a>
-  </p>
+  {% if not barber %}
+    <p>Could not load barber profile data.</p>
+  {% else %}
+    <div class="dashboard-links">
+      <a href="{{ url_for('barber_profile', barber_id=barber.user_id) }}">
+        View my public profile
+      </a>
+    </div>
 
-  <form method="post" action="{{ url_for('dashboard') }}">
-    <label for="username">Display name</label><br />
-    <input id="username" name="username" value="{{ barber.username or '' }}" /><br /><br />
+    <div class="dashboard-section">
+      <h2>Upload New Post</h2>
+      <button class="upload-btn" id="openUploadBtn">Upload Post</button>
+    </div>
 
-    <label for="postcode">Postcode</label><br />
-    <input id="postcode" name="postcode" value="{{ barber.postcode or '' }}" /><br /><br />
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Upload Photo Post</h2>
+          <button class="close-btn" id="closeUploadBtn">&times;</button>
+        </div>
 
-    <label for="location_lat">Latitude</label><br />
-    <input id="location_lat" name="location_lat" value="{{ barber.location_lat if barber.location_lat is not none else '' }}" /><br /><br />
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
 
-    <label for="location_lng">Longitude</label><br />
-    <input id="location_lng" name="location_lng" value="{{ barber.location_lng if barber.location_lng is not none else '' }}" /><br /><br />
+        <form id="uploadForm">
+          <!-- Photo Input -->
+          <div class="form-group">
+            <label for="photoInput">Select Photo</label>
+            <input type="file" id="photoInput" name="photo" accept="image/*" required>
+          </div>
 
-    <button type="submit">Save</button>
-  </form>
-{% endif %}
+          <!-- Preview -->
+          <div id="preview"></div>
+
+          <!-- Tag Selection -->
+          <div class="form-group">
+            <label>Haircut Tags (Select at least one)</label>
+            <div id="tagSearchContainer"></div>
+            <div id="selectedTagsContainer" style="margin-top: 12px;"></div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelUploadBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Upload Post</button>
+          </div>
+
+          <div class="loading" id="loading">
+            <p>Uploading...</p>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="dashboard-section">
+      <h2>Profile Settings</h2>
+      <form method="post" action="{{ url_for('dashboard') }}">
+        <div class="form-group">
+          <label for="username">Display name</label>
+          <input id="username" name="username" value="{{ barber.username or '' }}" />
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+<script type="module">
+  import { TagList } from "{{ url_for('static', filename='js/components/tagList.js') }}";
+  window.TagList = TagList;
+</script>
+<script type="module" src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
 {% endblock %}

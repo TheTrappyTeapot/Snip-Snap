@@ -94,3 +94,8 @@ export class TagList {
     for (const fn of this._listeners) fn(snapshot);
   }
 }
+
+// Also expose globally for non-module usage (e.g., dashboard.js)
+if (typeof window !== 'undefined') {
+  window.TagList = TagList;
+}
