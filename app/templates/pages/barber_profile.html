@@ -23,6 +23,10 @@
       <div id="user-promo-mount"></div>
     </div>
 
+    {% if barber.bio %}
+    <p class="barber-profile__bio">{{ barber.bio }}</p>
+    {% endif %}
+
     <button class="barber-profile__cta-button" type="button" disabled>Book this barber (coming soon)</button>
 
     <section class="barber-profile__info-section">
@@ -43,6 +47,15 @@
           <div class="barber-profile__info-item">
             <span class="barber-profile__info-label">Location</span>
             <span class="barber-profile__info-value" id="location-display">Loading…</span>
+          </div>
+        {% endif %}
+
+        {% if barber.shop_website %}
+          <div class="barber-profile__info-item">
+            <span class="barber-profile__info-label">Website</span>
+            <span class="barber-profile__info-value">
+              <a href="{{ barber.shop_website }}" target="_blank" rel="noopener">{{ barber.shop_website }}</a>
+            </span>
           </div>
         {% endif %}
       </div>
