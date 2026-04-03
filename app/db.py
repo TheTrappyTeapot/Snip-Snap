@@ -171,7 +171,7 @@ def get_barber_public_by_user_id(user_id: int):
                 """
                 SELECT u.user_id, u.username, u.location_lat, u.location_lng,
                        u.postcode, u.role,
-                       bs.location_lat AS shop_lat, bs.location_lng AS shop_lng
+                       bs.location_lat AS shop_lat, bs.location_lng AS shop_lng, bs.website, bs.postcode AS shop_postcode
                 FROM App_User u
                 LEFT JOIN Barber b ON b.user_id = u.user_id
                 LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
@@ -197,7 +197,31 @@ def get_barber_public_by_user_id(user_id: int):
         "role": role,
         "shop_lat": row[6],
         "shop_lng": row[7],
+        "website": row[8],
+        "shop_postcode": row[9],
     }
+
+
+def get_barber_id_from_user_id(user_id: int) -> int | None:
+    """
+    Get the barber_id for a given user_id.
+    
+    Args:
+        user_id: User ID
+        
+    Returns:
+        Barber ID or None if user is not a barber
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT barber_id FROM Barber WHERE user_id = %s
+                """,
+                (user_id,),
+            )
+            row = cur.fetchone()
+            return row[0] if row else None
 
 
 def get_barbershop_by_id(barbershop_id: int):
@@ -540,6 +564,7 @@ def fetch_discover_posts(
             hp.created_at,
             hp.barber_id,
 
+            u_promo.user_id AS promo_user_id,
             u_promo.username AS promo_name,
             u_promo.role AS promo_role,
             bs_promo.name AS promo_barbershop_name,
@@ -559,7 +584,7 @@ def fetch_discover_posts(
         WHERE {' AND '.join(where)}
         GROUP BY
             hp.photo_id, hp.image_url, hp.width_px, hp.height_px, hp.created_at, hp.barber_id,
-            u_promo.username, u_promo.role, bs_promo.name, pp_promo.image_url,
+            u_promo.user_id, u_promo.username, u_promo.role, bs_promo.name, pp_promo.image_url,
             bs_promo.location_lat, bs_promo.location_lng,
             rating_agg.avg_rating, rating_agg.rating_count
         {having_sql}
@@ -1016,3 +1041,87 @@ def get_profile_photo(user_id: int) -> dict | None:
                 "width_px": result[3],
                 "height_px": result[4],
             }
+
+
+def get_barber_gallery_photos(barber_id: int, limit: int = 16) -> List[Dict[str, Any]]:
+    """
+    Fetch haircut photos for a barber that are NOT posts (is_post = false).
+    Includes main tag name and barber promo info.
+    
+    Args:
+        barber_id: Barber ID
+        limit: Maximum number of photos to return (default 16 for 2x8 grid)
+        
+    Returns:
+        List of dicts with {photo_id, barber_id, image_url, width_px, height_px, main_tag_name, promo_name, promo_role, promo_barbershop_name, promo_profile_image_url}
+    """
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT 
+                    hp.photo_id, 
+                    hp.barber_id, 
+                    hp.image_url, 
+                    hp.width_px, 
+                    hp.height_px,
+                    t.name AS main_tag_name,
+                    u.username AS promo_name,
+                    u.role AS promo_role,
+                    bs.name AS promo_barbershop_name,
+                    pp.image_url AS promo_profile_image_url
+                FROM HaircutPhoto hp
+                LEFT JOIN Tag t ON t.tag_id = hp.main_tag
+                JOIN Barber b ON b.barber_id = hp.barber_id
+                JOIN App_User u ON u.user_id = b.user_id
+                LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
+                LEFT JOIN ProfilePhoto pp ON pp.user_id = u.user_id
+                WHERE hp.barber_id = %s AND hp.is_post = FALSE AND hp.status = 'show'
+                ORDER BY hp.created_at DESC
+                LIMIT %s
+                """,
+                (barber_id, limit),
+            )
+            return cur.fetchall()
+
+
+def get_barbershop_gallery_photos(barbershop_id: int, limit: int = 16) -> List[Dict[str, Any]]:
+    """
+    Fetch haircut photos for all barbers at a barbershop that are NOT posts (is_post = false).
+    Includes main tag name and barber promo info.
+    
+    Args:
+        barbershop_id: Barbershop ID
+        limit: Maximum number of photos to return (default 16 for 2x8 grid)
+        
+    Returns:
+        List of dicts with {photo_id, barber_id, image_url, width_px, height_px, main_tag_name, promo_name, promo_role, promo_barbershop_name, promo_profile_image_url}
+    """
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT 
+                    hp.photo_id, 
+                    hp.barber_id, 
+                    hp.image_url, 
+                    hp.width_px, 
+                    hp.height_px,
+                    t.name AS main_tag_name,
+                    u.username AS promo_name,
+                    u.role AS promo_role,
+                    bs.name AS promo_barbershop_name,
+                    pp.image_url AS promo_profile_image_url
+                FROM HaircutPhoto hp
+                LEFT JOIN Tag t ON t.tag_id = hp.main_tag
+                JOIN Barber b ON b.barber_id = hp.barber_id
+                JOIN App_User u ON u.user_id = b.user_id
+                LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
+                LEFT JOIN ProfilePhoto pp ON pp.user_id = u.user_id
+                WHERE b.barbershop_id = %s AND hp.is_post = FALSE AND hp.status = 'show'
+                ORDER BY hp.created_at DESC
+                LIMIT %s
+                """,
+                (barbershop_id, limit),
+            )
+            return cur.fetchall()

@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, session, url_for, jsonify,
 from .auth import verify_supabase_jwt
 from .input_sanitization import sanitize_input
 from .access import login_required, roles_required
-from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo
+from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, get_barber_id_from_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo, get_barber_gallery_photos, get_barbershop_gallery_photos, _get_conn
 from .supabase_storage import sign_storage_path
 from uuid import uuid4
 from datetime import datetime, time
@@ -72,6 +72,174 @@ def register_routes(app):
             return jsonify({"ok": True, "review_id": review_id})
         except Exception as e:
             return jsonify({"ok": False, "error": str(e)}), 400
+    @app.get("/api/barber/<int:barber_id>/photos")
+    def get_barber_photos(barber_id: int):
+        """API to fetch gallery photos for a barber (is_post = false)."""
+        try:
+            photos = get_barber_gallery_photos(barber_id, limit=16)
+            # Sign storage URLs for secure access
+            for photo in photos:
+                if photo.get("image_url"):
+                    photo["image_url"] = sign_storage_path(photo["image_url"], expires_in=3600)
+                if photo.get("promo_profile_image_url"):
+                    photo["promo_profile_image_url"] = sign_storage_path(photo["promo_profile_image_url"], expires_in=3600)
+            return jsonify(photos)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    @app.get("/api/barbershop/<int:barbershop_id>/photos")
+    def get_barbershop_photos(barbershop_id: int):
+        """API to fetch gallery photos for a barbershop (all barbers, is_post = false)."""
+        try:
+            photos = get_barbershop_gallery_photos(barbershop_id, limit=16)
+            # Sign storage URLs for secure access
+            for photo in photos:
+                if photo.get("image_url"):
+                    photo["image_url"] = sign_storage_path(photo["image_url"], expires_in=3600)
+                if photo.get("promo_profile_image_url"):
+                    photo["promo_profile_image_url"] = sign_storage_path(photo["promo_profile_image_url"], expires_in=3600)
+            return jsonify(photos)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    @app.get("/api/user/<int:user_id>/barber-id")
+    def get_barber_id_endpoint(user_id: int):
+        """API to get the barber_id for a given user_id."""
+        try:
+            barber_id = get_barber_id_from_user_id(user_id)
+            if barber_id is None:
+                return jsonify({"error": "User is not a barber"}), 404
+            return jsonify({"barber_id": barber_id})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    @app.get("/api/my-photos")
+    @login_required
+    def get_my_photos():
+        """API to get the current barber's non-post photos."""
+        try:
+            user_id = session["user"]["id"]
+            barber_id = get_barber_id_from_user_id(user_id)
+            if barber_id is None:
+                return jsonify({"error": "User is not a barber"}), 403
+            
+            photos = get_barber_gallery_photos(barber_id, limit=100)
+            # Sign storage URLs for secure access
+            for photo in photos:
+                if photo.get("image_url"):
+                    photo["image_url"] = sign_storage_path(photo["image_url"], expires_in=3600)
+                if photo.get("promo_profile_image_url"):
+                    photo["promo_profile_image_url"] = sign_storage_path(photo["promo_profile_image_url"], expires_in=3600)
+            return jsonify(photos)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    @app.post("/api/photos/<int:photo_id>/update-tag")
+    @login_required
+    def update_photo_main_tag(photo_id: int):
+        """API to update a photo's main tag."""
+        try:
+            data = request.get_json()
+            main_tag_id = data.get("main_tag_id")
+            
+            if not main_tag_id:
+                return jsonify({"error": "main_tag_id is required"}), 400
+            
+            user_id = session["user"]["id"]
+            barber_id = get_barber_id_from_user_id(user_id)
+            if barber_id is None:
+                return jsonify({"error": "User is not a barber"}), 403
+            
+            # Update the photo's main tag
+            with _get_conn() as conn:
+                with conn.cursor() as cur:
+                    # First, verify the photo belongs to this barber
+                    cur.execute(
+                        "SELECT barber_id FROM HaircutPhoto WHERE photo_id = %s",
+                        (photo_id,)
+                    )
+                    row = cur.fetchone()
+                    if not row or row[0] != barber_id:
+                        return jsonify({"error": "Photo not found or does not belong to you"}), 403
+                    
+                    # Update the main tag
+                    cur.execute(
+                        "UPDATE HaircutPhoto SET main_tag = %s WHERE photo_id = %s",
+                        (main_tag_id, photo_id)
+                    )
+                    conn.commit()
+            
+            return jsonify({"ok": True, "photo_id": photo_id})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    @app.post("/api/photos/replace")
+    @login_required
+    def replace_photo():
+        """API to replace a photo file (upload new image for existing photo)."""
+        try:
+            photo_id = request.form.get("photo_id")
+            width = request.form.get("width")
+            height = request.form.get("height")
+            
+            if not photo_id or not width or not height:
+                return jsonify({"error": "photo_id, width, and height are required"}), 400
+            
+            if "photo" not in request.files:
+                return jsonify({"error": "No photo file provided"}), 400
+            
+            file = request.files["photo"]
+            if not file.filename or not file.content_type.startswith("image/"):
+                return jsonify({"error": "Invalid image file"}), 400
+            
+            user_id = session["user"]["id"]
+            barber_id = get_barber_id_from_user_id(user_id)
+            if barber_id is None:
+                return jsonify({"error": "User is not a barber"}), 403
+            
+            # Verify the photo belongs to this barber
+            with _get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT barber_id FROM HaircutPhoto WHERE photo_id = %s",
+                        (photo_id,)
+                    )
+                    row = cur.fetchone()
+                    if not row or row[0] != barber_id:
+                        return jsonify({"error": "Photo not found or does not belong to you"}), 403
+            
+            # Upload new photo to Supabase storage
+            from supabase import create_client
+            sb = create_client(
+                os.environ["SUPABASE_URL"],
+                os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+            )
+            
+            file_data = file.read()
+            storage_path = f"haircuts/{barber_id}/{photo_id}_{uuid4().hex[:8]}.jpg"
+            
+            sb.storage.from_("photos").upload(
+                storage_path,
+                file_data,
+                file_options={"content-type": "image/jpeg"}
+            )
+            
+            # Update the photo record with new image_url
+            with _get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "UPDATE HaircutPhoto SET image_url = %s, width_px = %s, height_px = %s WHERE photo_id = %s",
+                        (storage_path, int(width), int(height), photo_id)
+                    )
+                    conn.commit()
+            
+            return jsonify({
+                "ok": True,
+                "photo_id": photo_id,
+                "storage_path": storage_path
+            })
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
 
     @app.route("/")
     def home():

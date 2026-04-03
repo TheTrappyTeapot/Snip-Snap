@@ -7,11 +7,11 @@ import psycopg2
 from ..db import _get_conn
 load_dotenv()
 
-MIN_PHOTOS_PER_BARBER = 20
+POST_PHOTOS_PER_BARBER = 10
+NON_POST_PHOTOS_PER_BARBER = 8
 TAG_ID_MIN = 1
 TAG_ID_MAX = 20
 HIDDEN_RATIO = 0.10
-POST_RATIO = 0.50
 
 
 # Spread timestamps over the last 180 days.
@@ -53,10 +53,6 @@ def random_timestamp() -> datetime:
 
 def choose_status() -> str:
     return "hide" if random.random() < HIDDEN_RATIO else "show"
-
-
-def choose_is_post() -> bool:
-    return random.random() < POST_RATIO
 
 
 def choose_dimensions() -> tuple[int, int]:
@@ -120,11 +116,16 @@ def main() -> None:
             total_tag_links = 0
 
             for barber_id in barber_ids:
-                for _ in range(MIN_PHOTOS_PER_BARBER):
+                # Generate 10 post photos and 8 non-post photos for this barber
+                photo_configs = (
+                    [(True, barber_id) for _ in range(POST_PHOTOS_PER_BARBER)] +
+                    [(False, barber_id) for _ in range(NON_POST_PHOTOS_PER_BARBER)]
+                )
+                
+                for is_post, current_barber_id in photo_configs:
                     image_path = random.choice(STORAGE_IMAGE_POOL)
                     width_px, height_px = choose_dimensions()
                     status = choose_status()
-                    is_post = choose_is_post()
                     created_at = random_timestamp()
                     tag_ids = choose_tags()
                     main_tag = random.choice(tag_ids)
@@ -132,7 +133,7 @@ def main() -> None:
                     cur.execute(
                         photo_insert_sql,
                         (
-                            barber_id,
+                            current_barber_id,
                             image_path,
                             width_px,
                             height_px,
@@ -153,7 +154,7 @@ def main() -> None:
         print(f"Inserted {total_photos} haircutphoto rows")
         print(f"Inserted {total_tag_links} haircutphoto_tag rows")
         print(f"Barbers covered: {len(barber_ids)}")
-        print(f"Photos per barber: {MIN_PHOTOS_PER_BARBER}")
+        print(f"Photos per barber: {POST_PHOTOS_PER_BARBER} post + {NON_POST_PHOTOS_PER_BARBER} non-post = {POST_PHOTOS_PER_BARBER + NON_POST_PHOTOS_PER_BARBER}")
 
     except Exception:
         conn.rollback()

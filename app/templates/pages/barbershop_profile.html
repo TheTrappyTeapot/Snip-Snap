@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/timetable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/barberGallery.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barbershop_profile.css') }}">
 {% endblock %}
 
@@ -76,6 +77,11 @@
         <p class="barbershop__no-barbers">No barbers listed yet</p>
       {% endif %}
     </section>
+
+    <section class="barber-gallery">
+      <h3 class="barber-gallery__title">Gallery</h3>
+      <div id="barbershop-gallery-mount"></div>
+    </section>
   {% endif %}
 </div>
 {% endblock %}
@@ -83,48 +89,22 @@
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{{ url_for('static', filename='js/components/mapWidget.js') }}"></script>
+{% if shop %}
 <script type="module">
-  import { renderUserPromo } from "{{ url_for('static', filename='js/components/userPromo.js') }}";
-  import { renderTimetable } from "{{ url_for('static', filename='js/components/timetable.js') }}";
+  import { initBarbershopProfile } from "{{ url_for('static', filename='js/pages/barbershop_profile.js') }}";
 
-  {% if shop and shop.barbers %}
-    {% for barber in shop.barbers %}
-      const promoData{{ loop.index }} = {
-        name: "{{ barber.promo.name or barber.username or 'Unknown' }}",
-        role: "{{ barber.promo.role or 'barber' }}",
-        barbershop_name: "{{ barber.promo.barbershop_name or shop.name or '' }}",
-        profile_image_url: "{{ barber.promo.profile_image_url or '' }}"
-      };
-      
-      renderUserPromo("#promo-{{ barber.user_id or loop.index }}", promoData{{ loop.index }}, {
-        avatarSize: 48
-      });
-    {% endfor %}
-  {% endif %}
-
-  {% if shop and shop.location_lat is not none and shop.location_lng is not none %}
-    initMapWidget("#map-widget-mount", {
-      center: [{{ shop.location_lat }}, {{ shop.location_lng }}],
-      marker: [{{ shop.location_lat }}, {{ shop.location_lng }}],
-      zoom: 14
-    });
-  {% endif %}
-
-  {% if opening_hours %}
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    renderTimetable("#barbershop-hours-mount", {
-      title: "Opening Hours",
-      schedule: {
-        {% for day_num, hours in opening_hours.items() %}
-          {{ day_num }}: { open: "{{ hours.open }}", close: "{{ hours.close }}" }{{ "," if not loop.last else "" }}
-        {% endfor %}
-      },
-      dayLabels: daysOfWeek,
-      currentDay: {{ current_day|default(0) }},
-      closingInfo: {{ closing_info|tojson if closing_info else 'null' }},
-      cssPrefix: "barbershop__",
-      scheduleType: "opening_hours"
-    });
-  {% endif %}
+  initBarbershopProfile({
+    barbershopId: {{ shop.barbershop_id }},
+    barbers: {{ shop.barbers|tojson if shop.barbers else '[]' }},
+    shopData: {
+      name: "{{ shop.name }}",
+      location_lat: {{ shop.location_lat if shop.location_lat is not none else 'null' }},
+      location_lng: {{ shop.location_lng if shop.location_lng is not none else 'null' }}
+    },
+    openingHours: {{ opening_hours|tojson if opening_hours else '{}' }},
+    currentDay: {{ current_day|default(0) }},
+    closingInfo: {{ closing_info|tojson if closing_info else 'null' }}
+  });
 </script>
+{% endif %}
 {% endblock %}

@@ -1,3 +1,5 @@
+console.log('[PHOTO UPLOAD] photoupload.js loaded');
+
 function createPhotoUploadComponent(mountElement, config = {}) {
 
     const maxPhotos = config.maxPhotos || 2;
@@ -6,9 +8,9 @@ function createPhotoUploadComponent(mountElement, config = {}) {
     let selectedFiles = [];
 
     // Create structure inside mount
-    mountElement.innerHTML = `
+    const html = `
         <div class="photo-upload">
-            <button class="photo-upload-btn">Upload photo</button>
+            <button type="button" class="photo-upload-btn">Upload photo</button>
 
             <div class="photo-upload-popup hidden">
                 <input type="file" class="photo-upload-input" accept="image/*" ${maxPhotos > 1 ? "multiple" : ""}>
@@ -17,6 +19,14 @@ function createPhotoUploadComponent(mountElement, config = {}) {
             </div>
         </div>
     `;
+    
+    console.log('[PHOTO UPLOAD] Mount element:', mountElement);
+    console.log('[PHOTO UPLOAD] Mount element innerHTML before:', mountElement.innerHTML);
+    
+    mountElement.innerHTML = html;
+    
+    console.log('[PHOTO UPLOAD] Component created, html:', html);
+    console.log('[PHOTO UPLOAD] Mount element innerHTML after:', mountElement.innerHTML);
 
     const button = mountElement.querySelector(".photo-upload-btn");
     const popup = mountElement.querySelector(".photo-upload-popup");
@@ -24,7 +34,22 @@ function createPhotoUploadComponent(mountElement, config = {}) {
     const preview = mountElement.querySelector(".photo-upload-preview");
     const limitMessage = mountElement.querySelector(".photo-upload-limit-message");
 
-    button.addEventListener("click", () => {
+    console.log('[PHOTO UPLOAD] Elements found:', {button: !!button, popup: !!popup, input: !!input});
+    if (button) {
+      console.log('[PHOTO UPLOAD] Button found! innerHTML:', button.innerHTML);
+    } else {
+      console.error('[PHOTO UPLOAD] Button NOT found after innerHTML assignment!');
+      console.error('[PHOTO UPLOAD] Mount element children:', Array.from(mountElement.children).map(c => c.outerHTML));
+    }
+
+    if (!button || !popup || !input || !preview || !limitMessage) {
+      console.error('[PHOTO UPLOAD] Missing required elements, aborting component initialization');
+      return { getFiles: () => [], clearFiles: () => {} };
+    }
+
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
+        console.log('[PHOTO UPLOAD] Upload button clicked');
         button.style.display = "none";
         popup.classList.remove("hidden");
     });
@@ -81,5 +106,16 @@ function createPhotoUploadComponent(mountElement, config = {}) {
         };
 
         reader.readAsDataURL(file);
-    });
+    }
+    }
+
+    return {
+        getFiles: function() { return selectedFiles; },
+        clearFiles: function() { selectedFiles = []; renderPreview(); input.disabled = false; limitMessage.textContent = ""; }
+    };
 }
+
+console.log('[PHOTO UPLOAD] About to expose createPhotoUploadComponent on window');
+// Explicitly expose on window to ensure it's available globally
+window.createPhotoUploadComponent = createPhotoUploadComponent;
+console.log('[PHOTO UPLOAD] Successfully exposed createPhotoUploadComponent:', typeof window.createPhotoUploadComponent);

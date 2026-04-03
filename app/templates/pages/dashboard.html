@@ -5,6 +5,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/searchAutocomplete.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/tagList.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/galleryGrid.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/editableGallery.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/photoupload.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -21,6 +24,14 @@
       <a href="{{ url_for('barber_profile', barber_id=barber.user_id) }}">
         View my public profile
       </a>
+    </div>
+
+    <div class="dashboard-section">
+      <h2>Gallery Photos</h2>
+      <div class="loading" id="galleryLoading">
+        <p>Loading photos...</p>
+      </div>
+      <div id="editable-gallery-mount"></div>
     </div>
 
     <div class="dashboard-section">
@@ -69,6 +80,51 @@
       </div>
     </div>
 
+    <!-- Edit Photo Modal -->
+    <div class="modal" id="editPhotoModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Photo</h2>
+          <button class="close-btn" id="closeEditPhotoBtn">&times;</button>
+        </div>
+
+        <div class="error-message" id="editPhotoErrorMessage"></div>
+        <div class="success-message" id="editPhotoSuccessMessage"></div>
+
+        <form id="editPhotoForm">
+          <!-- Photo Preview -->
+          <div class="form-group">
+            <label>Current Photo</label>
+            <div id="editPhotoPreview"></div>
+          </div>
+
+          <!-- Photo Upload (to change the photo) -->
+          <div class="form-group">
+            <label>Change Photo (Optional)</label>
+            <input type="file" id="editPhotoInput" name="photo" accept="image/*">
+            <div id="editPhotoPreviewNew"></div>
+          </div>
+
+          <!-- Main Tag Selection (Single select) -->
+          <div class="form-group">
+            <label>Main Tag (Select one)</label>
+            <div id="editPhotoTagSearchContainer"></div>
+            <div id="editPhotoSelectedTag" style="margin-top: 12px; min-height: 40px;"></div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelEditPhotoBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+
+          <div class="loading" id="editPhotoLoading">
+            <p>Saving...</p>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="dashboard-section">
       <h2>Profile Settings</h2>
       <form method="post" action="{{ url_for('dashboard') }}">
@@ -85,6 +141,7 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/components/searchAutocomplete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/components/photoupload.js') }}"></script>
 <script type="module">
   import { TagList } from "{{ url_for('static', filename='js/components/tagList.js') }}";
   window.TagList = TagList;

@@ -26,6 +26,28 @@
   align-items: center;
 }
 
+.barber-profile__see-on-maps-button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #1b73e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.barber-profile__see-on-maps-button:hover {
+  background-color: #1557b0;
+}
+
+.barber-profile__see-on-maps-button:active {
+  background-color: #0d47a1;
+}
+
 .barber-profile__info-label {
   font-weight: 600;
   color: #666;

@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/mapWidget.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/timetable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/barberGallery.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barber_profile.css') }}">
 {% endblock %}
 
@@ -23,19 +24,18 @@
       <div id="user-promo-mount"></div>
     </div>
 
-    <button class="barber-profile__cta-button" type="button" disabled>Book this barber (coming soon)</button>
+    {% if barber.website %}
+      <a href="{{ barber.website }}" target="_blank" rel="noopener noreferrer" class="barber-profile__cta-button">Go to website</a>
+    {% else %}
+      <button class="barber-profile__cta-button" type="button" disabled>Go to website (unavailable)</button>
+    {% endif %}
 
     <section class="barber-profile__info-section">
       <div class="barber-profile__info-grid">
-        <div class="barber-profile__info-item">
-          <span class="barber-profile__info-label">User ID</span>
-          <span class="barber-profile__info-value">{{ barber.user_id }}</span>
-        </div>
-
-        {% if barber.postcode %}
+        {% if barber.shop_postcode %}
           <div class="barber-profile__info-item">
             <span class="barber-profile__info-label">Postcode</span>
-            <span class="barber-profile__info-value">{{ barber.postcode }}</span>
+            <span class="barber-profile__info-value">{{ barber.shop_postcode }}</span>
           </div>
         {% endif %}
 
@@ -52,12 +52,18 @@
       <section class="barber-profile__map-section">
         <h3 class="barber-profile__map-title">Shop Location</h3>
         <div id="map-widget-mount"></div>
+        <button id="google-maps-button" class="barber-profile__see-on-maps-button" type="button">See on Google Maps</button>
       </section>
     {% endif %}
 
     {% if shifts %}
       <div id="barber-shifts-mount"></div>
     {% endif %}
+
+    <section class="barber-gallery">
+      <h3 class="barber-gallery__title">Gallery</h3>
+      <div id="barber-gallery-mount"></div>
+    </section>
   {% endif %}
 </div>
 {% endblock %}
@@ -67,66 +73,23 @@
 <script src="{{ url_for('static', filename='js/components/mapWidget.js') }}"></script>
 {% if barber %}
 <script type="module">
-  import { renderUserPromo } from "{{ url_for('static', filename='js/components/userPromo.js') }}";
-  renderUserPromo("#user-promo-mount", {
-    name: "{{ barber_promo.name or barber.username }}",
-    role: "{{ barber_promo.role or barber.role }}",
-    barbershop_name: "{{ barber_promo.barbershop_name or '' }}",
-    profile_image_url: "{{ barber_promo.profile_image_url or '' }}"
-  }, {
-    avatarSize: 56
-  });
-</script>
-{% endif %}
-{% if shifts %}
-<script type="module">
-  import { renderTimetable } from "{{ url_for('static', filename='js/components/timetable.js') }}";
+  import { initBarberProfile } from "{{ url_for('static', filename='js/pages/barber_profile.js') }}";
 
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  renderTimetable("#barber-shifts-mount", {
-    title: "Working Hours",
-    schedule: {{ shifts|tojson }},
-    dayLabels: daysOfWeek,
+  initBarberProfile({
+    userId: {{ barber.user_id }},
+    barberPromo: {{ barber_promo|tojson if barber_promo else '{}' }},
+    shifts: {{ shifts|tojson if shifts else '{}' }},
     currentDay: {{ current_day|default(0) }},
     closingInfo: {{ closing_info|tojson if closing_info else 'null' }},
-    cssPrefix: "barber-profile__",
-    scheduleType: "shifts"
+    barberData: {
+      username: "{{ barber.username }}",
+      role: "{{ barber.role }}",
+      location_lat: {{ barber.location_lat if barber.location_lat is not none else 'null' }},
+      location_lng: {{ barber.location_lng if barber.location_lng is not none else 'null' }},
+      shop_lat: {{ barber.shop_lat if barber.shop_lat is not none else 'null' }},
+      shop_lng: {{ barber.shop_lng if barber.shop_lng is not none else 'null' }}
+    }
   });
-</script>
-{% endif %}
-{% if barber and barber.location_lat is not none and barber.location_lng is not none %}
-<script>
-  (function () {
-    var lat = {{ barber.location_lat }};
-    var lng = {{ barber.location_lng }};
-    var shopLat = {{ barber.shop_lat if barber.shop_lat is not none else barber.location_lat }};
-    var shopLng = {{ barber.shop_lng if barber.shop_lng is not none else barber.location_lng }};
-
-    initMapWidget("#map-widget-mount", {
-      center: [shopLat, shopLng],
-      zoom: 14,
-      shops: [{ lat: shopLat, lng: shopLng }]
-    });
-
-    fetch(
-      "https://nominatim.openstreetmap.org/reverse?lat=" +
-        lat + "&lon=" + lng + "&format=json"
-    )
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        var el = document.getElementById("location-display");
-        if (!el || !data.address) return;
-        var a = data.address;
-        el.textContent =
-          a.road
-            ? (a.road + (a.city || a.town || a.village ? ", " + (a.city || a.town || a.village) : ""))
-            : (a.city || a.town || a.village || a.county || data.display_name.split(",")[0]);
-      })
-      .catch(function () {
-        var el = document.getElementById("location-display");
-        if (el) el.textContent = "Location set";
-      });
-  })();
 </script>
 {% endif %}
 {% endblock %}
