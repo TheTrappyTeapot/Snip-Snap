@@ -81,6 +81,8 @@
   import { initBarberProfile } from "{{ url_for('static', filename='js/pages/barber_profile.js') }}";
 
   initBarberProfile({
+    import { ReviewWidget } from "{{ url_for('static', filename='js/components/review_widget.js') }}";
+    window.widget = new ReviewWidget('review-widget-mount');
     userId: {{ barber.user_id }},
     barberPromo: {{ barber_promo|tojson if barber_promo else '{}' }},
     shifts: {{ shifts|tojson if shifts else '{}' }},
