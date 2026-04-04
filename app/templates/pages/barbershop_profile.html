@@ -98,6 +98,8 @@
 {% if shop %}
 <script type="module">
   import { initBarbershopProfile } from "{{ url_for('static', filename='js/pages/barbershop_profile.js') }}";
+  import { ReviewWidget } from "{{ url_for('static', filename='js/components/review_widget.js') }}";
+    window.widget = new ReviewWidget('review-widget-mount');
 
   initBarbershopProfile({
     barbershopId: {{ shop.barbershop_id }},
