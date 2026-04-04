@@ -1,5 +1,4 @@
-// Professional Review Widget Component
-class ReviewWidget {
+export class ReviewWidget {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.reviews = [
