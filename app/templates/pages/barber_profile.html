@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/timetable.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/barberGallery.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barber_profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/review_widget.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -55,11 +56,15 @@
         <button id="google-maps-button" class="barber-profile__see-on-maps-button" type="button">See on Google Maps</button>
       </section>
     {% endif %}
-
     {% if shifts %}
       <div id="barber-shifts-mount"></div>
     {% endif %}
-
+  
+  <section class="barber-reviews">
+  <h3 class="barber-profile__map-title">Reviews</h3>
+  <div id="review-widget-mount"></div>
+</section>
+  
     <section class="barber-gallery">
       <h3 class="barber-gallery__title">Gallery</h3>
       <div id="barber-gallery-mount"></div>
