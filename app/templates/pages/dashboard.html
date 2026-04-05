@@ -126,6 +126,41 @@
     </div>
 
     <div class="dashboard-section">
+      <h2>Availability</h2>
+      {% set day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+      <div id="timetable-grid">
+        {% for day_num in range(7) %}
+          <div class="timetable-day">
+            <span class="timetable-day-label">{{ day_names[day_num] }}</span>
+            <div class="timetable-shifts" id="shifts-day-{{ day_num }}">
+              {% if day_num in shifts %}
+                {% for shift in shifts[day_num] %}
+                  <span class="timetable-shift-pill" data-shift-id="{{ shift.shift_id }}">
+                    {{ shift.start_time }}–{{ shift.end_time }}
+                    <button class="timetable-remove-btn" data-shift-id="{{ shift.shift_id }}" title="Remove">&times;</button>
+                  </span>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="timetable-add-form">
+        <select id="shift-day">
+          {% for day in day_names %}
+            <option value="{{ loop.index0 }}">{{ day }}</option>
+          {% endfor %}
+        </select>
+        <input type="time" id="shift-start" />
+        <span>to</span>
+        <input type="time" id="shift-end" />
+        <button id="add-shift-btn" class="btn btn-primary">Add Shift</button>
+        <span id="shift-error" style="color:#b00020;margin-left:8px;"></span>
+      </div>
+    </div>
+
+    <div class="dashboard-section">
       <h2>Profile Settings</h2>
       <form method="post" action="{{ url_for('dashboard') }}">
         <div class="form-group">
@@ -147,4 +182,5 @@
   window.TagList = TagList;
 </script>
 <script type="module" src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/features/timetableEdit.js') }}"></script>
 {% endblock %}

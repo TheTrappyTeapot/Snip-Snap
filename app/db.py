@@ -340,6 +340,36 @@ def get_shifts_for_barber(user_id: int):
     return shifts_by_day
 
 
+def add_shift(barber_id: int, day_of_week: int, start_time: str, end_time: str) -> int:
+    """Add a shift for a barber. Returns the new shift_id."""
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO Shift (barber_id, day_of_week, start_time, end_time)
+                VALUES (%s, %s, %s, %s)
+                RETURNING shift_id
+                """,
+                (barber_id, day_of_week, start_time, end_time),
+            )
+            shift_id = cur.fetchone()[0]
+        conn.commit()
+    return shift_id
+
+
+def delete_shift(shift_id: int, barber_id: int) -> bool:
+    """Delete a shift, only if it belongs to the given barber."""
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM Shift WHERE shift_id = %s AND barber_id = %s",
+                (shift_id, barber_id),
+            )
+            deleted = cur.rowcount > 0
+        conn.commit()
+    return deleted
+
+
 def get_shop_opening_hours(barbershop_id: int):
     """
     Get aggregate opening hours for a shop by analyzing all barbers' shifts.
