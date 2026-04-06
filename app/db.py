@@ -172,7 +172,8 @@ def get_barber_public_by_user_id(user_id: int):
                 SELECT u.user_id, u.username, u.location_lat, u.location_lng,
                        u.postcode, u.role,
                        bs.location_lat AS shop_lat, bs.location_lng AS shop_lng,
-                       b.bio, bs.website AS shop_website, bs.barbershop_id
+                       b.bio, bs.website AS shop_website, bs.barbershop_id,
+                       b.social_links
                 FROM App_User u
                 LEFT JOIN Barber b ON b.user_id = u.user_id
                 LEFT JOIN Barbershop bs ON bs.barbershop_id = b.barbershop_id
@@ -201,6 +202,7 @@ def get_barber_public_by_user_id(user_id: int):
         "bio": row[8],
         "shop_website": row[9],
         "barbershop_id": row[10],
+        "social_links": row[11] or {},
     }
 
 
@@ -407,6 +409,18 @@ def update_barbershop_website(user_id: int, website: str | None) -> None:
                 )
                 """,
                 (website, user_id),
+            )
+        conn.commit()
+
+
+def update_barber_social_links(user_id: int, social_links: dict) -> None:
+    """Update the social_links JSON for a barber."""
+    import json as _json
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE Barber SET social_links = %s WHERE user_id = %s",
+                (_json.dumps(social_links), user_id),
             )
         conn.commit()
 

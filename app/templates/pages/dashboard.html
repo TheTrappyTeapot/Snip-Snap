@@ -95,6 +95,20 @@
         </div>
         {% endif %}
 
+        <div class="form-group">
+          <label for="instagram_url">Instagram URL</label>
+          <input id="instagram_url" name="instagram_url" type="url"
+                 value="{{ barber.social_links.get('instagram', '') if barber.social_links else '' }}"
+                 placeholder="https://instagram.com/yourhandle" />
+        </div>
+
+        <div class="form-group">
+          <label for="tiktok_url">TikTok URL</label>
+          <input id="tiktok_url" name="tiktok_url" type="url"
+                 value="{{ barber.social_links.get('tiktok', '') if barber.social_links else '' }}"
+                 placeholder="https://tiktok.com/@yourhandle" />
+        </div>
+
         <button type="submit" class="btn btn-primary">Update Profile</button>
       </form>
     </div>

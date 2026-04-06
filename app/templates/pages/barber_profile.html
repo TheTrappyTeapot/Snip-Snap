@@ -54,7 +54,25 @@
           <div class="barber-profile__info-item">
             <span class="barber-profile__info-label">Website</span>
             <span class="barber-profile__info-value">
-              <a href="{{ barber.shop_website }}" target="_blank" rel="noopener">{{ barber.shop_website }}</a>
+              <a href="{{ barber.shop_website }}" target="_blank" rel="noopener">View Website</a>
+            </span>
+          </div>
+        {% endif %}
+
+        {% if barber.social_links and barber.social_links.get('instagram') %}
+          <div class="barber-profile__info-item">
+            <span class="barber-profile__info-label">Instagram</span>
+            <span class="barber-profile__info-value">
+              <a href="{{ barber.social_links['instagram'] }}" target="_blank" rel="noopener">View Instagram</a>
+            </span>
+          </div>
+        {% endif %}
+
+        {% if barber.social_links and barber.social_links.get('tiktok') %}
+          <div class="barber-profile__info-item">
+            <span class="barber-profile__info-label">TikTok</span>
+            <span class="barber-profile__info-value">
+              <a href="{{ barber.social_links['tiktok'] }}" target="_blank" rel="noopener">View TikTok</a>
             </span>
           </div>
         {% endif %}

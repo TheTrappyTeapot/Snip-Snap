@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, session, url_for, jsonify,
 from .auth import verify_supabase_jwt
 from .input_sanitization import sanitize_input
 from .access import login_required, roles_required
-from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo, update_barber_bio, update_barbershop_website
+from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo, update_barber_bio, update_barbershop_website, update_barber_social_links
 from .supabase_storage import sign_storage_path
 from uuid import uuid4
 from datetime import datetime, time
@@ -390,6 +390,15 @@ def register_routes(app):
             website = (request.form.get("shop_website") or "").strip() or None
             if website:
                 update_barbershop_website(user_id, website)
+
+            social_links = {}
+            instagram = (request.form.get("instagram_url") or "").strip()
+            tiktok = (request.form.get("tiktok_url") or "").strip()
+            if instagram:
+                social_links["instagram"] = instagram
+            if tiktok:
+                social_links["tiktok"] = tiktok
+            update_barber_social_links(user_id, social_links)
 
             return redirect(url_for("dashboard"))
 
