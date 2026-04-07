@@ -251,3 +251,76 @@
 .success-message.show {
   display: block;
 }
+
+/* ── Timetable edit (dashboard) ─────────────────────────────────────────────── */
+
+#timetable-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.timetable-day {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.timetable-day-label {
+  width: 90px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #555;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.timetable-shifts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.timetable-shift-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 2px 8px 2px 10px;
+  font-size: 0.8rem;
+  color: #2e7d32;
+}
+
+.timetable-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.timetable-remove-btn:hover {
+  color: #b00020;
+}
+
+.timetable-add-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.timetable-add-form select,
+.timetable-add-form input[type="time"] {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}

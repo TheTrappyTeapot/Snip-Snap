@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, session, url_for, jsonify,
 from .auth import verify_supabase_jwt
 from .input_sanitization import sanitize_input
 from .access import login_required, roles_required
-from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, get_barber_id_from_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo, get_barber_gallery_photos, get_barbershop_gallery_photos, _get_conn
+from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, get_barber_id_from_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo, get_barber_gallery_photos, get_barbershop_gallery_photos, _get_conn, add_shift, delete_shift
 from .supabase_storage import sign_storage_path
 from uuid import uuid4
 from datetime import datetime, time
@@ -514,6 +514,44 @@ def register_routes(app):
         )
     
 
+    @app.post("/api/shifts")
+    @roles_required("barber")
+    def api_add_shift():
+        data = request.get_json(silent=True) or {}
+        day = data.get("day_of_week")
+        start = (data.get("start_time") or "").strip()
+        end = (data.get("end_time") or "").strip()
+
+        if day is None or not isinstance(day, int) or not (0 <= day <= 6):
+            return jsonify({"error": "day_of_week must be 0-6"}), 400
+        if not start or not end:
+            return jsonify({"error": "start_time and end_time required"}), 400
+        if start >= end:
+            return jsonify({"error": "start_time must be before end_time"}), 400
+
+        user_id = int(session["user"]["id"])
+        barber_id = get_barber_id_from_user_id(user_id)
+        if not barber_id:
+            return jsonify({"error": "Barber record not found"}), 404
+
+        shift_id = add_shift(barber_id, day, start, end)
+        return jsonify({"ok": True, "shift_id": shift_id}), 201
+
+
+    @app.delete("/api/shifts/<int:shift_id>")
+    @roles_required("barber")
+    def api_delete_shift(shift_id: int):
+        user_id = int(session["user"]["id"])
+        barber_id = get_barber_id_from_user_id(user_id)
+        if not barber_id:
+            return jsonify({"error": "Barber record not found"}), 404
+
+        deleted = delete_shift(shift_id, barber_id)
+        if not deleted:
+            return jsonify({"error": "Shift not found or not yours"}), 404
+        return jsonify({"ok": True})
+
+
     @app.route("/dashboard", methods=["GET", "POST"])
     @roles_required("barber")
     def dashboard():
@@ -553,4 +591,6 @@ def register_routes(app):
 
         # For display, reuse public fetch by id (barber-only route so safe)
         barber = get_barber_public_by_user_id(user_id)
-        return render_template("pages/dashboard.html", barber=barber)
+        barber_id = get_barber_id_from_user_id(user_id)
+        shifts = get_shifts_for_barber(user_id) if barber_id else {}
+        return render_template("pages/dashboard.html", barber=barber, shifts=shifts, barber_id=barber_id)
