@@ -167,6 +167,39 @@
           <label for="username">Display name</label>
           <input id="username" name="username" value="{{ barber.username or '' }}" />
         </div>
+
+        <div class="form-group">
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows="4" maxlength="500"
+                    placeholder="Tell customers about yourself..."
+                    style="width:100%;resize:vertical;">{{ barber.bio or '' }}</textarea>
+          <small>Max 500 characters.</small>
+        </div>
+
+        {% if barber.barbershop_id %}
+        <div class="form-group">
+          <label for="shop_website">Barbershop website</label>
+          <input id="shop_website" name="shop_website" type="url"
+                 value="{{ barber.shop_website or '' }}"
+                 placeholder="https://example.com" />
+          <small>This will be shown on your barbershop's page and your profile.</small>
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="instagram_url">Instagram URL</label>
+          <input id="instagram_url" name="instagram_url" type="url"
+                 value="{{ barber.social_links.get('instagram', '') if barber.social_links else '' }}"
+                 placeholder="https://instagram.com/yourhandle" />
+        </div>
+
+        <div class="form-group">
+          <label for="tiktok_url">TikTok URL</label>
+          <input id="tiktok_url" name="tiktok_url" type="url"
+                 value="{{ barber.social_links.get('tiktok', '') if barber.social_links else '' }}"
+                 placeholder="https://tiktok.com/@yourhandle" />
+        </div>
+
         <button type="submit" class="btn btn-primary">Update Profile</button>
       </form>
     </div>
