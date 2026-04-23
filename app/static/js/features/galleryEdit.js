@@ -7,6 +7,11 @@ let editPhotoTagSelection = null;
 let editPhotoNewFile = null;
 let editPhotoTagListComponent = null;
 
+// Add gallery photo feature
+let addGalleryPhotoTag = null;
+let addGalleryPhotoTagAutocomplete = null;
+let addGalleryPhotoTagListComponent = null;
+
 export function initGalleryEditFeature() {
   console.log('[GALLERY EDIT] Starting feature initialization');
   
@@ -123,11 +128,161 @@ export function initGalleryEditFeature() {
     }
   });
 
+  // Initialize add gallery photo form
+  initAddGalleryPhotoForm();
+
   // Load gallery on page load
   console.log('[GALLERY EDIT] Calling loadEditableGallery');
   loadEditableGallery();
   
   console.log('[GALLERY EDIT] Feature initialization complete');
+}
+
+function initAddGalleryPhotoForm() {
+  console.log('[GALLERY EDIT] Initializing add gallery photo form');
+  
+  const addGalleryPhotoModal = document.getElementById('addGalleryPhotoModal');
+  const closeAddGalleryPhotoBtn = document.getElementById('closeAddGalleryPhotoBtn');
+  const cancelAddGalleryPhotoBtn = document.getElementById('cancelAddGalleryPhotoBtn');
+  const addGalleryPhotoForm = document.getElementById('addGalleryPhotoForm');
+  const photoInput = document.getElementById('addGalleryPhotoInput');
+  const preview = document.getElementById('addGalleryPhotoPreview');
+
+  if (!addGalleryPhotoModal || !addGalleryPhotoForm) {
+    console.error('[GALLERY EDIT] Add gallery photo elements not found');
+    return;
+  }
+
+  // Close/Cancel buttons
+  closeAddGalleryPhotoBtn.addEventListener('click', () => {
+    console.log('[GALLERY EDIT] Close add gallery photo button clicked');
+    addGalleryPhotoModal.classList.remove('open');
+    resetAddGalleryPhotoForm();
+  });
+
+  cancelAddGalleryPhotoBtn.addEventListener('click', () => {
+    console.log('[GALLERY EDIT] Cancel add gallery photo button clicked');
+    addGalleryPhotoModal.classList.remove('open');
+    resetAddGalleryPhotoForm();
+  });
+
+  // Click outside modal
+  addGalleryPhotoModal.addEventListener('click', (e) => {
+    if (e.target === addGalleryPhotoModal) {
+      console.log('[GALLERY EDIT] Clicked outside add gallery photo modal');
+      addGalleryPhotoModal.classList.remove('open');
+      resetAddGalleryPhotoForm();
+    }
+  });
+
+  // File input handling
+  photoInput.addEventListener('change', function() {
+    preview.innerHTML = '';
+    
+    const file = this.files[0];
+    console.log('[GALLERY EDIT] File selected:', {
+      name: file?.name,
+      type: file?.type,
+      size: file?.size
+    });
+    
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const box = document.createElement('div');
+        box.className = 'image-box';
+        
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '×';
+        removeBtn.onclick = (evt) => {
+          evt.preventDefault();
+          photoInput.value = '';
+          preview.innerHTML = '';
+        };
+        
+        box.appendChild(img);
+        box.appendChild(removeBtn);
+        preview.appendChild(box);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Form submission
+  addGalleryPhotoForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log('[GALLERY EDIT] Add gallery photo form submission started');
+    
+    if (!photoInput.files.length) {
+      showAddGalleryPhotoError('Please select a photo');
+      return;
+    }
+    
+    const file = photoInput.files[0];
+    
+    if (!addGalleryPhotoTag) {
+      showAddGalleryPhotoError('Please select a tag');
+      return;
+    }
+    
+    // Get image dimensions
+    const img = new Image();
+    img.onload = () => {
+      submitAddGalleryPhoto(file, addGalleryPhotoTag.id, img.width, img.height);
+    };
+    img.onerror = () => {
+      showAddGalleryPhotoError('Invalid image file');
+    };
+    img.src = URL.createObjectURL(file);
+  });
+
+  console.log('[GALLERY EDIT] Add gallery photo form initialization complete');
+}
+
+async function submitAddGalleryPhoto(file, tagId, width, height) {
+  try {
+    showAddGalleryPhotoLoading(true);
+    hideAddGalleryPhotoMessages();
+    
+    const formData = new FormData();
+    formData.append('photo', file);
+    formData.append('width', width);
+    formData.append('height', height);
+    formData.append('tag_ids', tagId);
+    formData.append('is_post', 'false');
+    
+    const response = await fetch('/api/photos/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      showAddGalleryPhotoError(data.error || 'Upload failed');
+      return;
+    }
+    
+    showAddGalleryPhotoSuccess('Photo added to gallery successfully!');
+    resetAddGalleryPhotoForm();
+    
+    const modal = document.getElementById('addGalleryPhotoModal');
+    setTimeout(() => {
+      modal.classList.remove('open');
+      loadEditableGallery();
+    }, 1500);
+    
+  } catch (error) {
+    console.error('[GALLERY EDIT] Add gallery photo error:', error);
+    showAddGalleryPhotoError('An error occurred during upload');
+  } finally {
+    showAddGalleryPhotoLoading(false);
+  }
 }
 
 export async function loadEditableGallery() {
@@ -165,7 +320,26 @@ export async function loadEditableGallery() {
 
     if (!photos || photos.length === 0) {
       console.log('[GALLERY EDIT] No photos returned');
-      mountEl.innerHTML = "<p>No gallery photos yet. Edit existing photos to add them to your gallery!</p>";
+      const emptyContainer = document.createElement('div');
+      emptyContainer.className = 'gallery-empty-state';
+      
+      const message = document.createElement('p');
+      message.textContent = 'No gallery photos yet. Upload a photo to add it to your gallery!';
+      
+      const addButton = document.createElement('button');
+      addButton.type = 'button';
+      addButton.className = 'btn btn-primary add-photos-btn';
+      addButton.textContent = 'Add Photo';
+      addButton.addEventListener('click', () => {
+        loadAddGalleryPhotoTags();
+        document.getElementById('addGalleryPhotoModal').classList.add('open');
+      });
+      
+      emptyContainer.appendChild(message);
+      emptyContainer.appendChild(addButton);
+      mountEl.innerHTML = '';
+      mountEl.appendChild(emptyContainer);
+      
       if (loadingEl) loadingEl.classList.remove('show');
       return;
     }
@@ -177,12 +351,41 @@ export async function loadEditableGallery() {
     
     console.log('[GALLERY EDIT] Components imported, rendering gallery');
 
+    // Create container for gallery and button
+    const galleryContainer = document.createElement('div');
+    galleryContainer.className = 'gallery-with-action';
+    
+    const gridContainer = document.createElement('div');
+    galleryContainer.appendChild(gridContainer);
+
     renderGalleryGrid({
-      mountEl,
+      mountEl: gridContainer,
       items: photos,
       columns: 3,
       renderItem: (photo) => renderEditableGalleryCard(photo, openEditPhotoModal)
     });
+    
+    // Show "Add More Photos" button if fewer than 8 photos
+    if (photos.length < 8) {
+      console.log('[GALLERY EDIT] Fewer than 8 photos, showing add more button');
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'gallery-action-container';
+      
+      const addMoreButton = document.createElement('button');
+      addMoreButton.type = 'button';
+      addMoreButton.className = 'btn btn-primary add-photos-btn';
+      addMoreButton.textContent = `Add More Photos (${photos.length}/8)`;
+      addMoreButton.addEventListener('click', () => {
+        loadAddGalleryPhotoTags();
+        document.getElementById('addGalleryPhotoModal').classList.add('open');
+      });
+      
+      buttonContainer.appendChild(addMoreButton);
+      galleryContainer.appendChild(buttonContainer);
+    }
+    
+    mountEl.innerHTML = '';
+    mountEl.appendChild(galleryContainer);
     
     // Hide loading indicator
     if (loadingEl) loadingEl.classList.remove('show');
@@ -378,6 +581,86 @@ function hideEditPhotoMessages() {
 
 function showEditPhotoLoading(show) {
   const loading = document.getElementById('editPhotoLoading');
+  if (show) {
+    loading.classList.add('show');
+  } else {
+    loading.classList.remove('show');
+  }
+}
+
+// Helper functions for add gallery photo
+async function loadAddGalleryPhotoTags() {
+  try {
+    const response = await fetch('/api/discover/search_items');
+    const data = await response.json();
+    const tags = data.items.filter(item => item.type === 'tag');
+    
+    console.log('[GALLERY EDIT] Loaded', tags.length, 'tags for add gallery photo');
+
+    const tagSearchContainer = document.getElementById('addGalleryPhotoTagSearchContainer');
+    const selectedTagContainer = document.getElementById('addGalleryPhotoSelectedTag');
+    
+    tagSearchContainer.innerHTML = '';
+    selectedTagContainer.innerHTML = '';
+
+    // Initialize TagList
+    if (!addGalleryPhotoTagListComponent) {
+      addGalleryPhotoTagListComponent = new window.TagList({
+        mountEl: selectedTagContainer,
+        initialItems: []
+      });
+    }
+    
+    // Create autocomplete
+    addGalleryPhotoTagAutocomplete = window.createSearchBarAutocomplete(
+      tagSearchContainer,
+      (selectedItem) => {
+        console.log('[GALLERY EDIT] Add gallery photo tag selected:', selectedItem);
+        addGalleryPhotoTag = selectedItem;
+        addGalleryPhotoTagListComponent.set_items([selectedItem]);
+      },
+      tags,
+      { placeholder: 'Search and select tag...' }
+    );
+  } catch (error) {
+    console.error('[GALLERY EDIT] Error loading tags for add gallery photo:', error);
+  }
+}
+
+function resetAddGalleryPhotoForm() {
+  addGalleryPhotoTag = null;
+  
+  document.getElementById('addGalleryPhotoInput').value = '';
+  document.getElementById('addGalleryPhotoPreview').innerHTML = '';
+  document.getElementById('addGalleryPhotoTagSearchContainer').innerHTML = '';
+  
+  if (addGalleryPhotoTagListComponent) {
+    addGalleryPhotoTagListComponent.set_items([]);
+  }
+  
+  document.getElementById('addGalleryPhotoErrorMessage').classList.remove('show');
+  document.getElementById('addGalleryPhotoSuccessMessage').classList.remove('show');
+}
+
+function showAddGalleryPhotoError(message) {
+  const errorEl = document.getElementById('addGalleryPhotoErrorMessage');
+  errorEl.textContent = message;
+  errorEl.classList.add('show');
+}
+
+function showAddGalleryPhotoSuccess(message) {
+  const successEl = document.getElementById('addGalleryPhotoSuccessMessage');
+  successEl.textContent = message;
+  successEl.classList.add('show');
+}
+
+function hideAddGalleryPhotoMessages() {
+  document.getElementById('addGalleryPhotoErrorMessage').classList.remove('show');
+  document.getElementById('addGalleryPhotoSuccessMessage').classList.remove('show');
+}
+
+function showAddGalleryPhotoLoading(show) {
+  const loading = document.getElementById('addGalleryPhotoLoading');
   if (show) {
     loading.classList.add('show');
   } else {

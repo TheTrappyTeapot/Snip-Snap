@@ -492,16 +492,16 @@ def filter_existing_tag_ids(tag_ids: List[int]) -> List[int]:
     return [r[0] for r in rows]
 
 
-def create_haircut_post(barber_id: int, image_url: str, width_px: int, height_px: int, tag_ids: List[int]):
+def create_haircut_post(barber_id: int, image_url: str, width_px: int, height_px: int, tag_ids: List[int], is_post: bool = True):
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
                 INSERT INTO HaircutPhoto (barber_id, image_url, width_px, height_px, is_post)
-                VALUES (%s, %s, %s, %s, TRUE)
+                VALUES (%s, %s, %s, %s, %s)
                 RETURNING photo_id
                 """,
-                (barber_id, image_url, width_px, height_px),
+                (barber_id, image_url, width_px, height_px, is_post),
             )
             photo_id = cur.fetchone()[0]
 
@@ -592,6 +592,15 @@ def fetch_discover_posts(
         """
         # SELECT placeholders come before WHERE placeholders
         select_params.extend([viewer_lng, viewer_lat])
+        
+        # Filter out barbers more than 50km away
+        where.append("""
+        (ST_DistanceSphere(
+            ST_MakePoint(bs_promo.location_lng, bs_promo.location_lat),
+            ST_MakePoint(%s, %s)
+        ) / 1000.0) <= 50
+        """)
+        where_params.extend([viewer_lng, viewer_lat])
 
         distance_score_expr = """
         (1.0 / (1.0 + (
@@ -605,16 +614,19 @@ def fetch_discover_posts(
         select_params.extend([viewer_lng, viewer_lat])
 
     # --- Scoring
-    rating_score_expr = "COALESCE(rating_agg.avg_rating, 0)::float / 5.0"
+    # For rating: use average rating if available, otherwise use 3.0 (neutral/average)
+    rating_score_expr = "COALESCE(rating_agg.avg_rating, 3.0)::float / 5.0"
     recency_score_expr = """
     (1.0 / (1.0 + (EXTRACT(EPOCH FROM (NOW() - hp.created_at)) / 86400.0)))
     """
 
+    # Blended score prioritizes distance heavily (75% for local service),
+    # then rating (20%), then recency (5% - minimal impact to favor established barbers)
     blended_score_expr = f"""
     (
-        0.45 * ({distance_score_expr}) +
-        0.35 * ({rating_score_expr}) +
-        0.20 * ({recency_score_expr})
+        0.75 * ({distance_score_expr}) +
+        0.20 * ({rating_score_expr}) +
+        0.05 * ({recency_score_expr})
     )::float
     """
 
@@ -623,7 +635,8 @@ def fetch_discover_posts(
         order_by = "distance_km ASC, hp.created_at DESC, hp.photo_id DESC"
     elif effective_sort == "highest_rated":
         order_by = "rating_agg.avg_rating DESC NULLS LAST, rating_agg.rating_count DESC, hp.created_at DESC, hp.photo_id DESC"
-    elif effective_sort == "blended":
+    elif effective_sort == "blended" or (include_distance and effective_sort == "most_recent"):
+        # Use blended score when explicitly requested OR when we have location and using default most_recent
         order_by = "blended_score DESC, hp.created_at DESC, hp.photo_id DESC"
     else:
         order_by = "hp.created_at DESC, hp.photo_id DESC"
@@ -667,14 +680,46 @@ def fetch_discover_posts(
         LIMIT %s
     """
 
-    params = select_params + where_params + [limit]
+    params = select_params + where_params + [limit * 50]  # Fetch 50x buffer for 50km filter + diversity filtering
+
+    print(f"[DB] fetch_discover_posts: effective_sort={effective_sort}, include_distance={include_distance}, viewer_lat={viewer_lat}, viewer_lng={viewer_lng}, cursor={cursor}, limit={limit}")
+    print(f"[DB] where clauses: {where}")
+    print(f"[DB] SQL params count: {len(params)}")
 
     with _get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
-    return rows
+    print(f"[DB] Fetched {len(rows)} rows from database (requested limit={limit * 10})")
+
+    # --- Diversity filter: limit consecutive posts from same barber
+    # This prevents one barber from dominating the entire feed
+    # We fetch 50x limit to account for 50km distance filter + diversity filtering reducing result set
+    diverse_rows = []
+    max_consecutive = 4     # Allow max 4 consecutive posts from same barber (increased from 2 for pagination support)
+    last_barber_id = None
+    consecutive_count = 0
+
+    for row in rows:
+        barber_id = row["barber_id"]
+        
+        # Check if this is the same barber as the last post
+        if barber_id == last_barber_id:
+            consecutive_count += 1
+        else:
+            consecutive_count = 1
+            last_barber_id = barber_id
+        
+        # Allow up to max_consecutive posts from same barber before forcing a different barber
+        if consecutive_count <= max_consecutive:
+            diverse_rows.append(row)
+            
+            # Stop once we have enough diverse results (with buffer for pagination)
+            if len(diverse_rows) >= limit:
+                break
+
+    return diverse_rows[:limit]
 
 def update_user_location(user_id: int, lat: float, lng: float) -> None:
     with _get_conn() as conn:
@@ -689,14 +734,23 @@ def update_user_location(user_id: int, lat: float, lng: float) -> None:
 def get_user_location(user_id: int):
     with _get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT location_lat, location_lng FROM App_User WHERE user_id = %s", (user_id,))
+            cur.execute("SELECT location_lat, location_lng, postcode FROM App_User WHERE user_id = %s", (user_id,))
             row = cur.fetchone()
     if not row:
         return None
-    lat, lng = row
-    if lat is None or lng is None:
-        return None
-    return {"lat": float(lat), "lng": float(lng)}
+    lat, lng, postcode = row
+    
+    # If we have lat/lng, use those
+    if lat is not None and lng is not None:
+        return {"lat": float(lat), "lng": float(lng)}
+    
+    # Otherwise, try to convert postcode to coordinates
+    if postcode:
+        coords = postcode_to_coordinates(postcode.strip())
+        if coords:
+            return {"lat": float(coords[0]), "lng": float(coords[1])}
+    
+    return None
 
 
 def update_user_postcode(user_id: int, postcode: str) -> None:

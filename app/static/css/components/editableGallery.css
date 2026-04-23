@@ -49,3 +49,59 @@
 .editable-gallery-card__edit-btn:active {
   background: rgba(13, 71, 161, 0.95);
 }
+
+/* Gallery empty state */
+.gallery-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  min-height: 300px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.gallery-empty-state p {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 20px 0;
+}
+
+/* Gallery with action button */
+.gallery-with-action {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.gallery-action-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.add-photos-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background-color: #1b73e8;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-photos-btn:hover {
+  background-color: #1557b0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.add-photos-btn:active {
+  background-color: #0d47a1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}

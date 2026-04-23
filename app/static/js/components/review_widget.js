@@ -27,7 +27,7 @@ export class ReviewWidget {
                     </div>
                     <textarea id="reviewText" placeholder="Describe your experience..."></textarea>
                     <div class="photo-label">Attach photos:</div>
-                    <input type="file" id="imageInput" multiple accept="image/*">
+                    <input type="file" id="imageInput" multiple accept="image/png,image/jpeg,image/webp">
                     <div class="modal-btns">
                         <button class="btn-upload" id="submitReview">Upload</button>
                         <button class="btn-cancel" id="closeModal">Cancel</button>

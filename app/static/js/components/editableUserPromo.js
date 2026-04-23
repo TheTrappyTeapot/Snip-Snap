@@ -23,7 +23,7 @@ function createEditableUserPromo(mountElement, userData = {}, config = {}) {
 
         <!-- Photo Upload Popup (initially hidden) -->
         <div class="photo-upload-popup hidden" id="photoUploadPopup">
-          <input type="file" class="photo-upload-input" accept="image/*">
+          <input type="file" class="photo-upload-input" accept="image/png,image/jpeg,image/webp">
           <div class="photo-upload-preview"></div>
           <div class="photo-upload-limit-message"></div>
         </div>

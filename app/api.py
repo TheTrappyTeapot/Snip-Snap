@@ -184,7 +184,10 @@ def gallery_posts():
             viewer_lat = loc["lat"]
             viewer_lng = loc["lng"]
 
-    print("gallery_posts effective_sort =", effective_sort, "viewer_lat/lng =", viewer_lat, viewer_lng)
+    # Determine actual sort being used
+    actual_sort = effective_sort
+    if effective_sort == "most_recent" and viewer_lat is not None and viewer_lng is not None:
+        actual_sort = "blended"
 
     # Fetch 1 extra so we can calculate has_more
     rows = fetch_discover_posts(
@@ -198,8 +201,12 @@ def gallery_posts():
         viewer_lng=viewer_lng,
     )
 
-    has_more = len(rows) > limit
+    # For pagination: set has_more=true if we got a full page of results
+    # The cursor will naturally handle termination when no more posts exist
+    # This is better than requiring len(rows) > limit, which breaks when diversity/distance filters limit results
+    has_more = len(rows) >= limit
     items = rows[:limit]
+    
     for it in items:
         # Haircut photo
         it["image_url"] = sign_storage_path(it.get("image_url"), expires_in=3600)
@@ -557,12 +564,12 @@ def upload_photo():
     print(f"[UPLOAD_PHOTO] File content-type from request: {file.content_type}")
     
     # Validate file type
-    ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
+    ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
     file_ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
     print(f"[UPLOAD_PHOTO] File extension: {file_ext}")
     
     if file_ext not in ALLOWED_EXTENSIONS:
-        return jsonify({"ok": False, "error": "File type not allowed. Use jpg, jpeg, png, gif, or webp"}), 400
+        return jsonify({"ok": False, "error": "File type not allowed. Use jpg, jpeg, png, or webp"}), 400
     
     # Get image dimensions
     width_px = request.form.get("width", type=int)
@@ -573,6 +580,12 @@ def upload_photo():
     if not width_px or not height_px:
         return jsonify({"ok": False, "error": "Image dimensions required"}), 400
     
+    # Get is_post flag (default to True for backward compatibility)
+    is_post_str = request.form.get("is_post", "true").lower()
+    is_post = is_post_str in ["true", "1", "yes"]
+    
+    print(f"[UPLOAD_PHOTO] is_post: {is_post}")
+    
     # Get selected tag IDs
     tag_ids_str = request.form.get("tag_ids", "")
     tag_ids = []
@@ -581,6 +594,14 @@ def upload_photo():
             tag_ids = [int(x) for x in tag_ids_str.split(",") if x.strip().isdigit()]
         except (ValueError, TypeError):
             return jsonify({"ok": False, "error": "Invalid tag IDs"}), 400
+    
+    # For gallery photos (is_post=False), require exactly one tag
+    if not is_post and len(tag_ids) != 1:
+        return jsonify({"ok": False, "error": "Gallery photos require exactly one tag"}), 400
+    
+    # For posts (is_post=True), require at least one tag
+    if is_post and len(tag_ids) == 0:
+        return jsonify({"ok": False, "error": "Posts require at least one tag"}), 400
     
     print(f"[UPLOAD_PHOTO] Tag IDs: {tag_ids}")
     
@@ -606,9 +627,9 @@ def upload_photo():
             return jsonify({"ok": False, "error": "Failed to upload photo to storage"}), 500
         
         # Create database record
-        photo_id = create_haircut_post(barber_id, storage_path, width_px, height_px, tag_ids)
+        photo_id = create_haircut_post(barber_id, storage_path, width_px, height_px, tag_ids, is_post=is_post)
         
-        print(f"[UPLOAD_PHOTO] Photo uploaded successfully: photo_id={photo_id}, barber_id={barber_id}, path={storage_path}")
+        print(f"[UPLOAD_PHOTO] Photo uploaded successfully: photo_id={photo_id}, barber_id={barber_id}, path={storage_path}, is_post={is_post}")
         
         return jsonify({
             "ok": True,

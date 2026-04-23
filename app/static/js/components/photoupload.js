@@ -13,7 +13,7 @@ function createPhotoUploadComponent(mountElement, config = {}) {
             <button type="button" class="photo-upload-btn">Upload photo</button>
 
             <div class="photo-upload-popup hidden">
-                <input type="file" class="photo-upload-input" accept="image/*" ${maxPhotos > 1 ? "multiple" : ""}>
+                <input type="file" class="photo-upload-input" accept="image/png,image/jpeg,image/webp" ${maxPhotos > 1 ? "multiple" : ""}>
                 <div class="photo-upload-preview"></div>
                 <div class="photo-upload-limit-message"></div>
             </div>

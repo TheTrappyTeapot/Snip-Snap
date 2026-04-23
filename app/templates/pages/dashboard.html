@@ -54,7 +54,7 @@
           <!-- Photo Input -->
           <div class="form-group">
             <label for="photoInput">Select Photo</label>
-            <input type="file" id="photoInput" name="photo" accept="image/*" required>
+            <input type="file" id="photoInput" name="photo" accept="image/png,image/jpeg,image/webp" required>
           </div>
 
           <!-- Preview -->
@@ -101,7 +101,7 @@
           <!-- Photo Upload (to change the photo) -->
           <div class="form-group">
             <label>Change Photo (Optional)</label>
-            <input type="file" id="editPhotoInput" name="photo" accept="image/*">
+            <input type="file" id="editPhotoInput" name="photo" accept="image/png,image/jpeg,image/webp">
             <div id="editPhotoPreviewNew"></div>
           </div>
 
@@ -120,6 +120,47 @@
 
           <div class="loading" id="editPhotoLoading">
             <p>Saving...</p>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Gallery Photo Modal -->
+    <div class="modal" id="addGalleryPhotoModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add Gallery Photo</h2>
+          <button class="close-btn" id="closeAddGalleryPhotoBtn">&times;</button>
+        </div>
+
+        <div class="error-message" id="addGalleryPhotoErrorMessage"></div>
+        <div class="success-message" id="addGalleryPhotoSuccessMessage"></div>
+
+        <form id="addGalleryPhotoForm">
+          <!-- Photo Input -->
+          <div class="form-group">
+            <label for="addGalleryPhotoInput">Select Photo</label>
+            <input type="file" id="addGalleryPhotoInput" name="photo" accept="image/png,image/jpeg,image/webp" required>
+          </div>
+
+          <!-- Preview -->
+          <div id="addGalleryPhotoPreview"></div>
+
+          <!-- Tag Selection (Single select) -->
+          <div class="form-group">
+            <label>Haircut Tag</label>
+            <div id="addGalleryPhotoTagSearchContainer"></div>
+            <div id="addGalleryPhotoSelectedTag" style="margin-top: 12px; min-height: 40px;"></div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelAddGalleryPhotoBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add Photo</button>
+          </div>
+
+          <div class="loading" id="addGalleryPhotoLoading">
+            <p>Uploading...</p>
           </div>
         </form>
       </div>
