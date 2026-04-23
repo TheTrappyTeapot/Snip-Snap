@@ -9,4 +9,4 @@ It initializes the Supabase client, uploads binary image payloads, and creates t
 Purpose
 -------
 
-This module in `app/supabase_storage.py` provides backend application behavior. Function responsibilities: `get_supabase` retrieves supabase; `sign_storage_path` given a storage path like 'barber_12/photo_987.jpg', returns a signed URL; `upload_photo_to_storage` upload a photo to Supabase storage and return the storage path.
+This module in `app/supabase_storage.py` provides backend application behavior. Function responsibilities: `get_supabase` returns a configured Supabase client instance; `sign_storage_path` signs a storage path (for example `barber_12/photo_987.jpg`) and returns a temporary public URL; `upload_photo_to_storage` uploads image bytes to Supabase Storage and returns the saved storage path.
