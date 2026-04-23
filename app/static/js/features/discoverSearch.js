@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/discoverSearch.js. */
+/* Script for app/static/js/features/discoverSearch.js. */
 
 async function fetchSearchItems(endpoint) {
   const res = await fetch(endpoint, { method: "GET" });

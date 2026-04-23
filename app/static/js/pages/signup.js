@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/signup.js. */
+/* Script for app/static/js/pages/signup.js. */
 
 console.log("signup.js script loading");
 
@@ -71,7 +71,7 @@ if (window.__signupJsLoaded) {
   }
 
   /**
-   * Handles clearErrors.
+   * Clears all visible validation and general error messages.
    */
   function clearErrors() {
     usernameError.textContent = "";
@@ -82,7 +82,7 @@ if (window.__signupJsLoaded) {
   }
 
   /**
-   * Handles validateForm.
+   * Validates signup inputs and returns true when the form is valid.
    */
   function validateForm(username, email, password, accountType) {
     clearErrors();

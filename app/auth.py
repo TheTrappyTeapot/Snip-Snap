@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/auth.py."""
+"""Module for app/auth.py."""
 
 import os
 import jwt

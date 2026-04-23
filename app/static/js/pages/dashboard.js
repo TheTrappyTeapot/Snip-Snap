@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/dashboard.js. */
+/* Script for app/static/js/pages/dashboard.js. */
 
 import { initUploadPostFeature } from '../features/uploadPost.js';
 import { initGalleryEditFeature } from '../features/galleryEdit.js';

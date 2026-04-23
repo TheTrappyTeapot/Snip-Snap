@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/discover.js. */
+/* Script for app/static/js/pages/discover.js. */
 
 import { TagList } from "../components/tagList.js";
 import { initPostGallery } from "../features/postGallery.js";

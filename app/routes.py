@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/routes.py."""
+"""Route registration and page handlers for the Flask web app."""
 
 import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
@@ -45,7 +45,7 @@ def get_current_day_num():
     return datetime.now().weekday()
 
 def register_routes(app):
-    """Handles register routes."""
+    """Register API endpoints and page routes on the Flask app."""
 
     print("SUPABASE_URL =", os.getenv("SUPABASE_URL"))
 
@@ -246,7 +246,7 @@ def register_routes(app):
 
     @app.route("/")
     def home():
-        """Handles home."""
+        """Render the public landing page."""
         return render_template("pages/welcome.html")
 
     @app.route("/login")

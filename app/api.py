@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/api.py."""
+"""Module for app/api.py."""
 
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session

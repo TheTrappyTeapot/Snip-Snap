@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/postGallery.js. */
+/* Script for app/static/js/features/postGallery.js. */
 
 import { renderGalleryGrid } from "../components/galleryGrid.js";
 import { renderPostImageCard } from "../components/postImageCard.js";

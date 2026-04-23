@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/profile.js. */
+/* Script for app/static/js/pages/profile.js. */
 
 console.log("profile.js script loading");
 
@@ -197,7 +197,7 @@ if (window.__profileJsLoaded) {
     }
 
     /**
-     * Handles validateForm.
+     * Validates profile form values and reports any field-level errors.
      */
     function validateForm(username, location, role) {
       console.log("🔍 Validating form:", { location, role });

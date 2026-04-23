@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/editableGallery.js. */
+/* Script for app/static/js/components/editableGallery.js. */
 
 import { renderGalleryGrid } from "./galleryGrid.js";
 import { renderEditableGalleryCard } from "./editableGalleryCard.js";

@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/uploadPost.js. */
+/* Script for app/static/js/features/uploadPost.js. */
 
 // Upload Post Feature
 

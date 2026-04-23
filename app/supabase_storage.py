@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/supabase_storage.py."""
+"""Module for app/supabase_storage.py."""
 
 import os
 import mimetypes

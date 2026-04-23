@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/review_widget.js. */
+/* Script for app/static/js/components/review_widget.js. */
 
 export class ReviewWidget {
     constructor(containerId) {

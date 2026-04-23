@@ -1,4 +1,4 @@
-/* Styles for /home/runner/work/Snip-Snap/Snip-Snap/app/static/css/components/review_widget.css. */
+/* Styles for app/static/css/components/review_widget.css. */
 
 .widget-container { width:100%; max-width:500px; background:#fff; border:1px solid #d1d5db; border-radius:16px; overflow:hidden; }
 .widget-header { padding:16px; font-weight:700; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center; }

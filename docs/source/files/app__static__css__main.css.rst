@@ -9,5 +9,5 @@ This page documents ``app/static/css/main.css``.
 Purpose
 -------
 
-- Contains project logic and assets for ``app/static/css``.
+- Contains styling rules for ``app/static/css``.
 - Refer to inline comments in the source file for function-level and complex-flow details.

@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/tagList.js. */
+/* Script for app/static/js/components/tagList.js. */
 
 export class TagList {
   constructor({ mountEl, initialItems = [] }) {

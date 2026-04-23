@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/login.js. */
+/* Script for app/static/js/pages/login.js. */
 
 const SUPABASE_URL = document.currentScript.getAttribute('data-supabase-url');
 const SUPABASE_ANON_KEY = document.currentScript.getAttribute('data-supabase-anon-key');

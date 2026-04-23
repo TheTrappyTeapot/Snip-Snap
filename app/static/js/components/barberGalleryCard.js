@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/barberGalleryCard.js. */
+/* Script for app/static/js/components/barberGalleryCard.js. */
 
 import { renderUserPromo } from "./userPromo.js";
 

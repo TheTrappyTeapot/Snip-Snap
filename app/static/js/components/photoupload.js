@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/photoupload.js. */
+/* Script for app/static/js/components/photoupload.js. */
 
 console.log('[PHOTO UPLOAD] photoupload.js loaded');
 

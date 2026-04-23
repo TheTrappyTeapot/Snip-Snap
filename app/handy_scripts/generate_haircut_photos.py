@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/handy_scripts/generate_haircut_photos.py."""
+"""Module for app/handy_scripts/generate_haircut_photos.py."""
 
 import os
 import random

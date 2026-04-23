@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/app.py."""
+"""Module for app/app.py."""
 
 from pathlib import Path
 import os

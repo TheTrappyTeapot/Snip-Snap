@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/galleryEdit.js. */
+/* Script for app/static/js/features/galleryEdit.js. */
 
 // Gallery Edit Feature
 

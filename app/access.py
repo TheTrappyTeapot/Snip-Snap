@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/access.py."""
+"""Module for app/access.py."""
 
 from __future__ import annotations
 

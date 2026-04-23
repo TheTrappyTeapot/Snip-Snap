@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/map.js. */
+/* Script for app/static/js/pages/map.js. */
 
 (function () {
   "use strict";

@@ -1,4 +1,4 @@
-/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/barber_profile.js. */
+/* Script for app/static/js/pages/barber_profile.js. */
 
 import { renderUserPromo } from "../components/userPromo.js";
 import { renderTimetable } from "../components/timetable.js";

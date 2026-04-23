@@ -1,4 +1,4 @@
-"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/db.py."""
+"""Database access helpers for Snip-Snap."""
 
 import os
 import psycopg2
@@ -12,7 +12,7 @@ load_dotenv()
 
 
 def _get_conn():
-    """Handles get conn."""
+    """Create and return a PostgreSQL connection from DATABASE_URL."""
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
         raise RuntimeError("DATABASE_URL environment variable is not set")
@@ -527,7 +527,6 @@ def create_haircut_post(barber_id: int, image_url: str, width_px: int, height_px
 # It returns a list of haircut posts with associated promo info, ratings, and distance if viewer location is provided.
 # It is a very important function for the discover page performance and relevance, and is carefully optimized with conditional joins and where clauses based on the provided filters.
 def fetch_discover_posts(
-    """Handles fetch discover posts."""
     tag_ids: List[int],
     barber_ids: List[int],
     barbershop_ids: List[int],
@@ -537,6 +536,7 @@ def fetch_discover_posts(
     viewer_lat: float | None = None,
     viewer_lng: float | None = None,
 ) -> List[Dict[str, Any]]:
+    """Handles fetch discover posts."""
     where: List[str] = ["hp.is_post = TRUE", "hp.status = 'show'"]
     where_params: List[Any] = []
     select_params: List[Any] = []
