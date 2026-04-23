@@ -9,4 +9,4 @@ The script in app/static/js/components/mapWidget.js binds event listeners, updat
 Purpose
 -------
 
-This script in `app/static/js/components/mapWidget.js` provides frontend browser behavior. Function responsibilities: `initMapWidget` initializes map widget; `renderShops` ── Load barbershop pins ───────────────────────────────────────────────────.
+This script in `app/static/js/components/mapWidget.js` provides frontend browser behavior. Function responsibilities: `initMapWidget` initializes the Leaflet map instance and base layers; `renderShops` renders barbershop markers and popup content on the map.
