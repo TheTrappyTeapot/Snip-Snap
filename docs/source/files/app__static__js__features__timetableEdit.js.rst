@@ -9,4 +9,4 @@ The script in app/static/js/features/timetableEdit.js binds event listeners, upd
 Purpose
 -------
 
-This script in `app/static/js/features/timetableEdit.js` provides frontend browser behavior. Function responsibilities: `makePill` builds pill; `bindRemoveBtn` binds remove btn.
+This script in `app/static/js/features/timetableEdit.js` provides frontend browser behavior. Function responsibilities: `makePill` creates the timetable shift-pill DOM element with time text and remove button metadata; `bindRemoveBtn` attaches the delete API call and removes the matching shift pill after a successful response.

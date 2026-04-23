@@ -9,4 +9,4 @@ It samples storage images, chooses randomized timestamps/statuses/tags, and inse
 Purpose
 -------
 
-This script in `app/handy_scripts/generate_haircut_photos.py` performs maintenance and data operations. Function responsibilities: `get_storage_image_pool` retrieves storage image pool; `random_timestamp` returns random timestamp; `choose_status` chooses status; `choose_dimensions` chooses dimensions; `choose_tags` chooses tags; `main` returns main.
+This script in `app/handy_scripts/generate_haircut_photos.py` performs maintenance and data operations. Function responsibilities: `get_storage_image_pool` loads usable `photos/haircuts` storage paths from Supabase; `random_timestamp` generates a timestamp within the configured recent-day window; `choose_status` picks a visible/hidden status using the hidden-ratio probability; `choose_dimensions` selects one of the predefined social-image dimensions; `choose_tags` samples a non-duplicated set of tag IDs for a generated photo; `main` inserts generated haircutphoto and haircutphoto_tag rows for each barber in a single database transaction.
