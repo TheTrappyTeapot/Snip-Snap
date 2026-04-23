@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/uploadPost.js. */
+
 // Upload Post Feature
 
 let tagAutocomplete = null;
@@ -204,6 +206,9 @@ async function submitUpload(file, tagIds, width, height) {
   }
 }
 
+/**
+ * Handles resetForm.
+ */
 function resetForm() {
   const uploadForm = document.getElementById('uploadForm');
   const preview = document.getElementById('preview');
@@ -224,23 +229,35 @@ function resetForm() {
   }
 }
 
+/**
+ * Handles showError.
+ */
 function showError(message) {
   const errorEl = document.getElementById('errorMessage');
   errorEl.textContent = message;
   errorEl.classList.add('show');
 }
 
+/**
+ * Handles showSuccess.
+ */
 function showSuccess(message) {
   const successEl = document.getElementById('successMessage');
   successEl.textContent = message;
   successEl.classList.add('show');
 }
 
+/**
+ * Handles hideMessages.
+ */
 function hideMessages() {
   document.getElementById('errorMessage').classList.remove('show');
   document.getElementById('successMessage').classList.remove('show');
 }
 
+/**
+ * Handles showLoading.
+ */
 function showLoading(show) {
   const loading = document.getElementById('loading');
   if (show) {

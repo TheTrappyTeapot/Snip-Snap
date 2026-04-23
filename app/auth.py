@@ -1,3 +1,5 @@
+"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/auth.py."""
+
 import os
 import jwt
 from jwt import PyJWKClient
@@ -7,6 +9,7 @@ _JWK_URL = None
 
 
 def _get_jwk_client() -> PyJWKClient:
+    """Handles get jwk client."""
     global _JWK_CLIENT, _JWK_URL
 
     supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
@@ -20,6 +23,7 @@ def _get_jwk_client() -> PyJWKClient:
 
 
 def verify_supabase_jwt(access_token: str) -> dict:
+    """Handles verify supabase jwt."""
     supabase_url = os.environ["SUPABASE_URL"].rstrip("/")
     issuer = f"{supabase_url}/auth/v1"
 

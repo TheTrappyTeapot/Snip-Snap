@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/galleryEdit.js. */
+
 // Gallery Edit Feature
 
 let galleryEdits = new Map(); // photo_id -> { main_tag_id }
@@ -138,6 +140,9 @@ export function initGalleryEditFeature() {
   console.log('[GALLERY EDIT] Feature initialization complete');
 }
 
+/**
+ * Handles initAddGalleryPhotoForm.
+ */
 function initAddGalleryPhotoForm() {
   console.log('[GALLERY EDIT] Initializing add gallery photo form');
   
@@ -540,6 +545,9 @@ async function updatePhotoMainTag() {
   }, 1500);
 }
 
+/**
+ * Handles resetEditPhotoForm.
+ */
 function resetEditPhotoForm() {
   currentEditingPhoto = null;
   editPhotoTagSelection = null;
@@ -562,23 +570,35 @@ function resetEditPhotoForm() {
   document.getElementById('editPhotoSuccessMessage').classList.remove('show');
 }
 
+/**
+ * Handles showEditPhotoError.
+ */
 function showEditPhotoError(message) {
   const errorEl = document.getElementById('editPhotoErrorMessage');
   errorEl.textContent = message;
   errorEl.classList.add('show');
 }
 
+/**
+ * Handles showEditPhotoSuccess.
+ */
 function showEditPhotoSuccess(message) {
   const successEl = document.getElementById('editPhotoSuccessMessage');
   successEl.textContent = message;
   successEl.classList.add('show');
 }
 
+/**
+ * Handles hideEditPhotoMessages.
+ */
 function hideEditPhotoMessages() {
   document.getElementById('editPhotoErrorMessage').classList.remove('show');
   document.getElementById('editPhotoSuccessMessage').classList.remove('show');
 }
 
+/**
+ * Handles showEditPhotoLoading.
+ */
 function showEditPhotoLoading(show) {
   const loading = document.getElementById('editPhotoLoading');
   if (show) {
@@ -627,6 +647,9 @@ async function loadAddGalleryPhotoTags() {
   }
 }
 
+/**
+ * Handles resetAddGalleryPhotoForm.
+ */
 function resetAddGalleryPhotoForm() {
   addGalleryPhotoTag = null;
   
@@ -642,23 +665,35 @@ function resetAddGalleryPhotoForm() {
   document.getElementById('addGalleryPhotoSuccessMessage').classList.remove('show');
 }
 
+/**
+ * Handles showAddGalleryPhotoError.
+ */
 function showAddGalleryPhotoError(message) {
   const errorEl = document.getElementById('addGalleryPhotoErrorMessage');
   errorEl.textContent = message;
   errorEl.classList.add('show');
 }
 
+/**
+ * Handles showAddGalleryPhotoSuccess.
+ */
 function showAddGalleryPhotoSuccess(message) {
   const successEl = document.getElementById('addGalleryPhotoSuccessMessage');
   successEl.textContent = message;
   successEl.classList.add('show');
 }
 
+/**
+ * Handles hideAddGalleryPhotoMessages.
+ */
 function hideAddGalleryPhotoMessages() {
   document.getElementById('addGalleryPhotoErrorMessage').classList.remove('show');
   document.getElementById('addGalleryPhotoSuccessMessage').classList.remove('show');
 }
 
+/**
+ * Handles showAddGalleryPhotoLoading.
+ */
 function showAddGalleryPhotoLoading(show) {
   const loading = document.getElementById('addGalleryPhotoLoading');
   if (show) {

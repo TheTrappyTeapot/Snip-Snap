@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/editableUserPromo.js. */
+
 function createEditableUserPromo(mountElement, userData = {}, config = {}) {
   const onChange = config.onChange || function() {};
   const avatarSize = config.avatarSize || 80;

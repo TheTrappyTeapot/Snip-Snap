@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/login.js. */
+
 const SUPABASE_URL = document.currentScript.getAttribute('data-supabase-url');
 const SUPABASE_ANON_KEY = document.currentScript.getAttribute('data-supabase-anon-key');
 
@@ -16,12 +18,18 @@ const emailError = document.getElementById("emailError");
 const passwordError = document.getElementById("passwordError");
 const generalError = document.getElementById("generalError");
 
+/**
+ * Handles clearErrors.
+ */
 function clearErrors() {
   if (emailError) emailError.textContent = "";
   if (passwordError) passwordError.textContent = "";
   if (generalError) generalError.textContent = "";
 }
 
+/**
+ * Handles validateForm.
+ */
 function validateForm(email, password) {
   clearErrors();
   let isValid = true;

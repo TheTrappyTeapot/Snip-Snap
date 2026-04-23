@@ -13,6 +13,9 @@
 (function () {
   "use strict";
 
+  /**
+   * Handles initMapWidget.
+   */
   function initMapWidget(mountEl, opts) {
     opts = opts || {};
     const mount =

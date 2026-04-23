@@ -1,3 +1,5 @@
+"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/access.py."""
+
 from __future__ import annotations
 
 from functools import wraps
@@ -7,13 +9,16 @@ from flask import session, redirect, url_for, abort
 
 
 def current_role() -> str | None:
+    """Handles current role."""
     user = session.get("user") or {}
     return user.get("role")
 
 
 def login_required(view: Callable):
+    """Handles login required."""
     @wraps(view)
     def wrapper(*args, **kwargs):
+        """Handles wrapper."""
         if not session.get("user"):
             return redirect(url_for("login"))
         return view(*args, **kwargs)
@@ -21,11 +26,14 @@ def login_required(view: Callable):
 
 
 def roles_required(*allowed_roles: str):
+    """Handles roles required."""
     allowed = set(allowed_roles)
 
     def decorator(view: Callable):
+        """Handles decorator."""
         @wraps(view)
         def wrapper(*args, **kwargs):
+            """Handles wrapper."""
             user = session.get("user")
             if not user:
                 return redirect(url_for("login"))

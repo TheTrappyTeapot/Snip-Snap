@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/pages/signup.js. */
+
 console.log("signup.js script loading");
 
 // Prevent double-loading
@@ -68,6 +70,9 @@ if (window.__signupJsLoaded) {
     return;
   }
 
+  /**
+   * Handles clearErrors.
+   */
   function clearErrors() {
     usernameError.textContent = "";
     emailError.textContent = "";
@@ -76,6 +81,9 @@ if (window.__signupJsLoaded) {
     generalError.textContent = "";
   }
 
+  /**
+   * Handles validateForm.
+   */
   function validateForm(username, email, password, accountType) {
     clearErrors();
     let isValid = true;

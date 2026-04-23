@@ -1,8 +1,13 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/timetableEdit.js. */
+
 (function () {
   "use strict";
 
   const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+  /**
+   * Handles makePill.
+   */
   function makePill(shift) {
     var pill = document.createElement("span");
     pill.className = "timetable-shift-pill";
@@ -21,6 +26,9 @@
     return pill;
   }
 
+  /**
+   * Handles bindRemoveBtn.
+   */
   function bindRemoveBtn(btn) {
     btn.addEventListener("click", function () {
       var shiftId = parseInt(btn.dataset.shiftId, 10);

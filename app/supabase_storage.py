@@ -1,3 +1,5 @@
+"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/supabase_storage.py."""
+
 import os
 import mimetypes
 from supabase import create_client
@@ -5,6 +7,7 @@ from supabase import create_client
 _supabase = None
 
 def get_supabase():
+    """Handles get supabase."""
     global _supabase
     if _supabase is None:
         url = os.environ["SUPABASE_URL"]

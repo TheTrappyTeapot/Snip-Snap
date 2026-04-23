@@ -1,3 +1,5 @@
+"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/app.py."""
+
 from pathlib import Path
 import os
 
@@ -8,6 +10,7 @@ from .routes import register_routes
 
 
 def create_app():
+    """Handles create app."""
     project_root = Path(__file__).resolve().parent.parent  # .../Snip-Snap
     load_dotenv(project_root / ".env")  # .../Snip-Snap/.env
 
@@ -19,6 +22,7 @@ def create_app():
 
     @app.after_request
     def add_cache_headers(response):
+        """Handles add cache headers."""
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"

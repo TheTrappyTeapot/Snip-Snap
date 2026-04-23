@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/galleryGrid.js. */
+
 export function renderGalleryGrid({ mountEl, items, columns, renderItem }) {
   mountEl.innerHTML = "";
 

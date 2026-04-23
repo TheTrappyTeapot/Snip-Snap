@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/userPromo.js. */
+
 export function renderUserPromo(container, data = {}, options = {}) {
   const el = typeof container === "string" ? document.querySelector(container) : container;
   if (!el) return;

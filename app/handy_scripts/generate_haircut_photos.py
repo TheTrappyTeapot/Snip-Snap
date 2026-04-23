@@ -1,3 +1,5 @@
+"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/handy_scripts/generate_haircut_photos.py."""
+
 import os
 import random
 from datetime import datetime, timedelta
@@ -19,6 +21,7 @@ MAX_AGE_DAYS = 180
 
 
 def get_storage_image_pool():
+    """Handles get storage image pool."""
     url = os.environ["SUPABASE_URL"]
     key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 
@@ -43,6 +46,7 @@ def get_storage_image_pool():
 
 
 def random_timestamp() -> datetime:
+    """Handles random timestamp."""
     now = datetime.now()
     delta = timedelta(
         days=random.randint(0, MAX_AGE_DAYS),
@@ -52,10 +56,12 @@ def random_timestamp() -> datetime:
 
 
 def choose_status() -> str:
+    """Handles choose status."""
     return "hide" if random.random() < HIDDEN_RATIO else "show"
 
 
 def choose_dimensions() -> tuple[int, int]:
+    """Handles choose dimensions."""
     # Mostly portrait/square social-style images
     options = [
         (1080, 1080),
@@ -68,12 +74,14 @@ def choose_dimensions() -> tuple[int, int]:
 
 
 def choose_tags() -> list[int]:
+    """Handles choose tags."""
     # 1 to 5 tags per photo, no duplicates
     tag_count = random.randint(1, 5)
     return random.sample(range(TAG_ID_MIN, TAG_ID_MAX + 1), k=tag_count)
 
 
 def main() -> None:
+    """Handles main."""
     conn = _get_conn()
     conn.autocommit = False
 

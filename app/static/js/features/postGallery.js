@@ -1,6 +1,11 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/postGallery.js. */
+
 import { renderGalleryGrid } from "../components/galleryGrid.js";
 import { renderPostImageCard } from "../components/postImageCard.js";
 
+/**
+ * Handles normaliseTagListItems.
+ */
 function normaliseTagListItems(items) {
   const filter_ids = [];
   const tag_ids = [];
@@ -24,6 +29,9 @@ function normaliseTagListItems(items) {
   };
 }
 
+/**
+ * Handles resolveEffectiveSort.
+ */
 function resolveEffectiveSort(filter_ids) {
   const set = new Set(filter_ids || []);
 
@@ -58,6 +66,9 @@ async function fetchPosts({ endpoint, payload }) {
   return await res.json();
 }
 
+/**
+ * Handles createGalleryLoader.
+ */
 function createGalleryLoader() {
   const el = document.createElement("div");
   el.className = "postGalleryLoader";
@@ -92,10 +103,16 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     mountEl.parentNode?.appendChild(loaderEl);
   }
 
+  /**
+   * Handles setLoadingVisible.
+   */
   function setLoadingVisible(visible) {
     loaderEl.hidden = !visible;
   }
 
+  /**
+   * Handles render.
+   */
   function render() {
     if (state.error) {
       mountEl.innerHTML = "";
@@ -121,6 +138,9 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     });
   }
 
+  /**
+   * Handles buildPayload.
+   */
   function buildPayload({ cursor }) {
     const tagItems = tagList.get_items();
     const parts = normaliseTagListItems(tagItems);
@@ -137,6 +157,9 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     };
   }
 
+  /**
+   * Handles payloadKey.
+   */
   function payloadKey(payload) {
     const keyObj = {
       filter_ids: payload.filter_ids.slice().sort((a, b) => a - b),

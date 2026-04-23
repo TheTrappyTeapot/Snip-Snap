@@ -1,3 +1,5 @@
+"""Module for /home/runner/work/Snip-Snap/Snip-Snap/app/routes.py."""
+
 import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
 from .auth import verify_supabase_jwt
@@ -43,6 +45,7 @@ def get_current_day_num():
     return datetime.now().weekday()
 
 def register_routes(app):
+    """Handles register routes."""
 
     print("SUPABASE_URL =", os.getenv("SUPABASE_URL"))
 
@@ -243,10 +246,12 @@ def register_routes(app):
 
     @app.route("/")
     def home():
+        """Handles home."""
         return render_template("pages/welcome.html")
 
     @app.route("/login")
     def login():
+        """Handles login."""
         return render_template(
             "pages/login.html",
             supabase_url=os.environ["SUPABASE_URL"],
@@ -255,6 +260,7 @@ def register_routes(app):
 
     @app.route("/signup")
     def signup():
+        """Handles signup."""
         return render_template(
             "pages/signup.html",
             supabase_url=os.environ["SUPABASE_URL"],
@@ -263,12 +269,14 @@ def register_routes(app):
 
     @app.route("/logout")
     def logout():
+        """Handles logout."""
         session.pop("user", None)
         return redirect(url_for("home"))
 
     # OAuth redirect lands here (browser page that will POST token to /auth/callback)
     @app.route("/auth/redirect")
     def auth_redirect():
+        """Handles auth redirect."""
         return render_template(
             "pages/auth_redirect.html",
             supabase_url=os.environ["SUPABASE_URL"],
@@ -277,6 +285,7 @@ def register_routes(app):
 
     @app.post("/auth/callback")
     def auth_callback():
+        """Handles auth callback."""
         print("\n--- AUTH CALLBACK START ---")
 
         data = request.get_json(silent=True) or {}
@@ -350,6 +359,7 @@ def register_routes(app):
     
     @app.post("/guest/start")
     def guest_start():
+        """Handles guest start."""
         session["user"] = {
             "id": None,
             "auth_user_id": None,
@@ -363,12 +373,14 @@ def register_routes(app):
 
     @app.get("/whoami")
     def whoami():
+        """Handles whoami."""
         print("Current session:", session.get("user"))
         return jsonify(session.get("user") or {})
     
     @app.get("/discover")
     @login_required
     def discover():
+        """Handles discover."""
         user = session["user"]
         viewer_loc = None
 
@@ -382,6 +394,7 @@ def register_routes(app):
     @app.route("/map")
     @login_required
     def map_page():
+        """Handles map page."""
         u = session.get("user") or {}
         uid = u.get("id")
         loc = get_user_location(int(uid)) if uid else None
@@ -391,6 +404,7 @@ def register_routes(app):
     @app.route("/profile")
     @roles_required("customer", "barber")   # guests cannot access
     def profile():
+        """Handles profile."""
         u = session.get("user") or {}
         uid = u.get("id")
         pstCd = get_user_postcode(int(uid)) if uid else None
@@ -517,6 +531,7 @@ def register_routes(app):
     @app.post("/api/shifts")
     @roles_required("barber")
     def api_add_shift():
+        """Handles api add shift."""
         data = request.get_json(silent=True) or {}
         day = data.get("day_of_week")
         start = (data.get("start_time") or "").strip()
@@ -541,6 +556,7 @@ def register_routes(app):
     @app.delete("/api/shifts/<int:shift_id>")
     @roles_required("barber")
     def api_delete_shift(shift_id: int):
+        """Handles api delete shift."""
         user_id = int(session["user"]["id"])
         barber_id = get_barber_id_from_user_id(user_id)
         if not barber_id:
@@ -555,6 +571,7 @@ def register_routes(app):
     @app.route("/dashboard", methods=["GET", "POST"])
     @roles_required("barber")
     def dashboard():
+        """Handles dashboard."""
         user = session["user"]
         user_id = int(user["id"])
 

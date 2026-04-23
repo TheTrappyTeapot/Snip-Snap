@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/features/discoverSearch.js. */
+
 async function fetchSearchItems(endpoint) {
   const res = await fetch(endpoint, { method: "GET" });
   if (!res.ok) {
@@ -7,6 +9,9 @@ async function fetchSearchItems(endpoint) {
   return await res.json();
 }
 
+/**
+ * Handles dedupeAdd.
+ */
 function dedupeAdd(tagList, item) {
   const existing = tagList.get_items();
   const found = existing.some((x) => x.type === item.type && x.id === item.id);
@@ -19,6 +24,9 @@ export async function initDiscoverSearch({ mountEl, outEl, tagList, config }) {
   const data = await fetchSearchItems(endpoint);
   const all_items = Array.isArray(data.items) ? data.items : [];
 
+  /**
+   * Handles onSelect.
+   */
   function onSelect(item) {
     if (outEl) {
       outEl.textContent = `Selected: ${item.label}  (type: ${item.type}, id: ${item.id})`;

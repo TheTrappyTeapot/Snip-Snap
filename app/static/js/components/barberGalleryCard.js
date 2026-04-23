@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/barberGalleryCard.js. */
+
 import { renderUserPromo } from "./userPromo.js";
 
 export function renderBarberGalleryCard(photo) {

@@ -1,3 +1,5 @@
+/* Script for /home/runner/work/Snip-Snap/Snip-Snap/app/static/js/components/postImageCard.js. */
+
 import { renderUserPromo } from "./userPromo.js";
 
 export function renderPostImageCard(item, options = {}) {
