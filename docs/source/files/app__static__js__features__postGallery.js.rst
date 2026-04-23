@@ -9,4 +9,4 @@ The script in app/static/js/features/postGallery.js binds event listeners, updat
 Purpose
 -------
 
-This feature orchestration script powers postGallery behavior on the client side. It organizes logic through functions such as normaliseTagListItems, resolveEffectiveSort, fetchPosts, createGalleryLoader, and initPostGallery.
+This script in `app/static/js/features/postGallery.js` provides frontend browser behavior. Function responsibilities: `normaliseTagListItems` normalizes tag list items list; `resolveEffectiveSort` resolves effective sort; `createGalleryLoader` creates gallery loader; `setLoadingVisible` sets loading visible; `render` renders UI output; `buildPayload` builds payload; `payloadKey` returns payload key.

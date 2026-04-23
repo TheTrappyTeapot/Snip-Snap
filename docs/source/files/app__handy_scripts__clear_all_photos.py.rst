@@ -9,4 +9,4 @@ It performs bulk deletion logic against photo-related tables in the app database
 Purpose
 -------
 
-This maintenance script clears haircut photo records for reset or test data workflows.
+This script in `app/handy_scripts/clear_all_photos.py` performs maintenance and data operations. Function responsibilities: `clear_all_photos` deletes all records from haircutphoto_tag and haircutphoto.

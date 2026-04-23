@@ -9,4 +9,4 @@ It caches a PyJWKClient instance for key discovery and decodes JWTs with issuer 
 Purpose
 -------
 
-This module verifies Supabase access tokens using the project JWKS endpoint.
+This module in `app/auth.py` provides backend application behavior. Function responsibilities: `_get_jwk_client` retrieves jwk client; `verify_supabase_jwt` verifies supabase JWT.

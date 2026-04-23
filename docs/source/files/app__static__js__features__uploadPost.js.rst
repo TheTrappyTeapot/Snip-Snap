@@ -9,4 +9,4 @@ The script in app/static/js/features/uploadPost.js binds event listeners, update
 Purpose
 -------
 
-This feature orchestration script powers uploadPost behavior on the client side. It organizes logic through functions such as initUploadPostFeature, loadTags, submitUpload, resetForm, and showError.
+This script in `app/static/js/features/uploadPost.js` provides frontend browser behavior. Function responsibilities: `resetForm` resets form; `showError` shows error; `showSuccess` shows success; `hideMessages` hides messages; `showLoading` shows loading.

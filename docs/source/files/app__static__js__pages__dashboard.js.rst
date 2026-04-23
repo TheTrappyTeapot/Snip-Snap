@@ -9,4 +9,4 @@ The script in app/static/js/pages/dashboard.js binds event listeners, updates DO
 Purpose
 -------
 
-This page controller powers dashboard behavior on the client side. It organizes logic through functions such as initializeFeatures.
+This script in `app/static/js/pages/dashboard.js` provides frontend browser behavior. Function responsibilities: `initializeFeatures` but we'll check document.readyState to be safe.

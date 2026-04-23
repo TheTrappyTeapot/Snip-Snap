@@ -9,4 +9,4 @@ The script in app/static/js/pages/login.js binds event listeners, updates DOM st
 Purpose
 -------
 
-This page controller powers login behavior on the client side. It organizes logic through functions such as clearErrors, validateForm, and postTokenToFlask.
+This script in `app/static/js/pages/login.js` provides frontend browser behavior. Function responsibilities: `clearErrors` clears errors; `validateForm` validates form.

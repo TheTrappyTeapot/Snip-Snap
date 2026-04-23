@@ -9,4 +9,4 @@ The script in app/static/js/components/searchAutocomplete.js binds event listene
 Purpose
 -------
 
-This UI component script powers searchAutocomplete behavior on the client side. It organizes logic through functions such as normalise, isValidItem, createEl, createSearchBarAutocomplete, and open.
+This script in `app/static/js/components/searchAutocomplete.js` provides frontend browser behavior. Function responsibilities: `normalise` normalizes input values; `isValidItem` checks whether valid item; `createEl` creates DOM element; `createSearchBarAutocomplete` creates search bar autocomplete; `open` opens the UI panel; `close` closes the UI panel; `setHighlight` sets highlight; `renderNoResults` renders no results; `renderResults` renders results; `filterItems` filters items list; `selectItem` selects item; `refresh` refreshes UI state.

@@ -9,4 +9,4 @@ The script in app/static/js/pages/barbershop_profile.js binds event listeners, u
 Purpose
 -------
 
-This page controller powers barbershop profile behavior on the client side. It organizes logic through functions such as initBarbershopProfile.
+This script in `app/static/js/pages/barbershop_profile.js` provides frontend browser behavior.

@@ -9,4 +9,4 @@ It resolves the current user role from the session and provides login_required a
 Purpose
 -------
 
-This module centralizes session-based access control decorators for protected routes.
+This module in `app/access.py` provides backend application behavior. Function responsibilities: `current_role` returns the logged-in user role from session data; `login_required` wraps route handlers to require an authenticated user; `roles_required` builds decorators that enforce allowed user roles.

@@ -9,4 +9,4 @@ The script in app/static/js/features/discoverSearch.js binds event listeners, up
 Purpose
 -------
 
-This feature orchestration script powers discoverSearch behavior on the client side. It organizes logic through functions such as fetchSearchItems, dedupeAdd, initDiscoverSearch, onSelect, and endpoint.
+This script in `app/static/js/features/discoverSearch.js` provides frontend browser behavior. Function responsibilities: `dedupeAdd` deduplicates add; `onSelect` returns on select.

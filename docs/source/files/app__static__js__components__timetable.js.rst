@@ -9,4 +9,4 @@ The script in app/static/js/components/timetable.js binds event listeners, updat
 Purpose
 -------
 
-This UI component script powers timetable behavior on the client side. It organizes logic through functions such as renderTimetable.
+This script in `app/static/js/components/timetable.js` provides frontend browser behavior.

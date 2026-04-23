@@ -9,4 +9,4 @@ It normalizes and cleans input to reduce malformed values before database writes
 Purpose
 -------
 
-This module provides centralized text sanitization for user-provided form fields.
+This module in `app/input_sanitization.py` provides backend application behavior. Function responsibilities: `sanitize_input` validate a user-supplied string.

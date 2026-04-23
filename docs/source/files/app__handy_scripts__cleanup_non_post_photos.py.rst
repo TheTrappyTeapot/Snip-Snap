@@ -9,4 +9,4 @@ It connects to the application database and prunes records based on non-post cri
 Purpose
 -------
 
-This maintenance script removes non-post haircut photos that are no longer needed.
+This script in `app/handy_scripts/cleanup_non_post_photos.py` performs maintenance and data operations. Function responsibilities: `cleanup_non_post_photos` deletes all non-post haircutphotos except for the 8 most recent ones.

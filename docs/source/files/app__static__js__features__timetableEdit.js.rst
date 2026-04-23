@@ -9,4 +9,4 @@ The script in app/static/js/features/timetableEdit.js binds event listeners, upd
 Purpose
 -------
 
-This feature orchestration script powers timetableEdit behavior on the client side. It organizes logic through functions such as makePill and bindRemoveBtn.
+This script in `app/static/js/features/timetableEdit.js` provides frontend browser behavior. Function responsibilities: `makePill` builds pill; `bindRemoveBtn` binds remove btn.

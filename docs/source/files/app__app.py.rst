@@ -9,4 +9,4 @@ It loads environment configuration, initializes CORS support, and registers rout
 Purpose
 -------
 
-This module builds and configures the Flask application instance used to run Snip-Snap.
+This module in `app/app.py` provides backend application behavior. Function responsibilities: `create_app` creates Flask app instance.

@@ -9,4 +9,4 @@ The script in app/static/js/components/tagList.js binds event listeners, updates
 Purpose
 -------
 
-This UI component script powers tagList behavior on the client side. It coordinates DOM events and browser-side state for this area.
+This script in `app/static/js/components/tagList.js` provides frontend browser behavior.

@@ -9,4 +9,4 @@ The script in app/static/js/pages/barber_profile.js binds event listeners, updat
 Purpose
 -------
 
-This page controller powers barber profile behavior on the client side. It organizes logic through functions such as initBarberProfile.
+This script in `app/static/js/pages/barber_profile.js` provides frontend browser behavior.

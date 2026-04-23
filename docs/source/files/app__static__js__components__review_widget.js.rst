@@ -9,4 +9,4 @@ The script in app/static/js/components/review_widget.js binds event listeners, u
 Purpose
 -------
 
-This UI component script powers review widget behavior on the client side. It coordinates DOM events and browser-side state for this area.
+This script in `app/static/js/components/review_widget.js` provides frontend browser behavior.

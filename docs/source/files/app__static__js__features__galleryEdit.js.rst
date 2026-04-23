@@ -9,4 +9,4 @@ The script in app/static/js/features/galleryEdit.js binds event listeners, updat
 Purpose
 -------
 
-This feature orchestration script powers galleryEdit behavior on the client side. It organizes logic through functions such as initGalleryEditFeature, initAddGalleryPhotoForm, submitAddGalleryPhoto, loadEditableGallery, and openEditPhotoModal.
+This script in `app/static/js/features/galleryEdit.js` provides frontend browser behavior. Function responsibilities: `initAddGalleryPhotoForm` initializes add gallery photo form; `resetEditPhotoForm` resets edit photo form; `showEditPhotoError` shows edit photo error; `showEditPhotoSuccess` shows edit photo success; `hideEditPhotoMessages` hides edit photo messages; `showEditPhotoLoading` shows edit photo loading; `resetAddGalleryPhotoForm` resets add gallery photo form; `showAddGalleryPhotoError` shows add gallery photo error; `showAddGalleryPhotoSuccess` shows add gallery photo success; `hideAddGalleryPhotoMessages` hides add gallery photo messages; `showAddGalleryPhotoLoading` shows add gallery photo loading.

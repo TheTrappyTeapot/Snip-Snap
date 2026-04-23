@@ -9,4 +9,4 @@ It provides the package boundary used by Flask app modules and helpers. The file
 Purpose
 -------
 
-This package initializer marks the app directory as an importable Python package.
+This module in `app/__init__.py` provides backend application behavior.

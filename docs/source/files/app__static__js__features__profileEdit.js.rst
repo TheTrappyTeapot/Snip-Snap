@@ -9,4 +9,4 @@ The script in app/static/js/features/profileEdit.js binds event listeners, updat
 Purpose
 -------
 
-This feature orchestration script powers profileEdit behavior on the client side. It organizes logic through functions such as initProfileEditFeature.
+This script in `app/static/js/features/profileEdit.js` provides frontend browser behavior.

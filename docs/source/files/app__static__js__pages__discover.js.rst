@@ -9,4 +9,4 @@ The script in app/static/js/pages/discover.js binds event listeners, updates DOM
 Purpose
 -------
 
-This page controller powers discover behavior on the client side. It organizes logic through functions such as initDiscoverPage.
+This script in `app/static/js/pages/discover.js` provides frontend browser behavior.

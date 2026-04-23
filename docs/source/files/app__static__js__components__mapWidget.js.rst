@@ -9,4 +9,4 @@ The script in app/static/js/components/mapWidget.js binds event listeners, updat
 Purpose
 -------
 
-This UI component script powers mapWidget behavior on the client side. It organizes logic through functions such as initMapWidget and renderShops.
+This script in `app/static/js/components/mapWidget.js` provides frontend browser behavior. Function responsibilities: `initMapWidget` initializes map widget; `renderShops` ── Load barbershop pins ───────────────────────────────────────────────────.

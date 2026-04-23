@@ -9,4 +9,4 @@ The script in app/static/js/components/editableGalleryCard.js binds event listen
 Purpose
 -------
 
-This UI component script powers editableGalleryCard behavior on the client side. It organizes logic through functions such as renderEditableGalleryCard.
+This script in `app/static/js/components/editableGalleryCard.js` provides frontend browser behavior.

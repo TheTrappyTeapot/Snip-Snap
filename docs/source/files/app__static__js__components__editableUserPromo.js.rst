@@ -9,4 +9,4 @@ The script in app/static/js/components/editableUserPromo.js binds event listener
 Purpose
 -------
 
-This UI component script powers editableUserPromo behavior on the client side. It organizes logic through functions such as createEditableUserPromo, escapeHtml, uploadProfilePhoto, and saveUsername.
+This script in `app/static/js/components/editableUserPromo.js` provides frontend browser behavior. Function responsibilities: `createEditableUserPromo` creates editable user promo; `escapeHtml` helper function to escape HTML.

@@ -9,4 +9,4 @@ The script in app/static/js/pages/profile.js binds event listeners, updates DOM 
 Purpose
 -------
 
-This page controller powers profile behavior on the client side. It organizes logic through functions such as initializeForm, loadBarbershops, initializeBarbershopAutocomplete, loadCurrentBarbershop, and updateBarbershopFieldVisibility.
+This script in `app/static/js/pages/profile.js` provides frontend browser behavior. Function responsibilities: `initializeForm` initialize form when DOM is ready; `clearErrors` form validation; `validateForm` validates profile form values and reports any field-level errors; `openModal` opens modal; `closeModal` closes modal.

@@ -9,4 +9,4 @@ The script in app/static/js/components/userPromo.js binds event listeners, updat
 Purpose
 -------
 
-This UI component script powers userPromo behavior on the client side. It organizes logic through functions such as renderUserPromo and role.
+This script in `app/static/js/components/userPromo.js` provides frontend browser behavior.

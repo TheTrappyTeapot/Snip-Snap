@@ -9,4 +9,4 @@ The script in app/static/js/components/photoupload.js binds event listeners, upd
 Purpose
 -------
 
-This UI component script powers photoupload behavior on the client side. It organizes logic through functions such as createPhotoUploadComponent and renderPreview.
+This script in `app/static/js/components/photoupload.js` provides frontend browser behavior. Function responsibilities: `createPhotoUploadComponent` creates photo upload component; `renderPreview` renders preview.

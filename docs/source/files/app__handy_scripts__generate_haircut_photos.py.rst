@@ -9,4 +9,4 @@ It samples storage images, chooses randomized timestamps/statuses/tags, and inse
 Purpose
 -------
 
-This script seeds randomized haircut photo records for development and demo data.
+This script in `app/handy_scripts/generate_haircut_photos.py` performs maintenance and data operations. Function responsibilities: `get_storage_image_pool` retrieves storage image pool; `random_timestamp` returns random timestamp; `choose_status` chooses status; `choose_dimensions` chooses dimensions; `choose_tags` chooses tags; `main` returns main.

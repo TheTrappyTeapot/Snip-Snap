@@ -9,4 +9,4 @@ The script in app/static/js/components/barberGallery.js binds event listeners, u
 Purpose
 -------
 
-This UI component script powers barberGallery behavior on the client side. It organizes logic through functions such as initBarberGallery and initBarbershopGallery.
+This script in `app/static/js/components/barberGallery.js` provides frontend browser behavior.

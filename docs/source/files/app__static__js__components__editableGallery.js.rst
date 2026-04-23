@@ -9,4 +9,4 @@ The script in app/static/js/components/editableGallery.js binds event listeners,
 Purpose
 -------
 
-This UI component script powers editableGallery behavior on the client side. It organizes logic through functions such as initEditableGallery.
+This script in `app/static/js/components/editableGallery.js` provides frontend browser behavior.

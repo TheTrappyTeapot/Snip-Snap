@@ -9,4 +9,4 @@ It iterates rows with coordinates, calls a geocoding service, and persists resol
 Purpose
 -------
 
-This script backfills missing postcodes by reverse-geocoding existing latitude/longitude records.
+This script in `app/handy_scripts/populate_postcodes_from_coords.py` performs maintenance and data operations. Function responsibilities: `reverse_geocode` convert latitude/longitude to postcode using postcodes.io API; `populate_postcodes` fetch all users with location_lat/location_lng but no postcode, reverse geocode their coordinates, and update their postcode in DB.

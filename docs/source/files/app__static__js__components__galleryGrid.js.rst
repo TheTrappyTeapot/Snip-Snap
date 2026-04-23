@@ -9,4 +9,4 @@ The script in app/static/js/components/galleryGrid.js binds event listeners, upd
 Purpose
 -------
 
-This UI component script powers galleryGrid behavior on the client side. It organizes logic through functions such as renderGalleryGrid.
+This script in `app/static/js/components/galleryGrid.js` provides frontend browser behavior.

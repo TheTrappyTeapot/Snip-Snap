@@ -9,4 +9,4 @@ The script in app/static/js/components/postImageCard.js binds event listeners, u
 Purpose
 -------
 
-This UI component script powers postImageCard behavior on the client side. It organizes logic through functions such as renderPostImageCard.
+This script in `app/static/js/components/postImageCard.js` provides frontend browser behavior.

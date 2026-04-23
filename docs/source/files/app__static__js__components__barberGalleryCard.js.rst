@@ -9,4 +9,4 @@ The script in app/static/js/components/barberGalleryCard.js binds event listener
 Purpose
 -------
 
-This UI component script powers barberGalleryCard behavior on the client side. It organizes logic through functions such as renderBarberGalleryCard.
+This script in `app/static/js/components/barberGalleryCard.js` provides frontend browser behavior.
