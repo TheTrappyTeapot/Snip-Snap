@@ -36,12 +36,24 @@ export function renderUserPromo(container, data = {}, options = {}) {
   const nameEl = document.createElement("div");
   nameEl.className = "user-promo__name";
   nameEl.textContent = name;
+  if (data.userId) {
+    nameEl.classList.add("user-promo__name--clickable");
+    nameEl.addEventListener("click", () => {
+      window.location.href = `/barber/${data.userId}`;
+    });
+  }
   text.appendChild(nameEl);
 
   if (role === "barber" && shop) {
     const subtext = document.createElement("div");
     subtext.className = "user-promo__subtext";
     subtext.textContent = shop;
+    if (data.barbershopId) {
+      subtext.classList.add("user-promo__subtext--clickable");
+      subtext.addEventListener("click", () => {
+        window.location.href = `/barbershop/${data.barbershopId}`;
+      });
+    }
     text.appendChild(subtext);
   }
 

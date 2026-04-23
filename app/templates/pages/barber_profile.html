@@ -27,6 +27,12 @@
       <div id="user-promo-mount"></div>
     </div>
 
+    {% if barber.bio %}
+      <section class="barber-profile__bio-section">
+        <p class="barber-profile__bio-text">{{ barber.bio }}</p>
+      </section>
+    {% endif %}
+
     <section class="barber-profile__info-section">
       <div class="barber-profile__info-grid">
         {% if barber.shop_postcode %}
@@ -107,6 +113,7 @@
 
   initBarberProfile({
     userId: {{ barber.user_id }},
+    barbershopId: {{ barber.barbershop_id or 'null' }},
     barberPromo: {{ barber_promo|tojson if barber_promo else '{}' }},
     shifts: {{ shifts|tojson if shifts else '{}' }},
     currentDay: {{ current_day|default(0) }},

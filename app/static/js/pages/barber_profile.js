@@ -7,6 +7,7 @@ import { initBarberGallery } from "../components/barberGallery.js";
 export async function initBarberProfile(config = {}) {
   const {
     userId,
+    barbershopId,
     barberPromo = {},
     shifts = {},
     currentDay = 0,
@@ -20,7 +21,9 @@ export async function initBarberProfile(config = {}) {
       name: barberPromo.name || barberData.username || "Unknown",
       role: barberPromo.role || barberData.role || "barber",
       barbershop_name: barberPromo.barbershop_name || "",
-      profile_image_url: barberPromo.profile_image_url || ""
+      profile_image_url: barberPromo.profile_image_url || "",
+      userId: userId,
+      barbershopId: barbershopId
     }, {
       avatarSize: 56
     });

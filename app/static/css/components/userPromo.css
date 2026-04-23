@@ -39,8 +39,28 @@
   line-height: 1.2;
 }
 
+.user-promo__name--clickable {
+  cursor: pointer;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.user-promo__name--clickable:hover {
+  color: #007bff;
+  text-decoration: underline;
+}
+
 .user-promo__subtext {
   font-size: 0.825rem;
   color: #6b7280;
   line-height: 1.2;
+}
+
+.user-promo__subtext--clickable {
+  cursor: pointer;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.user-promo__subtext--clickable:hover {
+  color: #007bff;
+  text-decoration: underline;
 }
