@@ -4,10 +4,9 @@ app/static/css/app.css
 Overview
 --------
 
-This page documents ``app/static/css/app.css``.
+app/static/css/app.css controls layout, spacing, typography, colors, and interaction states for its target UI surface. It includes 2 media query block(s) to adapt the interface across viewport sizes. The file is loaded by page templates alongside app/static/css/main.css and other component/page styles as needed.
 
 Purpose
 -------
 
-- Contains styling rules for ``app/static/css``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This stylesheet defines presentation rules for shared application UI. It styles selectors such as .container, .nav, .nav-inner, and .brand.

@@ -4,10 +4,9 @@ app/templates/base.html
 Overview
 --------
 
-This page documents ``app/templates/base.html``.
+app/templates/base.html defines the HTML/Jinja structure, page regions, and server-rendered placeholders required by this screen. It composes display sections for content rendering and component mounting points used by client scripts. Named template blocks such as title, styles, content, and scripts allow base layout integration and page-specific content injection.
 
 Purpose
 -------
 
-- Contains template markup for ``app/templates``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This template renders the base view for the web application.

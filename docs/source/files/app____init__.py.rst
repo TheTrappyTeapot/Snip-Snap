@@ -4,10 +4,9 @@ app/__init__.py
 Overview
 --------
 
-This page documents ``app/__init__.py``.
+It provides the package boundary used by Flask app modules and helpers. The file has no runtime logic beyond package loading. Imports from sibling modules rely on this package entry point.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This package initializer marks the app directory as an importable Python package.

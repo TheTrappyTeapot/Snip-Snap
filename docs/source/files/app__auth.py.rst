@@ -4,10 +4,9 @@ app/auth.py
 Overview
 --------
 
-This page documents ``app/auth.py``.
+It caches a PyJWKClient instance for key discovery and decodes JWTs with issuer and audience validation. API and route handlers call verify_supabase_jwt to trust incoming identity claims. Invalid or malformed tokens raise explicit authentication exceptions.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This module verifies Supabase access tokens using the project JWKS endpoint.

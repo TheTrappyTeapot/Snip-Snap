@@ -4,10 +4,9 @@ app/routes.py
 Overview
 --------
 
-This page documents ``app/routes.py``.
+It renders Jinja templates for public and authenticated pages, handles auth redirects, and exposes helper endpoints used by frontend widgets. Route handlers combine session checks with database helper calls to populate profile, gallery, map, and review screens. It also includes convenience logic such as closing-soon calculations and media update endpoints.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This module registers page routes and non-blueprint API routes for the web application.

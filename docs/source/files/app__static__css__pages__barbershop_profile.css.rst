@@ -4,10 +4,9 @@ app/static/css/pages/barbershop_profile.css
 Overview
 --------
 
-This page documents ``app/static/css/pages/barbershop_profile.css``.
+app/static/css/pages/barbershop_profile.css controls layout, spacing, typography, colors, and interaction states for its target UI surface. It includes 1 media query block(s) to adapt the interface across viewport sizes. The file is loaded by page templates alongside app/static/css/main.css and other component/page styles as needed.
 
 Purpose
 -------
 
-- Contains styling rules for ``app/static/css/pages``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This stylesheet defines presentation rules for the barbershop profile page. It styles selectors such as .barbershop-container, .barbershop__header, .barbershop__name, and .barbershop__info-grid.

@@ -4,10 +4,9 @@ app/handy_scripts/cleanup_non_post_photos.py
 Overview
 --------
 
-This page documents ``app/handy_scripts/cleanup_non_post_photos.py``.
+It connects to the application database and prunes records based on non-post criteria. The script is intended for one-off cleanup operations outside normal request handling. It helps keep gallery/storage data tidy during development or data maintenance tasks.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app/handy_scripts``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This maintenance script removes non-post haircut photos that are no longer needed.

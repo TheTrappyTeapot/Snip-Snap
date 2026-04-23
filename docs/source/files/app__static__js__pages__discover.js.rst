@@ -4,10 +4,9 @@ app/static/js/pages/discover.js
 Overview
 --------
 
-This page documents ``app/static/js/pages/discover.js``.
+The script in app/static/js/pages/discover.js binds event listeners, updates DOM state, and keeps the related UI view interactive. It communicates with backend endpoints such as /api/discover/search_items and /api/gallery/posts to fetch or persist data needed by the UI. It is loaded by the corresponding template and works with neighboring component/feature scripts in app/static/js.
 
 Purpose
 -------
 
-- Contains JavaScript behavior for ``app/static/js/pages``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This page controller powers discover behavior on the client side. It organizes logic through functions such as initDiscoverPage.

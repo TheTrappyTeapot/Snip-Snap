@@ -4,10 +4,9 @@ app/static/css/components/searchAutocomplete.css
 Overview
 --------
 
-This page documents ``app/static/css/components/searchAutocomplete.css``.
+app/static/css/components/searchAutocomplete.css controls layout, spacing, typography, colors, and interaction states for its target UI surface. Its rules provide the base visual treatment used when rendering the related template/components. The file is loaded by page templates alongside app/static/css/main.css and other component/page styles as needed.
 
 Purpose
 -------
 
-- Contains styling rules for ``app/static/css/components``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This stylesheet defines presentation rules for the searchAutocomplete component. It styles selectors such as .sa-root, .sa-field, .sa-input, and .sa-input:focus.

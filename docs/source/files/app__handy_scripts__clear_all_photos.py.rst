@@ -4,10 +4,9 @@ app/handy_scripts/clear_all_photos.py
 Overview
 --------
 
-This page documents ``app/handy_scripts/clear_all_photos.py``.
+It performs bulk deletion logic against photo-related tables in the app database. Developers run it when they need a clean state before reseeding or validating gallery features. The script is intentionally separate from runtime app code to avoid accidental route exposure.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app/handy_scripts``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This maintenance script clears haircut photo records for reset or test data workflows.

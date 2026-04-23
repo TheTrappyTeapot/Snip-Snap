@@ -4,10 +4,9 @@ app/static/css/components/userPromo.css
 Overview
 --------
 
-This page documents ``app/static/css/components/userPromo.css``.
+app/static/css/components/userPromo.css controls layout, spacing, typography, colors, and interaction states for its target UI surface. Its rules provide the base visual treatment used when rendering the related template/components. The file is loaded by page templates alongside app/static/css/main.css and other component/page styles as needed.
 
 Purpose
 -------
 
-- Contains styling rules for ``app/static/css/components``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This stylesheet defines presentation rules for the userPromo component. It styles selectors such as .user-promo, .user-promo__avatar, .user-promo__avatar img, and .user-promo__text.

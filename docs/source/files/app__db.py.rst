@@ -4,10 +4,9 @@ app/db.py
 Overview
 --------
 
-This page documents ``app/db.py``.
+It opens PostgreSQL connections and implements query helpers used by route handlers and JSON APIs throughout the app. The module includes profile updates, gallery/photo writes, discover feed retrieval, map/search data queries, and review persistence. Most web endpoints delegate persistence work to these functions to keep request handlers thin.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This module is the primary data-access layer for users, barbers, barbershops, photos, search, and reviews.

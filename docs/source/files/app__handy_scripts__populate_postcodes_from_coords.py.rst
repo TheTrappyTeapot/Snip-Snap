@@ -4,10 +4,9 @@ app/handy_scripts/populate_postcodes_from_coords.py
 Overview
 --------
 
-This page documents ``app/handy_scripts/populate_postcodes_from_coords.py``.
+It iterates rows with coordinates, calls a geocoding service, and persists resolved postcode values. The script is meant for data repair and migration-like operations rather than normal request traffic. It helps keep location search and map features consistent when historical rows lack postcodes.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app/handy_scripts``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This script backfills missing postcodes by reverse-geocoding existing latitude/longitude records.

@@ -4,10 +4,9 @@ app/app.py
 Overview
 --------
 
-This page documents ``app/app.py``.
+It loads environment configuration, initializes CORS support, and registers route and API modules. The create_app function is the factory used by local runs and deployment entry points. Running the module directly starts the Flask server for development.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This module builds and configures the Flask application instance used to run Snip-Snap.

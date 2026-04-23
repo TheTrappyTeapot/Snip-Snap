@@ -4,10 +4,9 @@ app/input_sanitization.py
 Overview
 --------
 
-This page documents ``app/input_sanitization.py``.
+It normalizes and cleans input to reduce malformed values before database writes and template rendering. Route and API handlers call sanitize_input when accepting profile and review content. Keeping sanitization in one helper avoids inconsistent validation behavior across endpoints.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This module provides centralized text sanitization for user-provided form fields.

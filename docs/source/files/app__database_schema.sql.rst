@@ -4,10 +4,9 @@ app/database_schema.sql
 Overview
 --------
 
-This page documents ``app/database_schema.sql``.
+app/database_schema.sql creates core tables, foreign keys, and indexes that support users, barbers, shops, photos, tags, and reviews. Notable table definitions include public, public, public, public, public, and public. Application database helper functions in app/db.py assume this schema when executing reads and writes for API and route handlers.
 
 Purpose
 -------
 
-- Contains database schema and SQL definitions.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This SQL file defines the relational schema and constraints used by the Snip-Snap backend.

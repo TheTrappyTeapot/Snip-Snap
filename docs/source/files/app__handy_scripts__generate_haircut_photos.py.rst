@@ -4,10 +4,9 @@ app/handy_scripts/generate_haircut_photos.py
 Overview
 --------
 
-This page documents ``app/handy_scripts/generate_haircut_photos.py``.
+It samples storage images, chooses randomized timestamps/statuses/tags, and inserts rows associated with barbers. The generation flow uses helper functions for dimensions, tag sets, and photo metadata so output is varied but structured. It is used offline to quickly populate discover/gallery views with representative content.
 
 Purpose
 -------
 
-- Contains Python application logic for ``app/handy_scripts``.
-- Refer to inline comments in the source file for function-level and complex-flow details.
+This script seeds randomized haircut photo records for development and demo data.
