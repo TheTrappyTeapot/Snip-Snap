@@ -153,6 +153,12 @@ export class ReviewWidget {
     renderReviews() {
         console.log("[ReviewWidget.renderReviews] Starting render with", this.reviews.length, "reviews");
         const list = this.container.querySelector("#reviewList");
+        
+        if (this.reviews.length === 0) {
+            list.innerHTML = `<div style="text-align: center; padding: 32px 16px; color: #999;">No reviews yet. Be the first to review!</div>`;
+            return;
+        }
+        
         const html = this.reviews.map((rev, i) => {
             console.log(`[ReviewWidget.renderReviews] Rendering review ${i}:`, rev);
             const voteCount = rev.helpful_vote_count || 0;
