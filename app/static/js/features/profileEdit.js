@@ -1,3 +1,5 @@
+/* Script for app/static/js/features/profileEdit.js. */
+
 // Profile Edit Feature
 
 export function initProfileEditFeature() {

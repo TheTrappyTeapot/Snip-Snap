@@ -1,3 +1,5 @@
+/* Script for app/static/js/components/barberGallery.js. */
+
 import { renderGalleryGrid } from "./galleryGrid.js";
 import { renderBarberGalleryCard } from "./barberGalleryCard.js";
 

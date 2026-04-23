@@ -1,5 +1,10 @@
+/* Script for app/static/js/components/photoupload.js. */
+
 console.log('[PHOTO UPLOAD] photoupload.js loaded');
 
+/**
+ * Handles createPhotoUploadComponent.
+ */
 function createPhotoUploadComponent(mountElement, config = {}) {
 
     const maxPhotos = config.maxPhotos || 2;
@@ -72,6 +77,9 @@ function createPhotoUploadComponent(mountElement, config = {}) {
         }
     });
 
+    /**
+     * Handles renderPreview.
+     */
     function renderPreview() {
     preview.innerHTML = "";
 

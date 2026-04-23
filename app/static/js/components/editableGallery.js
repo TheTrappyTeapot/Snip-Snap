@@ -1,3 +1,5 @@
+/* Script for app/static/js/components/editableGallery.js. */
+
 import { renderGalleryGrid } from "./galleryGrid.js";
 import { renderEditableGalleryCard } from "./editableGalleryCard.js";
 

@@ -1,3 +1,5 @@
+/* Styles for app/static/css/components/userPromo.css. */
+
 .user-promo {
   --user-promo-avatar-size: 36px;
   display: inline-flex;

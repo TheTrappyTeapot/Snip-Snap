@@ -1,3 +1,5 @@
+/* Script for app/static/js/pages/profile.js. */
+
 console.log("profile.js script loading");
 
 // Prevent double-loading
@@ -194,6 +196,9 @@ if (window.__profileJsLoaded) {
       generalError.textContent = "";
     }
 
+    /**
+     * Validates profile form values and reports any field-level errors.
+     */
     function validateForm(username, location, role) {
       console.log("🔍 Validating form:", { location, role });
       clearErrors();
@@ -429,6 +434,9 @@ if (window.__profileJsLoaded) {
     const shopFormError = document.getElementById("shopFormError");
     const submitShopBtn = document.getElementById("submitShopBtn");
 
+    /**
+     * Handles openModal.
+     */
     function openModal() {
       console.log("🏪 Opening barbershop registration modal");
       registerBarbershopModal.style.display = "flex";
@@ -441,6 +449,9 @@ if (window.__profileJsLoaded) {
       shopNameInput.focus();
     }
 
+    /**
+     * Handles closeModal.
+     */
     function closeModal() {
       console.log("🏪 Closing barbershop registration modal");
       registerBarbershopModal.style.display = "none";

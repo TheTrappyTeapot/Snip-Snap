@@ -1,3 +1,5 @@
+"""Database access helpers for Snip-Snap."""
+
 import os
 import psycopg2
 import psycopg2.extras
@@ -10,6 +12,7 @@ load_dotenv()
 
 
 def _get_conn():
+    """Create and return a PostgreSQL connection from DATABASE_URL."""
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
         raise RuntimeError("DATABASE_URL environment variable is not set")
@@ -75,6 +78,7 @@ def link_auth_user_id(email: str, auth_user_id: str) -> bool:
     return rows_updated > 0
 
 def get_app_user_by_auth_user_id(auth_user_id: str):
+    """Handles get app user by auth user id."""
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -99,6 +103,7 @@ def get_app_user_by_auth_user_id(auth_user_id: str):
     }
 
 def get_app_user_by_email(email: str):
+    """Handles get app user by email."""
     email = email.strip().lower()
     with _get_conn() as conn:
         with conn.cursor() as cur:
@@ -480,6 +485,7 @@ def update_barber_social_links(user_id: int, social_links: dict) -> None:
 
 
 def filter_existing_tag_ids(tag_ids: List[int]) -> List[int]:
+    """Handles filter existing tag ids."""
     if not tag_ids:
         return []
     with _get_conn() as conn:
@@ -493,6 +499,7 @@ def filter_existing_tag_ids(tag_ids: List[int]) -> List[int]:
 
 
 def create_haircut_post(barber_id: int, image_url: str, width_px: int, height_px: int, tag_ids: List[int], is_post: bool = True):
+    """Handles create haircut post."""
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -529,6 +536,7 @@ def fetch_discover_posts(
     viewer_lat: float | None = None,
     viewer_lng: float | None = None,
 ) -> List[Dict[str, Any]]:
+    """Handles fetch discover posts."""
     where: List[str] = ["hp.is_post = TRUE", "hp.status = 'show'"]
     where_params: List[Any] = []
     select_params: List[Any] = []
@@ -722,6 +730,7 @@ def fetch_discover_posts(
     return diverse_rows[:limit]
 
 def update_user_location(user_id: int, lat: float, lng: float) -> None:
+    """Handles update user location."""
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -732,6 +741,7 @@ def update_user_location(user_id: int, lat: float, lng: float) -> None:
 
 
 def get_user_location(user_id: int):
+    """Handles get user location."""
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT location_lat, location_lng, postcode FROM App_User WHERE user_id = %s", (user_id,))
@@ -754,6 +764,7 @@ def get_user_location(user_id: int):
 
 
 def update_user_postcode(user_id: int, postcode: str) -> None:
+    """Handles update user postcode."""
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -763,6 +774,7 @@ def update_user_postcode(user_id: int, postcode: str) -> None:
         conn.commit()
 
 def get_user_postcode(user_id: int):
+    """Handles get user postcode."""
     with _get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT postcode FROM App_User WHERE user_id = %s", (user_id,))
@@ -777,6 +789,7 @@ def get_user_postcode(user_id: int):
 
 
 def _pick_label(row: Dict[str, Any], preferred_keys: List[str]) -> str:
+    """Handles pick label."""
     for k in preferred_keys:
         v = row.get(k)
         if isinstance(v, str) and v.strip():
@@ -844,6 +857,7 @@ def get_barbershops_for_map():
 
 
 def fetch_discover_search_items():
+    """Handles fetch discover search items."""
     items = [
         {"id": 0, "type": "filter", "label": "Closest"},
         {"id": 1, "type": "filter", "label": "Highest rated"},

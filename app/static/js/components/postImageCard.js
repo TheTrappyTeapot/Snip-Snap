@@ -1,3 +1,5 @@
+/* Script for app/static/js/components/postImageCard.js. */
+
 import { renderUserPromo } from "./userPromo.js";
 
 export function renderPostImageCard(item, options = {}) {

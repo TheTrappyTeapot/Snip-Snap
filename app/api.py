@@ -1,3 +1,5 @@
+"""Module for app/api.py."""
+
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 
@@ -75,6 +77,7 @@ def create_user():
 
 @api_bp.get("/barbershops")
 def barbershops():
+    """Handles barbershops."""
     try:
         shops = get_barbershops_for_map()
         return jsonify(shops)
@@ -84,6 +87,7 @@ def barbershops():
 
 @api_bp.post("/user/location")
 def save_user_location():
+    """Handles save user location."""
     u = session.get("user")
     if not u or not u.get("id"):
         return jsonify({"error": "Not logged in"}), 401
@@ -105,6 +109,7 @@ def save_user_location():
 
 @api_bp.get("/discover/search_items")
 def discover_search_items():
+    """Handles discover search items."""
     items = fetch_discover_search_items()
     return jsonify({"items": items})
 
@@ -144,6 +149,7 @@ def _make_next_cursor(items):
 
 @api_bp.post("/gallery/posts")
 def gallery_posts():
+    """Handles gallery posts."""
     payload = request.get_json(silent=True) or {}
 
     ALLOWED_SORTS = {"most_recent", "nearest", "highest_rated"}

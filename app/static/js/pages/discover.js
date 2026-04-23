@@ -1,3 +1,5 @@
+/* Script for app/static/js/pages/discover.js. */
+
 import { TagList } from "../components/tagList.js";
 import { initPostGallery } from "../features/postGallery.js";
 import { initDiscoverSearch } from "../features/discoverSearch.js";

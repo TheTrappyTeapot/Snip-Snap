@@ -1,3 +1,5 @@
+/* Script for app/static/js/components/review_widget.js. */
+
 export class ReviewWidget {
     constructor(containerId) {
         this.container = document.getElementById(containerId);

@@ -30,10 +30,16 @@
     `,
   };
 
+  /**
+   * Handles normalise.
+   */
   function normalise(str) {
     return (str ?? "").toString().trim().toLowerCase();
   }
 
+  /**
+   * Handles isValidItem.
+   */
   function isValidItem(item) {
     return (
       item &&
@@ -44,6 +50,9 @@
     );
   }
 
+  /**
+   * Handles createEl.
+   */
   function createEl(tag, className, attrs = {}) {
     const el = document.createElement(tag);
     if (className) el.className = className;
@@ -105,6 +114,9 @@
     mount.innerHTML = "";
     mount.appendChild(root);
 
+    /**
+     * Handles open.
+     */
     function open() {
       if (isOpen) return;
       isOpen = true;
@@ -112,6 +124,9 @@
       dropdown.classList.add("is-open");
     }
 
+    /**
+     * Handles close.
+     */
     function close() {
       if (!isOpen) return;
       isOpen = false;
@@ -122,6 +137,9 @@
       renderedResults = [];
     }
 
+    /**
+     * Handles setHighlight.
+     */
     function setHighlight(newIndex) {
       highlightedIndex = newIndex;
       const rows = dropdown.querySelectorAll(".sa-item[role='option']");
@@ -131,6 +149,9 @@
       });
     }
 
+    /**
+     * Handles renderNoResults.
+     */
     function renderNoResults() {
       dropdown.innerHTML = "";
       const row = createEl("div", "sa-item sa-item--empty", { role: "option" });
@@ -141,6 +162,9 @@
       open();
     }
 
+    /**
+     * Handles renderResults.
+     */
     function renderResults(results) {
       dropdown.innerHTML = "";
       renderedResults = results;
@@ -189,6 +213,9 @@
       highlightedIndex = -1;
     }
 
+    /**
+     * Handles filterItems.
+     */
     function filterItems(query) {
       const q = normalise(query);
       if (q.length < 1) return [];
@@ -202,6 +229,9 @@
       return results;
     }
 
+    /**
+     * Handles selectItem.
+     */
     function selectItem(item) {
       selectedItem = item;
       input.value = item.label;
@@ -213,6 +243,9 @@
       close();
     }
 
+    /**
+     * Handles refresh.
+     */
     function refresh() {
       const q = input.value ?? "";
 

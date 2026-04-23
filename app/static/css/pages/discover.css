@@ -1,3 +1,5 @@
+/* Styles for app/static/css/pages/discover.css. */
+
 :root {
   --discover-bg: var(--login-bg, #f5f7fb);
   --discover-surface: var(--login-surface, #ffffff);

@@ -1,3 +1,5 @@
+/* Styles for app/static/css/components/galleryGrid.css. */
+
 .galleryGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));

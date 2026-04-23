@@ -1,3 +1,5 @@
+/* Script for app/static/js/pages/barbershop_profile.js. */
+
 import { renderUserPromo } from "../components/userPromo.js";
 import { renderTimetable } from "../components/timetable.js";
 import { initBarbershopGallery } from "../components/barberGallery.js";

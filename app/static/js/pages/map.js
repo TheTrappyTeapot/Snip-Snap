@@ -1,3 +1,5 @@
+/* Script for app/static/js/pages/map.js. */
+
 (function () {
   "use strict";
 
@@ -68,6 +70,9 @@
     locationInput.focus();
   }
 
+  /**
+   * Handles hideModal.
+   */
   function hideModal() {
     locationModal.classList.add("hidden");
   }
@@ -172,6 +177,9 @@
     savePrompt.classList.remove("hidden");
   }
 
+  /**
+   * Handles hideSavePrompt.
+   */
   function hideSavePrompt() {
     savePrompt.classList.add("hidden");
   }
@@ -202,6 +210,9 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
+  /**
+   * Handles formatDistance.
+   */
   function formatDistance(km) {
     return km < 1 ? Math.round(km * 1000) + "m" : km.toFixed(1) + "km";
   }

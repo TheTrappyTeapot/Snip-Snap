@@ -1,3 +1,5 @@
+/* Script for app/static/js/components/tagList.js. */
+
 export class TagList {
   constructor({ mountEl, initialItems = [] }) {
     if (!mountEl) throw new Error("TagList requires mountEl");
