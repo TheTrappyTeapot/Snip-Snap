@@ -9,4 +9,4 @@ The script in app/static/js/pages/dashboard.js binds event listeners, updates DO
 Purpose
 -------
 
-This script in `app/static/js/pages/dashboard.js` provides frontend browser behavior. Function responsibilities: `initializeFeatures` initializes dashboard feature modules after the page DOM is ready.
+This script in `app/static/js/pages/dashboard.js` provides frontend browser behavior. Function responsibilities: `initializeFeatures` sets up dashboard feature modules when the DOM is ready.

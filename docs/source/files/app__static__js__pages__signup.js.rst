@@ -9,4 +9,4 @@ The script in app/static/js/pages/signup.js binds event listeners, updates DOM s
 Purpose
 -------
 
-This script in `app/static/js/pages/signup.js` provides frontend browser behavior. Function responsibilities: `initializeForm` initialize form when DOM is ready; `clearErrors` clears all visible validation and general error messages; `validateForm` validates signup inputs and returns true when the form is valid.
+This script in `app/static/js/pages/signup.js` provides frontend browser behavior. Function responsibilities: `initializeForm` initializes the signup form when the DOM is ready; `clearErrors` clears visible validation and general error messages; `validateForm` validates signup inputs and returns true when the form is valid.

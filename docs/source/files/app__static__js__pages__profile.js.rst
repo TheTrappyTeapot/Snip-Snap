@@ -9,4 +9,4 @@ The script in app/static/js/pages/profile.js binds event listeners, updates DOM 
 Purpose
 -------
 
-This script in `app/static/js/pages/profile.js` provides frontend browser behavior. Function responsibilities: `initializeForm` initialize form when DOM is ready; `clearErrors` form validation; `validateForm` validates profile form values and reports any field-level errors; `openModal` opens modal; `closeModal` closes modal.
+This script in `app/static/js/pages/profile.js` provides frontend browser behavior. Function responsibilities: `initializeForm` initializes profile form controls when the DOM is ready; `clearErrors` clears field-level and general profile form error messages; `validateForm` validates profile form values and reports any field-level errors; `openModal` opens the profile modal dialog; `closeModal` closes the profile modal dialog.
