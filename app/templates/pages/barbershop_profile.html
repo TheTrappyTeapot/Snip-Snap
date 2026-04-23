@@ -101,7 +101,7 @@
 <script type="module">
   import { initBarbershopProfile } from "{{ url_for('static', filename='js/pages/barbershop_profile.js') }}";
   import { ReviewWidget } from "{{ url_for('static', filename='js/components/review_widget.js') }}";
-    window.widget = new ReviewWidget('review-widget-mount');
+    window.widget = new ReviewWidget('review-widget-mount', "{{ shop.name }}", null, {{ shop.barbershop_id }});
 
   initBarbershopProfile({
     barbershopId: {{ shop.barbershop_id }},

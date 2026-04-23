@@ -18,6 +18,12 @@ from .db import (
     postcode_to_coordinates,
     create_barbershop,
     update_or_create_profile_photo,
+    create_review,
+    create_review_reply,
+    get_reviews_with_replies,
+    add_helpful_vote,
+    remove_helpful_vote,
+    get_helpful_vote_count,
 )
 from .input_sanitization import sanitize_input
 from .supabase_storage import sign_storage_path, upload_photo_to_storage
@@ -649,3 +655,174 @@ def upload_photo():
         import traceback
         print(f"[UPLOAD_PHOTO] Traceback: {traceback.format_exc()}")
         return jsonify({"ok": False, "error": error_msg}), 500
+
+
+@api_bp.post("/reviews")
+def post_review():
+    """Create a new review for a barber or barbershop."""
+    u = session.get("user")
+    if not u or not u.get("id"):
+        return jsonify({"ok": False, "error": "Not logged in"}), 401
+    
+    user_id = int(u["id"])
+    data = request.get_json(silent=True) or {}
+    
+    target_barber_id = data.get("target_barber_id")
+    target_barbershop_id = data.get("target_barbershop_id")
+    text = data.get("text", "").strip()
+    rating = data.get("rating")
+    
+    # Validate input
+    if not text:
+        return jsonify({"ok": False, "error": "Review text is required"}), 400
+    
+    if not rating or not isinstance(rating, int) or not (1 <= rating <= 5):
+        return jsonify({"ok": False, "error": "Rating must be between 1 and 5"}), 400
+    
+    if not target_barber_id and not target_barbershop_id:
+        return jsonify({"ok": False, "error": "Either target_barber_id or target_barbershop_id is required"}), 400
+    
+    try:
+        review_id = create_review(
+            user_id=user_id,
+            target_barber_id=target_barber_id,
+            target_barbershop_id=target_barbershop_id,
+            text=text,
+            rating=rating
+        )
+        
+        # Get the target_barber_user_id if reviewing a barber
+        target_barber_user_id = None
+        if target_barber_id:
+            from .db import _get_conn
+            with _get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("SELECT user_id FROM Barber WHERE barber_id = %s", (target_barber_id,))
+                    row = cur.fetchone()
+                    target_barber_user_id = row[0] if row else None
+        
+        return jsonify({"ok": True, "review_id": review_id, "user_id": user_id, "target_barber_user_id": target_barber_user_id}), 201
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.post("/reviews/reply")
+def post_review_reply():
+    """Create a reply to an existing review."""
+    u = session.get("user")
+    if not u or not u.get("id"):
+        return jsonify({"ok": False, "error": "Not logged in"}), 401
+    
+    user_id = int(u["id"])
+    data = request.get_json(silent=True) or {}
+    
+    parent_review_id = data.get("parent_review_id")
+    text = data.get("text", "").strip()
+    
+    # Validate input
+    if not parent_review_id:
+        return jsonify({"ok": False, "error": "parent_review_id is required"}), 400
+    
+    if not text:
+        return jsonify({"ok": False, "error": "Reply text is required"}), 400
+    
+    try:
+        reply_id = create_review_reply(
+            user_id=user_id,
+            parent_review_id=parent_review_id,
+            text=text
+        )
+        return jsonify({"ok": True, "reply_id": reply_id, "user_id": user_id}), 201
+    except ValueError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.get("/reviews")
+def get_reviews():
+    """Fetch reviews for a barber or barbershop."""
+    target_barber_id = request.args.get("target_barber_id", type=int)
+    target_barbershop_id = request.args.get("target_barbershop_id", type=int)
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    print(f"[GET_REVIEWS] Request received: target_barber_id={target_barber_id}, target_barbershop_id={target_barbershop_id}, current_user_id={current_user_id}")
+    
+    if not target_barber_id and not target_barbershop_id:
+        print("[GET_REVIEWS] Error: Neither target_barber_id nor target_barbershop_id provided")
+        return jsonify({"ok": False, "error": "Either target_barber_id or target_barbershop_id is required"}), 400
+    
+    try:
+        print(f"[GET_REVIEWS] Calling get_reviews_with_replies with barber_id={target_barber_id}, current_user_id={current_user_id}")
+        reviews = get_reviews_with_replies(
+            target_barber_id=target_barber_id,
+            target_barbershop_id=target_barbershop_id,
+            current_user_id=current_user_id
+        )
+        print(f"[GET_REVIEWS] Success! Retrieved {len(reviews)} reviews")
+        return jsonify({"ok": True, "reviews": reviews}), 200
+    except Exception as e:
+        print(f"[GET_REVIEWS] Exception: {str(e)}")
+        import traceback
+        print(f"[GET_REVIEWS] Traceback: {traceback.format_exc()}")
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.post("/reviews/<int:review_id>/vote")
+def vote_on_review(review_id: int):
+    """Vote on a review or reply as helpful."""
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    print(f"[VOTE_REVIEW] Request received: review_id={review_id}, user_id={current_user_id}")
+    
+    if not current_user_id:
+        print("[VOTE_REVIEW] Error: User not logged in")
+        return jsonify({"ok": False, "error": "Must be logged in to vote"}), 401
+    
+    try:
+        # Try to add the vote
+        success = add_helpful_vote(review_id, current_user_id)
+        
+        if success:
+            print(f"[VOTE_REVIEW] Vote added successfully")
+            vote_count = get_helpful_vote_count(review_id)
+            return jsonify({"ok": True, "message": "Vote added", "helpful_vote_count": vote_count}), 200
+        else:
+            print(f"[VOTE_REVIEW] User already voted on this review")
+            return jsonify({"ok": False, "error": "You already voted on this"}), 400
+    except Exception as e:
+        print(f"[VOTE_REVIEW] Exception: {str(e)}")
+        import traceback
+        print(f"[VOTE_REVIEW] Traceback: {traceback.format_exc()}")
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.delete("/reviews/<int:review_id>/vote")
+def remove_vote_on_review(review_id: int):
+    """Remove a helpful vote from a review or reply."""
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    print(f"[REMOVE_VOTE] Request received: review_id={review_id}, user_id={current_user_id}")
+    
+    if not current_user_id:
+        print("[REMOVE_VOTE] Error: User not logged in")
+        return jsonify({"ok": False, "error": "Must be logged in"}), 401
+    
+    try:
+        success = remove_helpful_vote(review_id, current_user_id)
+        
+        if success:
+            print(f"[REMOVE_VOTE] Vote removed successfully")
+            vote_count = get_helpful_vote_count(review_id)
+            return jsonify({"ok": True, "message": "Vote removed", "helpful_vote_count": vote_count}), 200
+        else:
+            print(f"[REMOVE_VOTE] No vote found to remove")
+            return jsonify({"ok": False, "error": "No vote to remove"}), 404
+    except Exception as e:
+        print(f"[REMOVE_VOTE] Exception: {str(e)}")
+        import traceback
+        print(f"[REMOVE_VOTE] Traceback: {traceback.format_exc()}")
+        return jsonify({"ok": False, "error": str(e)}), 500

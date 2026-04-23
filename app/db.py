@@ -1034,6 +1034,279 @@ def submit_barber_review(barber_id: int, customer_id: int, rating: int, comment:
     return review_id
 
 
+def create_review(user_id: int, target_barber_id: int | None, target_barbershop_id: int | None, text: str, rating: int) -> int:
+    """
+    Create a new review in the database.
+    Returns the review_id.
+    """
+    if not (1 <= rating <= 5):
+        raise ValueError("Rating must be between 1 and 5")
+    
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO review (user_id, target_barber_id, target_barbershop_id, text, rating, status)
+                VALUES (%s, %s, %s, %s, %s, 'show')
+                RETURNING review_id
+                """,
+                (user_id, target_barber_id, target_barbershop_id, text, rating),
+            )
+            review_id = cur.fetchone()[0]
+        conn.commit()
+    return review_id
+
+
+def create_review_reply(user_id: int, parent_review_id: int, text: str) -> int:
+    """
+    Create a reply to a review in the database.
+    Returns the review_id of the reply.
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            # Get the parent review to determine the target
+            cur.execute(
+                "SELECT target_barber_id, target_barbershop_id FROM review WHERE review_id = %s",
+                (parent_review_id,),
+            )
+            parent = cur.fetchone()
+            if not parent:
+                raise ValueError("Parent review not found")
+            
+            # Create the reply (linked via parent_review_id)
+            cur.execute(
+                """
+                INSERT INTO review (user_id, parent_review_id, target_barber_id, target_barbershop_id, text, status)
+                VALUES (%s, %s, %s, %s, %s, 'show')
+                RETURNING review_id
+                """,
+                (user_id, parent_review_id, parent[0], parent[1], text),
+            )
+            reply_id = cur.fetchone()[0]
+        conn.commit()
+    return reply_id
+
+
+def get_helpful_vote_count(review_id: int) -> int:
+    """
+    Get the number of helpful votes for a review.
+    
+    Args:
+        review_id: Review ID
+        
+    Returns:
+        Number of votes
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT COUNT(*) FROM review_helpful_vote WHERE review_id = %s",
+                (review_id,),
+            )
+            count = cur.fetchone()[0]
+    return count
+
+
+def has_user_voted(review_id: int, user_id: int) -> bool:
+    """
+    Check if a user has already voted on a review.
+    
+    Args:
+        review_id: Review ID
+        user_id: User ID
+        
+    Returns:
+        True if user has voted, False otherwise
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT 1 FROM review_helpful_vote WHERE review_id = %s AND user_id = %s",
+                (review_id, user_id),
+            )
+            return cur.fetchone() is not None
+
+
+def add_helpful_vote(review_id: int, user_id: int) -> bool:
+    """
+    Add a helpful vote for a review by a user.
+    Prevents duplicate votes (one user, one vote per review).
+    
+    Args:
+        review_id: Review ID
+        user_id: User ID
+        
+    Returns:
+        True if vote was added, False if already voted
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute(
+                    """
+                    INSERT INTO review_helpful_vote (review_id, user_id)
+                    VALUES (%s, %s)
+                    """,
+                    (review_id, user_id),
+                )
+                conn.commit()
+                print(f"[ADD_HELPFUL_VOTE] Vote added for review_id={review_id}, user_id={user_id}")
+                return True
+            except Exception as e:
+                conn.rollback()
+                print(f"[ADD_HELPFUL_VOTE] Error adding vote: {e}")
+                # Check if it's a duplicate vote
+                if "duplicate key" in str(e):
+                    return False
+                raise
+
+
+def remove_helpful_vote(review_id: int, user_id: int) -> bool:
+    """
+    Remove a helpful vote for a review by a user.
+    
+    Args:
+        review_id: Review ID
+        user_id: User ID
+        
+    Returns:
+        True if vote was removed, False if no vote existed
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM review_helpful_vote WHERE review_id = %s AND user_id = %s",
+                (review_id, user_id),
+            )
+            deleted = cur.rowcount > 0
+            conn.commit()
+            print(f"[REMOVE_HELPFUL_VOTE] Vote removed for review_id={review_id}, user_id={user_id}: {deleted}")
+            return deleted
+
+
+def get_reviews_with_replies(target_barber_id: int | None = None, target_barbershop_id: int | None = None, current_user_id: int | None = None) -> List[Dict[str, Any]]:
+    """
+    Fetch all reviews (and their replies) for a barber or barbershop.
+    
+    Args:
+        target_barber_id: Barber ID (if provided, fetches reviews for this barber)
+        target_barbershop_id: Barbershop ID (if provided, fetches reviews for this barbershop)
+        current_user_id: Current user ID (optional, to check if user has voted)
+        
+    Returns:
+        List of review dicts with structure:
+        {
+            review_id, user_id, username, rating, text, created_at, status, 
+            target_barber_id, target_barbershop_id, target_barber_user_id,
+            helpful_vote_count, user_has_voted,
+            replies: [{ review_id, user_id, username, text, created_at, helpful_vote_count, user_has_voted }, ...]
+        }
+    """
+    print(f"[GET_REVIEWS_WITH_REPLIES] Called with barber_id={target_barber_id}, barbershop_id={target_barbershop_id}, current_user_id={current_user_id}")
+    
+    if not target_barber_id and not target_barbershop_id:
+        raise ValueError("Either target_barber_id or target_barbershop_id must be provided")
+    
+    # Ensure current_user_id is an int or None
+    if current_user_id and not isinstance(current_user_id, int):
+        print(f"[GET_REVIEWS_WITH_REPLIES] Warning: current_user_id is {type(current_user_id)}, expected int")
+        current_user_id = None
+    
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            # Build WHERE clause
+            where_clause = []
+            where_params = []
+            
+            if target_barber_id:
+                where_clause.append("r.target_barber_id = %s")
+                where_params.append(target_barber_id)
+            if target_barbershop_id:
+                where_clause.append("r.target_barbershop_id = %s")
+                where_params.append(target_barbershop_id)
+            
+            where_str = " AND ".join(where_clause)
+            
+            # Prepare all parameters in correct order: [user_id_for_subquery, ...where_params]
+            all_params = [current_user_id if current_user_id else -1] + where_params
+            
+            query = f"""
+                SELECT 
+                    r.review_id, 
+                    r.user_id, 
+                    u.username, 
+                    r.rating, 
+                    r.text, 
+                    r.created_at,
+                    r.status,
+                    r.target_barber_id,
+                    r.target_barbershop_id,
+                    b.user_id AS target_barber_user_id,
+                    COALESCE(vote_counts.vote_count, 0) AS helpful_vote_count,
+                    COALESCE(user_votes.has_voted, FALSE) AS user_has_voted
+                FROM review r
+                JOIN app_user u ON u.user_id = r.user_id
+                LEFT JOIN Barber b ON b.barber_id = r.target_barber_id
+                LEFT JOIN (
+                    SELECT review_id, COUNT(*) as vote_count
+                    FROM review_helpful_vote
+                    GROUP BY review_id
+                ) vote_counts ON vote_counts.review_id = r.review_id
+                LEFT JOIN (
+                    SELECT review_id, TRUE as has_voted
+                    FROM review_helpful_vote
+                    WHERE user_id = %s
+                ) user_votes ON user_votes.review_id = r.review_id
+                WHERE r.parent_review_id IS NULL AND {where_str} AND r.status = 'show'
+                ORDER BY r.created_at DESC
+                """
+            
+            print(f"[GET_REVIEWS_WITH_REPLIES] Executing query with params: {all_params}")
+            
+            cur.execute(query, all_params)
+            parent_reviews = cur.fetchall()
+            
+            print(f"[GET_REVIEWS_WITH_REPLIES] Found {len(parent_reviews)} parent reviews")
+            
+            # Fetch replies for each parent review
+            for parent in parent_reviews:
+                print(f"[GET_REVIEWS_WITH_REPLIES] Fetching replies for review_id={parent['review_id']}")
+                reply_params = [current_user_id if current_user_id else -1, parent["review_id"]]
+                cur.execute(
+                    """
+                    SELECT 
+                        r.review_id, 
+                        r.user_id, 
+                        u.username, 
+                        r.text, 
+                        r.created_at,
+                        COALESCE(vote_counts.vote_count, 0) AS helpful_vote_count,
+                        COALESCE(user_votes.has_voted, FALSE) AS user_has_voted
+                    FROM review r
+                    JOIN app_user u ON u.user_id = r.user_id
+                    LEFT JOIN (
+                        SELECT review_id, COUNT(*) as vote_count
+                        FROM review_helpful_vote
+                        GROUP BY review_id
+                    ) vote_counts ON vote_counts.review_id = r.review_id
+                    LEFT JOIN (
+                        SELECT review_id, TRUE as has_voted
+                        FROM review_helpful_vote
+                        WHERE user_id = %s
+                    ) user_votes ON user_votes.review_id = r.review_id
+                    WHERE r.parent_review_id = %s AND r.status = 'show'
+                    ORDER BY r.created_at ASC
+                    """,
+                    reply_params,
+                )
+                replies = cur.fetchall()
+                parent["replies"] = replies
+                print(f"[GET_REVIEWS_WITH_REPLIES] Review {parent['review_id']} has {len(replies)} replies")
+    
+    print(f"[GET_REVIEWS_WITH_REPLIES] Returning {len(parent_reviews)} reviews")
+    return parent_reviews
+
+
 def postcode_to_coordinates(postcode: str) -> tuple | None:
     """
     Convert UK postcode to latitude/longitude using postcodes.io API.
@@ -1123,12 +1396,12 @@ def update_or_create_profile_photo(user_id: int, image_url: str, width_px: int, 
     
     Args:
         user_id: User ID (must exist in Users table)
-        image_url: Storage path to the image (e.g., "profile_123_abc123.png")
+        image_url: URL of the profile photo
         width_px: Image width in pixels
         height_px: Image height in pixels
         
     Returns:
-        photo_id of the created or updated ProfilePhoto record
+        The ProfilePhoto ID
     """
     with _get_conn() as conn:
         with conn.cursor() as cur:
@@ -1136,19 +1409,15 @@ def update_or_create_profile_photo(user_id: int, image_url: str, width_px: int, 
                 """
                 INSERT INTO ProfilePhoto (user_id, image_url, width_px, height_px)
                 VALUES (%s, %s, %s, %s)
-                ON CONFLICT (user_id)
-                DO UPDATE SET
-                    image_url = EXCLUDED.image_url,
-                    width_px = EXCLUDED.width_px,
-                    height_px = EXCLUDED.height_px
-                RETURNING photo_id
+                ON CONFLICT (user_id) DO UPDATE
+                SET image_url = EXCLUDED.image_url, width_px = EXCLUDED.width_px, height_px = EXCLUDED.height_px
+                RETURNING profile_photo_id
                 """,
                 (user_id, image_url, width_px, height_px),
             )
             photo_id = cur.fetchone()[0]
         conn.commit()
     
-    print(f"[UPDATE_OR_CREATE_PROFILE_PHOTO] Updated profile photo for user {user_id} (ID: {photo_id}): {image_url} ({width_px}x{height_px})")
     return photo_id
 
 
@@ -1193,7 +1462,7 @@ def get_barber_gallery_photos(barber_id: int, limit: int = 16) -> List[Dict[str,
     
     Args:
         barber_id: Barber ID
-        limit: Maximum number of photos to return (default 16 for 2x8 grid)
+        limit: Maximum number of photos to return (default 16 for 2-column by 8-row grid)
         
     Returns:
         List of dicts with {photo_id, barber_id, image_url, width_px, height_px, main_tag_name, promo_name, promo_role, promo_barbershop_name, promo_profile_image_url}
@@ -1235,7 +1504,7 @@ def get_barbershop_gallery_photos(barbershop_id: int, limit: int = 16) -> List[D
     
     Args:
         barbershop_id: Barbershop ID
-        limit: Maximum number of photos to return (default 16 for 2x8 grid)
+        limit: Maximum number of photos to return (default 16 for 2-column by 8-row grid)
         
     Returns:
         List of dicts with {photo_id, barber_id, image_url, width_px, height_px, main_tag_name, promo_name, promo_role, promo_barbershop_name, promo_profile_image_url}

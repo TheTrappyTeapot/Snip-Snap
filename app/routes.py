@@ -472,6 +472,9 @@ def register_routes(app):
         shifts = get_shifts_for_barber(int(barber_id))
         current_day = get_current_day_num()
         
+        # Get the actual barber_id (from Barber table)
+        barber_db_id = get_barber_id_from_user_id(int(barber_id))
+        
         # Calculate closing soon info for today's shifts
         closing_info = {}
         if current_day in shifts and shifts[current_day]:
@@ -485,6 +488,7 @@ def register_routes(app):
             barber_promo=barber_promo, 
             shifts=shifts, 
             barber_id=barber_id,
+            barber_db_id=barber_db_id,
             current_day=current_day,
             closing_info=closing_info
         )
