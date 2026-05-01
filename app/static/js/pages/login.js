@@ -11,7 +11,6 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const loginForm = document.getElementById("loginForm");
 const submitBtn = loginForm?.querySelector('button[type="submit"]');
-const googleBtn = document.getElementById("googleBtn");
 
 // Error elements
 const emailError = document.getElementById("emailError");
@@ -142,24 +141,6 @@ if (loginForm) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Sign in";
       }
-    }
-  });
-}
-
-if (googleBtn) {
-  googleBtn.addEventListener("click", async () => {
-    if (msg) msg.textContent = "Redirecting to Google…";
-
-    try {
-      await sb.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin + "/auth_redirect",
-        },
-      });
-    } catch (error) {
-      console.error("Google OAuth error:", error);
-      if (generalError) generalError.textContent = "Error: " + error.message;
     }
   });
 }

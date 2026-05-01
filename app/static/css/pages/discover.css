@@ -66,6 +66,39 @@
   gap: 14px;
 }
 
+.discover-filter-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.discover-filter-label {
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.discover-filter-select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 150px;
+  background-color: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.discover-filter-select:hover {
+  border-color: #999;
+}
+
+.discover-filter-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --discover-bg: var(--login-bg, #181a1f);
@@ -148,6 +181,21 @@
 
   .taglist button {
     color: var(--login-accent, #f59e0b) !important;
+  }
+
+  .discover-filter-select {
+    background-color: #1f232a;
+    border-color: #3a404b;
+    color: var(--discover-text);
+  }
+
+  .discover-filter-select:hover {
+    border-color: #505a6d;
+  }
+
+  .discover-filter-select:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
   }
 }
 

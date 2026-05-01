@@ -207,9 +207,9 @@ if (window.__profileJsLoaded) {
       // Note: Username is now edited via the editable userPromo component
       // which handles its own validation and API calls
       
-      // Location validation (optional but if provided must be valid)
-      if (location && location.length > 10) {
-        locationError.textContent = "Location must be 10 characters or fewer";
+      // Location validation (optional but if provided must be valid UK postcode)
+      if (location && location.length > 8) {
+        locationError.textContent = "Postcode must be a valid UK format (e.g., SW1A 1AA)";
         console.log("✗ Location validation failed: too long");
         isValid = false;
       } else if (location) {
@@ -509,8 +509,8 @@ if (window.__profileJsLoaded) {
         if (!shopPostcode) {
           shopPostcodeError.textContent = "Postcode is required";
           isValid = false;
-        } else if (shopPostcode.length > 10) {
-          shopPostcodeError.textContent = "Postcode too long (max 10 characters)";
+        } else if (shopPostcode.length > 8) {
+          shopPostcodeError.textContent = "Postcode must be a valid UK format (e.g., SW1A 1AA)";
           isValid = false;
         }
 

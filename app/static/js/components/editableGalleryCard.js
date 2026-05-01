@@ -21,8 +21,16 @@ export function renderEditableGalleryCard(photo, onEdit) {
     onEdit(photo);
   });
 
+  // Tag label overlay (bottom)
+  const tagEl = document.createElement('div');
+  tagEl.className = 'editable-gallery-card__tag';
+  if (photo.main_tag_name) {
+    tagEl.textContent = photo.main_tag_name;
+  }
+
   media.appendChild(img);
   media.appendChild(editBtn);
+  media.appendChild(tagEl);
 
   card.appendChild(media);
 

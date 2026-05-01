@@ -34,7 +34,7 @@
       <!-- Location -->
       <div class="profile-field">
         <label class="profile-label" for="location">Location (Postcode)</label>
-        <input class="profile-input" id="location" type="text" placeholder="Enter your postcode" value="{{ user_postcode if user_postcode else '' }}">
+        <input class="profile-input" id="location" type="text" placeholder="Enter your postcode (e.g., SW1A 1AA)" maxlength="8" value="{{ user_postcode if user_postcode else '' }}">
         <p id="locationError" class="field-error"></p>
       </div>
 
@@ -110,7 +110,7 @@
           type="text" 
           required 
           placeholder="Enter postcode (e.g., SW1A 1AA)"
-          maxlength="10"
+          maxlength="8"
         >
         <p id="shopPostcodeError" class="field-error"></p>
       </div>

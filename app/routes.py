@@ -3,7 +3,12 @@
 import os
 from flask import render_template, request, redirect, session, url_for, jsonify, abort
 from .auth import verify_supabase_jwt
-from .input_sanitization import sanitize_input
+from .input_sanitization import (
+    sanitize_input,
+    validate_username,
+    validate_postcode,
+    validate_bio,
+)
 from .access import login_required, roles_required
 from .db import get_user_postcode, get_user_location, link_auth_user_id, get_app_user_by_auth_user_id, get_app_user_by_email, get_user_promo, get_barber_public_by_user_id, get_barber_id_from_user_id, update_barber_profile, get_barbershop_by_id, get_shifts_for_barber, get_shop_opening_hours, get_reviews_for_barber, submit_barber_review, get_profile_photo, get_barber_gallery_photos, get_barbershop_gallery_photos, _get_conn, add_shift, delete_shift, update_barber_bio, update_barbershop_website, update_barber_social_links
 from .supabase_storage import sign_storage_path
@@ -583,12 +588,15 @@ def register_routes(app):
             username = (request.form.get("username") or "").strip() or None
             postcode = (request.form.get("postcode") or "").strip() or None
 
-            if username and len(username) > 50:
-                username = username[:50]
-            if postcode and len(postcode) > 10:
-                return render_template("pages/dashboard.html", error="Postcode too long.")
+            # Validate username if provided
             if username:
-                err = sanitize_input(username)
+                err = validate_username(username)
+                if err:
+                    return render_template("pages/dashboard.html", error=err)
+
+            # Validate postcode if provided
+            if postcode:
+                err = validate_postcode(postcode)
                 if err:
                     return render_template("pages/dashboard.html", error=err)
 
@@ -610,8 +618,10 @@ def register_routes(app):
             update_barber_profile(user_id=user_id, username=username, postcode=postcode, lat=lat, lng=lng)
 
             bio = (request.form.get("bio") or "").strip() or None
-            if bio and len(bio) > 500:
-                bio = bio[:500]
+            if bio:
+                err = validate_bio(bio)
+                if err:
+                    return render_template("pages/dashboard.html", error=err)
             update_barber_bio(user_id, bio)
 
             website = (request.form.get("shop_website") or "").strip() or None

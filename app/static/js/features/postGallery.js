@@ -38,7 +38,9 @@ function resolveEffectiveSort(filter_ids) {
   const hasClosest = set.has(0);
   const hasHighestRated = set.has(1);
   const hasMostRecent = set.has(2);
+  const hasFollowing = set.has(3);
 
+  // Remove "Following" from sort consideration since it's a data filter, not a sort
   const selectedCount =
     (hasClosest ? 1 : 0) +
     (hasHighestRated ? 1 : 0) +
@@ -145,6 +147,7 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     const tagItems = tagList.get_items();
     const parts = normaliseTagListItems(tagItems);
     const effective_sort = resolveEffectiveSort(parts.filter_ids);
+    const followed = parts.filter_ids.includes(3);
 
     return {
       filter_ids: parts.filter_ids,
@@ -152,6 +155,7 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
       tag_ids: parts.tag_ids,
       barber_ids: parts.barber_ids,
       barbershop_ids: parts.barbershop_ids,
+      followed: followed,
       cursor: cursor,
       limit: limit
     };
@@ -164,6 +168,7 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
     const keyObj = {
       filter_ids: payload.filter_ids.slice().sort((a, b) => a - b),
       effective_sort: payload.effective_sort,
+      followed: payload.followed,
       tag_ids: payload.tag_ids.slice().sort((a, b) => a - b),
       barber_ids: payload.barber_ids.slice().sort((a, b) => a - b),
       barbershop_ids: payload.barbershop_ids.slice().sort((a, b) => a - b),

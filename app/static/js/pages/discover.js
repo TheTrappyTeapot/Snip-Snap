@@ -38,29 +38,21 @@ async function initDiscoverPage() {
 
   // Create filter selector DDL inline with search bar
   const filterContainer = document.createElement("div");
-  filterContainer.style.display = "flex";
-  filterContainer.style.gap = "12px";
-  filterContainer.style.alignItems = "center";
+  filterContainer.className = "discover-filter-container";
 
   const label = document.createElement("label");
   label.textContent = "Sort by: ";
-  label.style.fontWeight = "500";
-  label.style.fontSize = "14px";
-  label.style.whiteSpace = "nowrap";
+  label.className = "discover-filter-label";
 
   const select = document.createElement("select");
-  select.style.padding = "8px 12px";
-  select.style.borderRadius = "4px";
-  select.style.border = "1px solid #ddd";
-  select.style.fontSize = "14px";
-  select.style.cursor = "pointer";
-  select.style.minWidth = "150px";
+  select.className = "discover-filter-select";
 
   // Add the three filter options
   const filterOptions = [
+    { id: 3, label: "Following" },
     { id: 2, label: "Most recent" },
     { id: 1, label: "Highest rated" },
-    { id: 0, label: "Closest" },
+    { id: 0, label: "Closest" }
   ];
 
   for (const filter of filterOptions) {

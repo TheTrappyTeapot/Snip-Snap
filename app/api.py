@@ -25,7 +25,17 @@ from .db import (
     remove_helpful_vote,
     get_helpful_vote_count,
 )
-from .input_sanitization import sanitize_input
+from .input_sanitization import (
+    sanitize_input,
+    validate_username,
+    validate_email,
+    validate_password,
+    validate_postcode,
+    validate_review_text,
+    validate_rating,
+    validate_name,
+    validate_bio,
+)
 from .supabase_storage import sign_storage_path, upload_photo_to_storage
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -35,7 +45,6 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 def create_user():
     """Create a new App_User record for signup."""
     try:
-        import re
         data = request.get_json(silent=True) or {}
         email = data.get("email", "").strip().lower()
         username = data.get("username", "").strip()
@@ -43,21 +52,16 @@ def create_user():
 
         print(f"[CREATE_USER] Received request: email={email}, username={username}, role={role}")
 
-        if not email or not username:
-            print(f"[CREATE_USER] Validation failed: missing email or username")
-            return jsonify({"ok": False, "error": "Email and username required"}), 400
-
-        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
-            return jsonify({"ok": False, "error": "Invalid email address"}), 400
-
-        if len(username) > 50:
-            return jsonify({"ok": False, "error": "Username must be 50 characters or fewer"}), 400
-
-        if len(username) < 2:
-            return jsonify({"ok": False, "error": "Username must be at least 2 characters"}), 400
-
-        err = sanitize_input(username)
+        # Validate email
+        err = validate_email(email)
         if err:
+            print(f"[CREATE_USER] Email validation failed: {err}")
+            return jsonify({"ok": False, "error": err}), 400
+
+        # Validate username
+        err = validate_username(username)
+        if err:
+            print(f"[CREATE_USER] Username validation failed: {err}")
             return jsonify({"ok": False, "error": err}), 400
 
         # Validate role
@@ -258,21 +262,18 @@ def update_profile():
     lng = data.get("lng")
 
     # Validation
-    if not username:
-        return jsonify({"ok": False, "error": "Username is required"}), 400
+    if username:
+        err = validate_username(username)
+        if err:
+            return jsonify({"ok": False, "error": err}), 400
 
-    if len(username) < 2 or len(username) > 50:
-        return jsonify({"ok": False, "error": "Username must be 2-50 characters"}), 400
-
-    err = sanitize_input(username)
-    if err:
-        return jsonify({"ok": False, "error": err}), 400
+    if location:
+        err = validate_postcode(location)
+        if err:
+            return jsonify({"ok": False, "error": err}), 400
 
     if not role or role not in ["customer", "barber"]:
         return jsonify({"ok": False, "error": "Invalid role"}), 400
-
-    if location and len(location) > 10:
-        return jsonify({"ok": False, "error": "Location must be 10 characters or fewer"}), 400
 
     # Validate latitude/longitude if provided
     if lat is not None:
@@ -380,20 +381,12 @@ def create_new_barbershop():
     auto_assign = data.get("auto_assign", True)  # Whether to assign to current barber
 
     # Validation
-    if not name:
-        return jsonify({"ok": False, "error": "Barbershop name is required"}), 400
+    err = validate_name(name)
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
 
-    if len(name) > 255:
-        return jsonify({"ok": False, "error": "Barbershop name too long (max 255 characters)"}), 400
-
-    if not postcode:
-        return jsonify({"ok": False, "error": "Postcode is required"}), 400
-
-    if len(postcode) > 10:
-        return jsonify({"ok": False, "error": "Postcode too long"}), 400
-
-    # Sanitize name
-    err = sanitize_input(name)
+    # Validate postcode
+    err = validate_postcode(postcode)
     if err:
         return jsonify({"ok": False, "error": err}), 400
 
@@ -672,12 +665,15 @@ def post_review():
     text = data.get("text", "").strip()
     rating = data.get("rating")
     
-    # Validate input
-    if not text:
-        return jsonify({"ok": False, "error": "Review text is required"}), 400
+    # Validate text
+    err = validate_review_text(text)
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
     
-    if not rating or not isinstance(rating, int) or not (1 <= rating <= 5):
-        return jsonify({"ok": False, "error": "Rating must be between 1 and 5"}), 400
+    # Validate rating
+    err = validate_rating(rating)
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
     
     if not target_barber_id and not target_barbershop_id:
         return jsonify({"ok": False, "error": "Either target_barber_id or target_barbershop_id is required"}), 400
@@ -723,8 +719,10 @@ def post_review_reply():
     if not parent_review_id:
         return jsonify({"ok": False, "error": "parent_review_id is required"}), 400
     
-    if not text:
-        return jsonify({"ok": False, "error": "Reply text is required"}), 400
+    # Validate reply text
+    err = validate_review_text(text)
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
     
     try:
         reply_id = create_review_reply(

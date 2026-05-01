@@ -52,6 +52,24 @@
   background: rgba(13, 71, 161, 0.95);
 }
 
+.editable-gallery-card__tag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 10;
+  min-height: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
 /* Gallery empty state */
 .gallery-empty-state {
   display: flex;

@@ -55,7 +55,6 @@ if (window.__signupJsLoaded) {
   const passwordError = document.getElementById("passwordError");
   const accountTypeError = document.getElementById("accountTypeError");
   const generalError = document.getElementById("generalError");
-  const googleBtn = document.getElementById("googleBtn");
   
   console.log("Form elements found:", {
     signupForm: !!signupForm,
@@ -82,6 +81,35 @@ if (window.__signupJsLoaded) {
   }
 
   /**
+   * Validates password strength and returns detailed feedback.
+   * Requirements: At least 6 chars, max 50 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+   * Matches Python validation in input_sanitization.validate_password()
+   */
+  function validatePasswordStrength(password) {
+    const requirements = {
+      length: password.length >= 6,
+      maxLength: password.length <= 50,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)
+    };
+
+    const missingRequirements = [];
+    if (!requirements.length) missingRequirements.push("at least 6 characters");
+    if (!requirements.maxLength) missingRequirements.push("at most 50 characters");
+    if (!requirements.uppercase) missingRequirements.push("1 uppercase letter");
+    if (!requirements.lowercase) missingRequirements.push("1 lowercase letter");
+    if (!requirements.number) missingRequirements.push("1 number");
+    if (!requirements.special) missingRequirements.push("1 special character");
+
+    return {
+      isStrong: missingRequirements.length === 0,
+      missingRequirements
+    };
+  }
+
+  /**
    * Validates signup inputs and returns true when the form is valid.
    */
   function validateForm(username, email, password, accountType) {
@@ -102,7 +130,7 @@ if (window.__signupJsLoaded) {
       usernameError.textContent = "Username must be at least 2 characters";
       isValid = false;
     } else if (username.length > 50) {
-      usernameError.textContent = "Username must be less than 50 characters";
+      usernameError.textContent = "Username must be 50 characters or fewer";
       isValid = false;
     }
 
@@ -119,12 +147,12 @@ if (window.__signupJsLoaded) {
     if (!password) {
       passwordError.textContent = "Password is required";
       isValid = false;
-    } else if (password.length < 6) {
-      passwordError.textContent = "Password must be at least 6 characters";
-      isValid = false;
-    } else if (password.length > 128) {
-      passwordError.textContent = "Password is too long";
-      isValid = false;
+    } else {
+      const strength = validatePasswordStrength(password);
+      if (!strength.isStrong) {
+        passwordError.textContent = "Password must include: " + strength.missingRequirements.join(", ");
+        isValid = false;
+      }
     }
 
     return isValid;
@@ -140,6 +168,23 @@ if (window.__signupJsLoaded) {
     if (!json.ok) {
       throw new Error(json.error || "Auth callback failed");
     }
+  }
+
+  // Add real-time password strength feedback
+  if (passwordInput) {
+    passwordInput.addEventListener("input", () => {
+      const password = passwordInput.value;
+      if (password) {
+        const strength = validatePasswordStrength(password);
+        if (!strength.isStrong) {
+          passwordError.textContent = "Password must include: " + strength.missingRequirements.join(", ");
+        } else {
+          passwordError.textContent = "";
+        }
+      } else {
+        passwordError.textContent = "";
+      }
+    });
   }
 
   // Attach form submit handler
@@ -236,27 +281,6 @@ if (window.__signupJsLoaded) {
     }
   });
 
-  // Google signup button
-  if (googleBtn) {
-    googleBtn.addEventListener("click", async () => {
-      try {
-        if (!supabase) {
-          throw new Error("Supabase not initialized");
-        }
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: window.location.origin + '/auth/callback',
-          },
-        });
-        if (error) throw error;
-      } catch (error) {
-        console.error("Google signup error:", error);
-        generalError.textContent = "Google signup failed: " + error.message;
-      }
-    });
-  }
-  
   console.log("Form initialization complete");
 }
 
