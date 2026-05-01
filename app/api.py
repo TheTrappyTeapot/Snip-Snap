@@ -24,6 +24,9 @@ from .db import (
     add_helpful_vote,
     remove_helpful_vote,
     get_helpful_vote_count,
+    follow_barber,
+    unfollow_barber,
+    is_user_following_barber,
 )
 from .input_sanitization import (
     sanitize_input,
@@ -205,6 +208,15 @@ def gallery_posts():
     if effective_sort == "most_recent" and viewer_lat is not None and viewer_lng is not None:
         actual_sort = "blended"
 
+    # Handle followed filter
+    followed = payload.get("followed", False)
+    
+    # Extract filter_ids for distance filtering
+    raw_filter_ids = payload.get("filter_ids") or []
+    filter_ids = [int(x) for x in raw_filter_ids if str(x).lstrip("-").isdigit()]
+    
+    print(f"[API] gallery_posts: payload filter_ids={payload.get('filter_ids')}, parsed filter_ids={filter_ids}, effective_sort={effective_sort}")
+
     # Fetch 1 extra so we can calculate has_more
     rows = fetch_discover_posts(
         tag_ids=tag_ids,
@@ -215,6 +227,9 @@ def gallery_posts():
         effective_sort=effective_sort,
         viewer_lat=viewer_lat,
         viewer_lng=viewer_lng,
+        followed=followed,
+        user_id=uid,
+        filter_ids=filter_ids,
     )
 
     # For pagination: set has_more=true if we got a full page of results
@@ -824,3 +839,90 @@ def remove_vote_on_review(review_id: int):
         import traceback
         print(f"[REMOVE_VOTE] Traceback: {traceback.format_exc()}")
         return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.post("/barber/<int:barber_id>/follow")
+def follow_barber_endpoint(barber_id: int):
+    """Follow a barber."""
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    print(f"[FOLLOW] Request received: barber_id={barber_id}, user_id={current_user_id}")
+    
+    if not current_user_id:
+        print("[FOLLOW] Error: User not logged in")
+        return jsonify({"ok": False, "error": "Must be logged in"}), 401
+    
+    try:
+        success = follow_barber(int(current_user_id), barber_id)
+        
+        if success:
+            print(f"[FOLLOW] Successfully followed barber {barber_id}")
+            return jsonify({"ok": True, "message": "Followed"}), 200
+        else:
+            print(f"[FOLLOW] Already following barber {barber_id}")
+            return jsonify({"ok": False, "error": "Already following"}), 409
+    except Exception as e:
+        print(f"[FOLLOW] Exception: {str(e)}")
+        import traceback
+        print(f"[FOLLOW] Traceback: {traceback.format_exc()}")
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.post("/barber/<int:barber_id>/unfollow")
+def unfollow_barber_endpoint(barber_id: int):
+    """Unfollow a barber."""
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    print(f"[UNFOLLOW] Request received: barber_id={barber_id}, user_id={current_user_id}")
+    
+    if not current_user_id:
+        print("[UNFOLLOW] Error: User not logged in")
+        return jsonify({"ok": False, "error": "Must be logged in"}), 401
+    
+    try:
+        success = unfollow_barber(int(current_user_id), barber_id)
+        
+        if success:
+            print(f"[UNFOLLOW] Successfully unfollowed barber {barber_id}")
+            return jsonify({"ok": True, "message": "Unfollowed"}), 200
+        else:
+            print(f"[UNFOLLOW] Not following barber {barber_id}")
+            return jsonify({"ok": False, "error": "Not following"}), 404
+    except Exception as e:
+        print(f"[UNFOLLOW] Exception: {str(e)}")
+        import traceback
+        print(f"[UNFOLLOW] Traceback: {traceback.format_exc()}")
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@api_bp.get("/barber/<int:barber_id>/following-status")
+def get_following_status(barber_id: int):
+    """Check if current user is following a barber."""
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    if not current_user_id:
+        return jsonify({"is_following": False}), 200
+    
+    try:
+        is_following = is_user_following_barber(int(current_user_id), barber_id)
+        return jsonify({"is_following": is_following}), 200
+    except Exception as e:
+        print(f"[FOLLOWING_STATUS] Exception: {str(e)}")
+        return jsonify({"is_following": False}), 200
+
+
+@api_bp.get("/barber/<int:barber_id>/reviews")
+def get_barber_reviews(barber_id: int):
+    """Fetch reviews for a barber."""
+    user_data = session.get("user")
+    current_user_id = user_data.get("id") if user_data else None
+    
+    try:
+        reviews = get_reviews_with_replies(target_barber_id=barber_id, current_user_id=current_user_id)
+        return jsonify({"reviews": reviews}), 200
+    except Exception as e:
+        print(f"[GET_BARBER_REVIEWS] Exception: {str(e)}")
+        return jsonify({"reviews": [], "error": str(e)}), 500

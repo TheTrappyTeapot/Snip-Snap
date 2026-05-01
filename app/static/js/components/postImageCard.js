@@ -33,7 +33,8 @@ export function renderPostImageCard(item, options = {}) {
       role: item.promo_role,
       barbershop_name: item.promo_barbershop_name,
       profile_image_url: item.promo_profile_image_url,
-    }, { avatarSize: 36 });
+      barberId: item.barber_id
+    }, { avatarSize: 36, showFollowButton: false });
   }
 
   // Image

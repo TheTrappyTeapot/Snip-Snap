@@ -535,6 +535,9 @@ def fetch_discover_posts(
     effective_sort: str,
     viewer_lat: float | None = None,
     viewer_lng: float | None = None,
+    followed: bool = False,
+    user_id: Optional[int] = None,
+    filter_ids: Optional[List[int]] = None,
 ) -> List[Dict[str, Any]]:
     """Handles fetch discover posts."""
     where: List[str] = ["hp.is_post = TRUE", "hp.status = 'show'"]
@@ -542,6 +545,9 @@ def fetch_discover_posts(
     select_params: List[Any] = []
     join: List[str] = []
     having: List[str] = []
+
+    # Check if "closest" filter (id=0) is selected
+    has_closest_filter = filter_ids and 0 in filter_ids
 
     # --- Core joins for promo + barbershop coords
     join.append("JOIN barber b_promo ON b_promo.barber_id = hp.barber_id")
@@ -565,6 +571,12 @@ def fetch_discover_posts(
     """)
 
     # --- Filters
+    if followed and user_id is not None:
+        print(f"[DB] Filtering for followed barbers - user_id={user_id}")
+        join.append("JOIN follow f ON f.barber_id = hp.barber_id")
+        where.append("f.user_id = %s")
+        where_params.append(user_id)
+
     if barbershop_ids:
         where.append("b_promo.barbershop_id = ANY(%s)")
         where_params.append(barbershop_ids)
@@ -601,14 +613,15 @@ def fetch_discover_posts(
         # SELECT placeholders come before WHERE placeholders
         select_params.extend([viewer_lng, viewer_lat])
         
-        # Filter out barbers more than 50km away
-        where.append("""
+        # Only filter out barbers more than 50km away if "closest" filter is explicitly selected
+        if has_closest_filter:
+            where.append("""
         (ST_DistanceSphere(
             ST_MakePoint(bs_promo.location_lng, bs_promo.location_lat),
             ST_MakePoint(%s, %s)
         ) / 1000.0) <= 50
         """)
-        where_params.extend([viewer_lng, viewer_lat])
+            where_params.extend([viewer_lng, viewer_lat])
 
         distance_score_expr = """
         (1.0 / (1.0 + (
@@ -688,9 +701,9 @@ def fetch_discover_posts(
         LIMIT %s
     """
 
-    params = select_params + where_params + [limit * 50]  # Fetch 50x buffer for 50km filter + diversity filtering
+    params = select_params + where_params + [limit * 150]  # Fetch 150x buffer for 150km filter + diversity filtering
 
-    print(f"[DB] fetch_discover_posts: effective_sort={effective_sort}, include_distance={include_distance}, viewer_lat={viewer_lat}, viewer_lng={viewer_lng}, cursor={cursor}, limit={limit}")
+    print(f"[DB] fetch_discover_posts: effective_sort={effective_sort}, include_distance={include_distance}, has_closest_filter={has_closest_filter}, viewer_lat={viewer_lat}, viewer_lng={viewer_lng}, cursor={cursor}, limit={limit}")
     print(f"[DB] where clauses: {where}")
     print(f"[DB] SQL params count: {len(params)}")
 
@@ -705,7 +718,7 @@ def fetch_discover_posts(
     # This prevents one barber from dominating the entire feed
     # We fetch 50x limit to account for 50km distance filter + diversity filtering reducing result set
     diverse_rows = []
-    max_consecutive = 4     # Allow max 4 consecutive posts from same barber (increased from 2 for pagination support)
+    max_consecutive = 2     # Allow max 2 consecutive posts from same barber to scatter posts better
     last_barber_id = None
     consecutive_count = 0
 
@@ -862,6 +875,7 @@ def fetch_discover_search_items():
         {"id": 0, "type": "filter", "label": "Closest"},
         {"id": 1, "type": "filter", "label": "Highest rated"},
         {"id": 2, "type": "filter", "label": "Most recent"},
+        {"id": 3, "type": "filter", "label": "Following"}
     ]
 
     with _get_conn() as conn:
@@ -1382,7 +1396,84 @@ def create_barbershop(name: str, postcode: str, location_lat: float, location_ln
             )
             barbershop_id = cur.fetchone()[0]
         conn.commit()
+    return barbershop_id
+
+
+def follow_barber(user_id: int, barber_id: int) -> bool:
+    """
+    Add a follow relationship between a user and a barber.
     
+    Args:
+        user_id: User ID
+        barber_id: Barber ID
+        
+    Returns:
+        True if follow was added, False if already following
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute(
+                    """
+                    INSERT INTO follow (user_id, barber_id)
+                    VALUES (%s, %s)
+                    """,
+                    (user_id, barber_id),
+                )
+                conn.commit()
+                print(f"[FOLLOW] User {user_id} followed barber {barber_id}")
+                return True
+            except Exception as e:
+                conn.rollback()
+                print(f"[FOLLOW] Error adding follow: {e}")
+                # Check if it's a duplicate follow
+                if "duplicate key" in str(e):
+                    return False
+                raise
+
+
+def unfollow_barber(user_id: int, barber_id: int) -> bool:
+    """
+    Remove a follow relationship between a user and a barber.
+    
+    Args:
+        user_id: User ID
+        barber_id: Barber ID
+        
+    Returns:
+        True if follow was removed, False if not following
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM follow WHERE user_id = %s AND barber_id = %s",
+                (user_id, barber_id),
+            )
+            deleted = cur.rowcount > 0
+            conn.commit()
+            print(f"[UNFOLLOW] User {user_id} unfollowed barber {barber_id}: {deleted}")
+            return deleted
+
+
+def is_user_following_barber(user_id: int, barber_id: int) -> bool:
+    """
+    Check if a user is following a barber.
+    
+    Args:
+        user_id: User ID
+        barber_id: Barber ID
+        
+    Returns:
+        True if user is following barber, False otherwise
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT 1 FROM follow WHERE user_id = %s AND barber_id = %s",
+                (user_id, barber_id),
+            )
+            return cur.fetchone() is not None
+
     print(f"[CREATE_BARBERSHOP] Created barbershop (ID: {barbershop_id}): {name} @ {postcode} ({location_lat}, {location_lng})")
     return barbershop_id
 

@@ -138,6 +138,26 @@ export function initPostGallery({ mountEl, sentinelEl, tagList, config }) {
       columns,
       renderItem: renderPostImageCard
     });
+
+    // Show "change filters" message when no more posts to load
+    if (!state.loading && !state.has_more && state.items.length > 0) {
+      // Remove any existing end message from parent
+      const parentEl = mountEl.parentNode;
+      if (parentEl) {
+        const existingMsg = parentEl.querySelector(".post-gallery-end-message");
+        if (existingMsg) existingMsg.remove();
+        
+        const messageEl = document.createElement("div");
+        messageEl.className = "post-gallery-end-message";
+        messageEl.textContent = "Change filters to see more posts";
+        messageEl.style.textAlign = "center";
+        messageEl.style.padding = "20px";
+        messageEl.style.color = "#6b7280";
+        messageEl.style.fontSize = "0.875rem";
+        messageEl.style.marginTop = "20px";
+        parentEl.appendChild(messageEl);
+      }
+    }
   }
 
   /**

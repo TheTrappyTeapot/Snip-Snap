@@ -1,0 +1,69 @@
+/* Styles for app/static/css/components/ratingInfo.css. */
+
+.rating-info-widget {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #fcd34d;
+}
+
+.rating-info-widget__content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rating-info-widget__stars {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating-info-widget__rating {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.rating-info-widget__stars-display {
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+}
+
+.rating-info-widget__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rating-info-widget__count {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.rating-info-widget__no-reviews {
+  font-size: 1rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .rating-info-widget {
+    padding: 12px;
+  }
+
+  .rating-info-widget__content {
+    gap: 12px;
+  }
+
+  .rating-info-widget__rating {
+    font-size: 2rem;
+  }
+
+  .rating-info-widget__stars-display {
+    font-size: 1.25rem;
+  }
+}

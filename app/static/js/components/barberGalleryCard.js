@@ -27,7 +27,7 @@ export function renderBarberGalleryCard(photo) {
     role: photo.promo_role || "barber",
     barbershop_name: photo.promo_barbershop_name || "",
     profile_image_url: photo.promo_profile_image_url || ""
-  }, { avatarSize: 28 });
+  }, { avatarSize: 28, showFollowButton: false });
 
   media.appendChild(promoMount);
 

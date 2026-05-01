@@ -32,6 +32,7 @@
   display: grid;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .user-promo__name {
@@ -63,4 +64,35 @@
 .user-promo__subtext--clickable:hover {
   color: #007bff;
   text-decoration: underline;
+}
+
+.user-promo__follow-btn {
+  padding: 6px 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.user-promo__follow-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.user-promo__follow-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-promo__follow-btn--following {
+  background-color: #28a745;
+}
+
+.user-promo__follow-btn--following:hover:not(:disabled) {
+  background-color: #1e7e34;
 }

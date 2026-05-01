@@ -25,11 +25,7 @@ async function initDiscoverPage() {
   }
 
   // Create initial filter items with proper labels
-  const initialFilters = [
-    filterItems.find(f => f.id === 2) || { id: 2, type: "filter", label: "Most recent" },
-    filterItems.find(f => f.id === 1) || { id: 1, type: "filter", label: "Highest rated" },
-    filterItems.find(f => f.id === 0) || { id: 0, type: "filter", label: "Closest" },
-  ];
+  const initialFilters = [];  // Start with NO filters - only apply when user explicitly selects them
 
   const tagList = new TagList({
     mountEl: tagListMount,
@@ -55,6 +51,14 @@ async function initDiscoverPage() {
     { id: 0, label: "Closest" }
   ];
 
+  // Add a placeholder option
+  const placeholderOption = document.createElement("option");
+  placeholderOption.value = "";
+  placeholderOption.textContent = "Add a filter...";
+  placeholderOption.disabled = true;
+  placeholderOption.selected = true;
+  select.appendChild(placeholderOption);
+
   for (const filter of filterOptions) {
     const option = document.createElement("option");
     option.value = filter.id;
@@ -68,20 +72,29 @@ async function initDiscoverPage() {
     const currentFilters = tagList.get_items();
     const isSelected = currentFilters.some(f => f.id === filterId && f.type === "filter");
 
+    console.log(`[DISCOVER] Filter selection: filterId=${filterId}, isSelected=${isSelected}, currentFilters=`, currentFilters);
+
     if (isSelected) {
       // Remove filter
       const idx = currentFilters.findIndex(f => f.id === filterId && f.type === "filter");
       if (idx >= 0) {
+        console.log(`[DISCOVER] Removing filter ${filterId} at index ${idx}`);
         tagList.remove_item_at(idx);
       }
     } else {
       // Add filter
       const filterItem = filterOptions.find(f => f.id === filterId);
-      tagList.add_item({ id: filterItem.id, type: "filter", label: filterItem.label });
+      console.log(`[DISCOVER] Adding filter: filterId=${filterId}, filterItem=`, filterItem);
+      if (filterItem) {
+        tagList.add_item({ id: filterItem.id, type: "filter", label: filterItem.label });
+        console.log(`[DISCOVER] Added filter, taglist now has:`, tagList.get_items());
+      } else {
+        console.error(`[DISCOVER] Filter not found in filterOptions: ${filterId}`);
+      }
     }
 
-    // Reset dropdown to show first option
-    select.value = filterOptions[0].id;
+    // Reset dropdown to placeholder
+    select.value = "";
   });
 
   filterContainer.appendChild(label);

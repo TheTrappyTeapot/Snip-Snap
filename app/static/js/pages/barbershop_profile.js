@@ -21,9 +21,11 @@ export function initBarbershopProfile(config = {}) {
         name: barber.promo?.name || barber.username || "Unknown",
         role: barber.promo?.role || "barber",
         barbershop_name: barber.promo?.barbershop_name || shopData.name || "",
-        profile_image_url: barber.promo?.profile_image_url || ""
+        profile_image_url: barber.promo?.profile_image_url || "",
+        barberId: barber.barber_id || barber.id
       }, {
-        avatarSize: 48
+        avatarSize: 48,
+        showFollowButton: false
       });
     });
   }

@@ -60,6 +60,55 @@ export function renderUserPromo(container, data = {}, options = {}) {
   row.appendChild(avatar);
   row.appendChild(text);
 
+  // Add follow button if barberId is provided, it's a barber, and showFollowButton is enabled
+  const showFollowButton = options.showFollowButton !== false; // Default to true, can be disabled with showFollowButton: false
+  if (data.barberId && role === "barber" && showFollowButton) {
+    const followBtn = document.createElement("button");
+    followBtn.className = "user-promo__follow-btn";
+    followBtn.textContent = "Follow";
+    followBtn.setAttribute("aria-label", `Follow ${name}`);
+    followBtn.disabled = false;
+
+    // Check if already following
+    if (options.isFollowing) {
+      followBtn.classList.add("user-promo__follow-btn--following");
+      followBtn.textContent = "Following";
+    }
+
+    followBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      followBtn.disabled = true;
+
+      const isFollowing = followBtn.classList.contains("user-promo__follow-btn--following");
+      const action = isFollowing ? "unfollow" : "follow";
+
+      try {
+        const response = await fetch(`/api/barber/${data.barberId}/${action}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+
+        if (response.ok) {
+          if (isFollowing) {
+            followBtn.classList.remove("user-promo__follow-btn--following");
+            followBtn.textContent = "Follow";
+          } else {
+            followBtn.classList.add("user-promo__follow-btn--following");
+            followBtn.textContent = "Following";
+          }
+        } else {
+          console.error(`Failed to ${action}:`, response.status);
+          followBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error(`Error during ${action}:`, error);
+        followBtn.disabled = false;
+      }
+    });
+
+    row.appendChild(followBtn);
+  }
+
   el.textContent = "";
   el.appendChild(row);
 }

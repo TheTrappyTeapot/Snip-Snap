@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/userPromo.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/timetable.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/barberGallery.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/ratingInfo.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/barber_profile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/review_widget.css') }}">
 {% endblock %}
@@ -91,6 +92,7 @@
   
   <section class="barber-reviews">
   <h3 class="barber-profile__map-title">Reviews</h3>
+  <div id="rating-info-mount"></div>
   <div id="review-widget-mount"></div>
 </section>
   
@@ -113,6 +115,7 @@
 
   initBarberProfile({
     userId: {{ barber.user_id }},
+    barberId: {{ barber_db_id or 'null' }},
     barbershopId: {{ barber.barbershop_id or 'null' }},
     barberPromo: {{ barber_promo|tojson if barber_promo else '{}' }},
     shifts: {{ shifts|tojson if shifts else '{}' }},
