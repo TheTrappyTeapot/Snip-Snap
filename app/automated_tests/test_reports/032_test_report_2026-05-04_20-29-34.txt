@@ -1,0 +1,533 @@
+================================================================================
+SNIP-SNAP AUTOMATED TEST REPORT
+================================================================================
+Generated: 2026-05-04 20:30:03
+
+================================================================================
+SECTION: Welcome
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_welcome_page_loads [PASS]
+
+Test ID: 1
+  Function: Go to Login Page | Test Function Name: test_go_to_login_page | Partition: Navigation
+  Description: Attempt to navigate to login page
+  Inputs: Press "Login" button
+  Expected Outputs: Transfer user to login page with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 2
+  Function: Go to Signup Page | Test Function Name: test_go_to_signup_page | Partition: Navigation
+  Description: Attempt to navigate to signup page
+  Inputs: Press "Sign up" button
+  Expected Outputs: Transfer user to signup page with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 3
+  Function: Continue as Guest | Test Function Name: test_continue_as_guest | Partition: Navigation
+  Description: Attempt to continue as guest and verify redirect
+  Inputs: Press "Continue as guest" button
+  Expected Outputs: Redirect to discover page (HTTP 302/303)
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 4
+  Function: Continue as Guest with Redirect | Test Function Name: test_continue_as_guest_with_redirect | Partition: Navigation
+  Description: Verify guest session creation and complete redirect flow
+  Inputs: Press "Continue as guest" button and follow redirect
+  Expected Outputs: Successfully reach discover page with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.007s
+
+================================================================================
+SECTION: Login
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_login_page_loads [PASS]
+    - test_login_page_contains_form_element [PASS]
+    - test_login_page_has_guest_option [PASS]
+    - test_login_page_supabase_config_present [PASS]
+
+Test ID: 5
+  Function: Invalid Login | Test Function Name: test_login_page_invalid_credentials_client_side | Partition: Invalid login
+  Description: Attempt login with invalid credentials
+  Inputs: Enter email "invalid@ss.dev" password "111111"
+  Expected Outputs: Login form loads with email and password inputs; Supabase will reject invalid credentials on submission
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 6
+  Function: Valid Login | Test Function Name: test_login_page_valid_login_attempt_ready | Partition: Valid login
+  Description: Attempt login with valid account
+  Inputs: Enter "barber@ss.dev" pass "1111"
+  Expected Outputs: Login form loads with email and password inputs; credentials format passes form validation
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 7
+  Function: Valid Email Format | Test Function Name: test_login_email_validation_elements_present | Partition: Valid email
+  Description: Verify email input exists
+  Inputs: Enter "cust@ss.dev"
+  Expected Outputs: Email input field displays with HTML5 email validation; format passes validation check
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 8
+  Function: Invalid Email Format | Test Function Name: test_login_email_format_no_at_symbol | Partition: Invalid email format
+  Description: Email input without @ symbol
+  Inputs: Enter "invalid"
+  Expected Outputs: Email input displays with validation; format lacks @ symbol and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 9
+  Function: Invalid Email Format | Test Function Name: test_login_email_format_missing_domain | Partition: Invalid email format
+  Description: Email input incomplete
+  Inputs: Enter "invalid@"
+  Expected Outputs: Email input displays with validation; format incomplete (missing domain) and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 10
+  Function: Invalid Email Format | Test Function Name: test_login_email_format_incomplete_domain | Partition: Invalid email format
+  Description: Email domain incomplete
+  Inputs: Enter "invalid@ss"
+  Expected Outputs: Email input displays with validation; format incomplete (missing extension) and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 11
+  Function: Invalid Email Format | Test Function Name: test_login_page_contains_email_input | Partition: Invalid email format
+  Description: Email extension missing
+  Inputs: Enter "invalid@ss."
+  Expected Outputs: Email input displays with validation; format invalid (no extension) and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 12
+  Function: Empty Email | Test Function Name: test_login_empty_email_field_handling | Partition: Empty email
+  Description: Email field empty
+  Inputs: Enter null
+  Expected Outputs: Email field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 13
+  Function: Empty Password | Test Function Name: test_login_page_contains_password_input | Partition: Empty password
+  Description: Password field empty
+  Inputs: Enter null password
+  Expected Outputs: Password field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 14
+  Function: Password Too Short | Test Function Name: test_login_password_validation_elements | Partition: Password too short
+  Description: Password less than 6 characters
+  Inputs: Enter "1234"
+  Expected Outputs: Password input displays with validation enabled; value (4 chars) fails minimum length requirement (6 chars)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 15
+  Function: Password Too Long | Test Function Name: test_login_page_contains_submit_button | Partition: Password too long
+  Description: Password exceeds 50 characters
+  Inputs: Enter 51+ characters
+  Expected Outputs: Password input displays with validation enabled; value exceeds maximum length requirement (50 chars)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 18
+  Function: Password Too Simple | Test Function Name: test_login_valid_password_form_ready | Partition: Password too simple
+  Description: Password lacks special character
+  Inputs: Enter "aA4aaa"
+  Expected Outputs: Password input displays with validation; value fails complexity requirement (missing special character)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+================================================================================
+SECTION: Signup
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_signup_page_loads [PASS]
+    - test_signup_page_contains_form_element [PASS]
+    - test_signup_page_contains_email_input [PASS]
+    - test_signup_page_contains_password_input [PASS]
+    - test_signup_page_contains_submit_button [PASS]
+    - test_signup_page_has_login_option [PASS]
+    - test_signup_page_supabase_config_present [PASS]
+    - test_signup_valid_password [PASS]
+
+Test ID: 20
+  Function: Invalid Signup | Test Function Name: test_signup_invalid_credentials | Partition: Invalid credentials
+  Description: Attempt signup with invalid credentials
+  Inputs: Enter email "invalid@ss.dev" password "111111"
+  Expected Outputs: Signup form loads with email and password inputs; Supabase will reject invalid credentials on submission
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 21
+  Function: Valid Signup | Test Function Name: test_signup_valid_credentials | Partition: Valid credentials
+  Description: Attempt signup with valid account
+  Inputs: Enter "barber@ss.dev" pass "aA4&aa"
+  Expected Outputs: Signup form loads with email and password inputs; credentials format passes form validation
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 22
+  Function: Valid Email Format | Test Function Name: test_signup_email_validation_present | Partition: Valid email
+  Description: Verify email input exists
+  Inputs: Enter "cust@ss.dev"
+  Expected Outputs: Email input field displays with HTML5 email validation; format passes validation check
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 23
+  Function: Invalid Email Format | Test Function Name: test_signup_invalid_email_no_at | Partition: Invalid email format
+  Description: Email input without @ symbol
+  Inputs: Enter "invalid"
+  Expected Outputs: Email input displays with validation; format lacks @ symbol and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 24
+  Function: Invalid Email Format | Test Function Name: test_signup_invalid_email_missing_domain | Partition: Invalid email format
+  Description: Email input incomplete
+  Inputs: Enter "invalid@"
+  Expected Outputs: Email input displays with validation; format incomplete (missing domain) and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 25
+  Function: Empty Email | Test Function Name: test_signup_empty_email | Partition: Empty email
+  Description: Email field empty
+  Inputs: Enter null
+  Expected Outputs: Email field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 26
+  Function: Empty Password | Test Function Name: test_signup_empty_password | Partition: Empty password
+  Description: Password field empty
+  Inputs: Enter null password
+  Expected Outputs: Password field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 27
+  Function: Password Too Short | Test Function Name: test_signup_password_too_short | Partition: Password too short
+  Description: Password less than 6 characters
+  Inputs: Enter "1234"
+  Expected Outputs: Password input displays with validation enabled; value (4 chars) fails minimum length requirement (6 chars)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.007s
+
+Test ID: 28
+  Function: Password Too Long | Test Function Name: test_signup_password_too_long | Partition: Password too long
+  Description: Password exceeds 50 characters
+  Inputs: Enter 51+ characters
+  Expected Outputs: Password input displays with validation enabled; value exceeds maximum length requirement (50 chars)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 29
+  Function: Password Too Simple | Test Function Name: test_signup_password_missing_special_char | Partition: Password too simple
+  Description: Password lacks special character
+  Inputs: Enter "aaaaaa"
+  Expected Outputs: Password input displays with validation; value fails complexity requirement (missing special character and number)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 30
+  Function: Password Too Simple | Test Function Name: test_signup_password_missing_number | Partition: Password too simple
+  Description: Password lacks number
+  Inputs: Enter "aAaaaa"
+  Expected Outputs: Password input displays with validation; value fails complexity requirement (missing number)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 31
+  Function: Valid Password | Test Function Name: Valid password format | Partition: Valid password
+  Description: uppercase
+  Inputs: Enter "aA4&aa"
+  Expected Outputs: Password input displays; value meets all validation requirements (length
+  Valid/Invalid: number
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+================================================================================
+SECTION: My Profile
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_my_profile_page_loads [PASS]
+    - test_my_profile_page_contains_form_element [PASS]
+    - test_my_profile_page_contains_username_input [PASS]
+    - test_my_profile_page_contains_photo_upload [PASS]
+    - test_my_profile_page_contains_location_input [PASS]
+    - test_my_profile_page_contains_account_type_selector [PASS]
+
+Test ID: 41
+  Function: Profanity Filter | Test Function Name: test_my_profile_profanity_filter_username | Partition: Profanity filter
+  Description: Make a rude username
+  Inputs: Enter "fuck"
+  Expected Outputs: Form witholds the username for profanity concerns; asks user to choose another name before submitting
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.666s
+
+Test ID: 42
+  Function: Duplicate Username | Test Function Name: test_my_profile_duplicate_username | Partition: Duplicate username
+  Description: Use username already being used
+  Inputs: Enter "bob"
+  Expected Outputs: Error message asking to use different username
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.661s
+
+Test ID: 43
+  Function: Username Too Long | Test Function Name: test_my_profile_username_too_long | Partition: Username too long
+  Description: Make username too long
+  Inputs: Enter 51+ characters
+  Expected Outputs: Form requests that username is less than 50 characters
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.782s
+
+Test ID: 44
+  Function: Valid Username | Test Function Name: test_my_profile_valid_username | Partition: Valid username
+  Description: Make a new username
+  Inputs: Enter "alexander"
+  Expected Outputs: Form parses the username as valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.665s
+
+Test ID: 45
+  Function: Photo Upload PNG | Test Function Name: test_my_profile_photo_upload_png | Partition: Photo uploads
+  Description: Check png can be uploaded
+  Inputs: Click "upload" and choose a png photo
+  Expected Outputs: The new photo should show
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.760s
+
+Test ID: 46
+  Function: Photo Upload JPEG | Test Function Name: test_my_profile_photo_upload_jpeg | Partition: Photo uploads
+  Description: Check jpeg can be uploaded
+  Inputs: Click "upload" and choose a jpeg photo
+  Expected Outputs: The new photo should show
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.684s
+
+Test ID: 47
+  Function: Photo Upload WEBP | Test Function Name: test_my_profile_photo_upload_webp | Partition: Photo uploads
+  Description: Check webp can be uploaded
+  Inputs: Click "upload" and choose a webp photo
+  Expected Outputs: The new photo should show
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.673s
+
+Test ID: 48
+  Function: Photo Upload JPG Invalid | Test Function Name: test_my_profile_photo_upload_jpg_invalid | Partition: Photo uploads
+  Description: Check jpg is rejected
+  Inputs: Click "upload" and choose a jpg photo
+  Expected Outputs: The system will reject the photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.681s
+
+Test ID: 49
+  Function: Photo Upload Null | Test Function Name: test_my_profile_photo_upload_null | Partition: Photo uploads
+  Description: Check null safety
+  Inputs: Leave photo as null
+  Expected Outputs: The system will reject the photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.690s
+
+Test ID: 50
+  Function: Valid Postcode | Test Function Name: test_my_profile_postcode_valid | Partition: Valid postcode
+  Description: Standard correctly formatted postcode
+  Inputs: SW1A 1AA
+  Expected Outputs: Accepted
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.677s
+
+Test ID: 51
+  Function: Lowercase Postcode | Test Function Name: test_my_profile_postcode_lowercase | Partition: Valid postcode
+  Description: Lowercase valid postcode
+  Inputs: sw1a 1aa
+  Expected Outputs: Accepted or converted to uppercase
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.716s
+
+Test ID: 52
+  Function: Empty Postcode | Test Function Name: test_my_profile_postcode_empty | Partition: Empty postcode
+  Description: No postcode entered
+  Inputs: null
+  Expected Outputs: Error message shown / rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.732s
+
+Test ID: 53
+  Function: Postcode Too Short | Test Function Name: test_my_profile_postcode_too_short | Partition: Postcode too short
+  Description: Postcode does not contain enough characters
+  Inputs: A1 1A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: FAIL [ERROR] | Duration: 0.713s
+
+Test ID: 54
+  Function: Postcode Too Long | Test Function Name: test_my_profile_postcode_too_long | Partition: Postcode too long
+  Description: Postcode contains too many characters
+  Inputs: SW1A 11AAA
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.696s
+
+Test ID: 55
+  Function: Invalid Postcode Characters | Test Function Name: test_my_profile_postcode_invalid_characters | Partition: Invalid postcode characters
+  Description: Contains special character not allowed
+  Inputs: SW1A 1@A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: FAIL [ERROR] | Duration: 0.724s
+
+Test ID: 56
+  Function: Numeric Only Postcode | Test Function Name: test_my_profile_postcode_numeric_only | Partition: Numeric only
+  Description: Input is not in postcode format
+  Inputs: 123456
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.692s
+
+Test ID: 57
+  Function: Alphabetic Only Postcode | Test Function Name: test_my_profile_postcode_alphabetic_only | Partition: Alphabetic only
+  Description: Input is not in postcode format
+  Inputs: ABCDEF
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.678s
+
+Test ID: 58
+  Function: Incomplete Postcode | Test Function Name: test_my_profile_postcode_incomplete | Partition: Incomplete postcode
+  Description: Incomplete postcode
+  Inputs: SW1A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: FAIL [ERROR] | Duration: 0.689s
+
+Test ID: 59
+  Function: Whitespace Postcode | Test Function Name: test_my_profile_postcode_whitespace | Partition: Whitespace handling
+  Description: Checks handling of extra spaces
+  Inputs: SW1A 1AA
+  Expected Outputs: Accepted after trimming or rejected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.671s
+
+Test ID: 60
+  Function: No-Space Postcode | Test Function Name: test_my_profile_postcode_no_space | Partition: No-space postcode
+  Description: Checks formatting rule
+  Inputs: SW1A1AA
+  Expected Outputs: Accepted if auto-formatted, otherwise rejected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.672s
+
+Test ID: 61
+  Function: Switch to Customer | Test Function Name: test_my_profile_account_type_switch_customer | Partition: Valid account type
+  Description: Switch to customer account
+  Inputs: Select "Customer"
+  Expected Outputs: Barbershop selection disappears
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.704s
+
+Test ID: 62
+  Function: Switch to Barber | Test Function Name: test_my_profile_account_type_switch_barber | Partition: Valid account type
+  Description: Switch to barber account
+  Inputs: Select "Barber"
+  Expected Outputs: Barbershop selection appears
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.706s
+
+Test ID: 63
+  Function: Non-Existent Barbershop | Test Function Name: test_my_profile_select_nonexistent_barbershop | Partition: Non-existent barbershop
+  Description: Change barbershop to inexistent shop
+  Inputs: Enter "silly styles" with a barber who has already saved a barbershop
+  Expected Outputs: Form ignores input, when "save changes" pressed the previous valid barbershop will stay
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.729s
+
+Test ID: 64
+  Function: Valid Barbershop | Test Function Name: test_my_profile_select_valid_barbershop | Partition: Valid barbershop
+  Description: Change barbershop to an existing shop
+  Inputs: Select "Supreme Styling"
+  Expected Outputs: Form saves barbershop to barber
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.707s
+
+Test ID: 65
+  Function: Empty Barbershop | Test Function Name: test_my_profile_select_empty_barbershop | Partition: Empty barbershop
+  Description: Enter nothing into field
+  Inputs: Select null
+  Expected Outputs: Form requests "Please select a barbershop"
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.701s
+
+Test ID: 66
+  Function: Register Valid Barbershop | Test Function Name: test_my_profile_register_valid_barbershop | Partition: Valid barbershop
+  Description: Create new barbershop with valid inputs
+  Inputs: Name = "top trims", Location = "SW1A1AA"
+  Expected Outputs: Form saves new barbershop to barber
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.681s
+
+Test ID: 67
+  Function: Register Empty Barbershop | Test Function Name: test_my_profile_register_empty_barbershop | Partition: Empty barbershop
+  Description: Create new barbershop with null inputs
+  Inputs: Name = null, Location = null
+  Expected Outputs: Form requests data be added
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.656s
+
+Test ID: 68
+  Function: Register Profane Barbershop | Test Function Name: test_my_profile_register_profane_barbershop | Partition: Profanity filter
+  Description: Create new barbershop with profane inputs
+  Inputs: Name = "fuck", Location = "SW1A1AA"
+  Expected Outputs: Form rejects profane input and requests a different name
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.705s
+
+Test ID: 69
+  Function: Register Duplicate Barbershop | Test Function Name: test_my_profile_register_duplicate_barbershop | Partition: Duplicate Barbershop
+  Description: Create new barbershop with duplicate inputs
+  Inputs: Name = "Supreme Styling", Location = "SW1A1AA"
+  Expected Outputs: Form rejects duplicate input and requests a different name
+  Valid/Invalid: i
+  Status: FAIL [ERROR] | Duration: 0.681s
+
+Test ID: 70
+  Function: Register Unique Barbershop | Test Function Name: test_my_profile_register_unique_barbershop | Partition: Valid Barbershop
+  Description: Create new barbershop with valid inputs. Name is UNIQUE, location is duplicate. Two shops can open in the same postcode.
+  Inputs: Name = "Not Supreme Styling", Location = "SW1A1AA"
+  Expected Outputs: Form saves new barbershop to barber
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.745s
+
+Test ID: 71
+  Function: Barbershop Name Too Long | Test Function Name: test_my_profile_barbershop_name_too_long | Partition: Name too long
+  Description: Create new barbershop with input too long
+  Inputs: Enter 51+ characters
+  Expected Outputs: Form requests that name is less than 50 characters
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.718s
+
+================================================================================
+TEST SUMMARY
+================================================================================
+Supporting Tests: 19
+Planned Tests: 59
+Total Tests: 77
+Passed: 73
+Failed: 4
+Success Rate: 94.8%
+
+Exit Code: 1
+Status: SOME TESTS FAILED [FAIL]
+================================================================================

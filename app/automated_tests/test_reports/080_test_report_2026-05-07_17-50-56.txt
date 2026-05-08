@@ -1,0 +1,1710 @@
+================================================================================
+SNIP-SNAP AUTOMATED TEST REPORT
+================================================================================
+Generated: 2026-05-07 17:57:58
+
+================================================================================
+SECTION: Welcome
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_welcome_page_loads [PASS]
+    - test_continue_as_guest_with_redirect [PASS]
+
+Test ID: 1
+  Function: Go to Login Page | Test Function Name: test_go_to_login_page | Partition: Navigation
+  Description: Button navigation to login
+  Inputs: press "Login" button
+  Expected Outputs: Transfer user to login page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 2
+  Function: Go to Signup Page | Test Function Name: test_go_to_signup_page | Partition: Navigation
+  Description: Button navigation to signup
+  Inputs: press "Sign up" button
+  Expected Outputs: Transfer user to signup page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 3
+  Function: Continue as Guest | Test Function Name: test_continue_as_guest | Partition: Navigation
+  Description: Guest access
+  Inputs: press "Continue as guest" button
+  Expected Outputs: Transfer user to discover page as guest
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+================================================================================
+SECTION: Login
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_login_page_loads [PASS]
+
+Test ID: 4
+  Function: Invalid Login | Test Function Name: test_login_page_invalid_credentials_client_side | Partition: Invalid login
+  Description: Attempt login with inexistent account
+  Inputs: Enter email "invalid@ss.dev" password "111111"
+  Expected Outputs: Email or password is incorrect
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.008s
+
+Test ID: 5
+  Function: Valid Login | Test Function Name: test_login_page_valid_login_attempt_ready | Partition: Valid login
+  Description: Attempt login with valid account
+  Inputs: Enter "barber@ss.dev" pass "1111"
+  Expected Outputs: accepted
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.037s
+
+Test ID: 6
+  Function: Valid Email Format | Test Function Name: test_login_email_validation_elements_present | Partition: Valid email
+  Description: Attempt login with valid email
+  Inputs: Enter "cust@ss.dev"
+  Expected Outputs: accepted
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 7
+  Function: Invalid Email No At | Test Function Name: test_login_email_format_no_at_symbol | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid"
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 8
+  Function: Invalid Email Missing Domain | Test Function Name: test_login_email_format_missing_domain | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid@"
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 9
+  Function: Invalid Email Incomplete Domain | Test Function Name: test_login_email_format_incomplete_domain | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid@ss"
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 10
+  Function: Invalid Email No Extension | Test Function Name: test_login_page_contains_email_input | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid@ss."
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 11
+  Function: Empty Email | Test Function Name: test_login_empty_email_field_handling | Partition: Empty email
+  Description: Attempt login without providing email
+  Inputs: Enter null
+  Expected Outputs: Error message asking to input data
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 12
+  Function: Empty Password | Test Function Name: test_login_page_contains_password_input | Partition: Empty password
+  Description: Dont enter password
+  Inputs: Enter null password
+  Expected Outputs: Form requests the password field is filled
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 13
+  Function: Password Too Short | Test Function Name: test_login_password_validation_elements | Partition: Password too short
+  Description: Enter small password
+  Inputs: Enter "1234"
+  Expected Outputs: Form request password be at least 6 long
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 14
+  Function: Password Too Long | Test Function Name: test_login_page_contains_submit_button | Partition: password too long
+  Description: Enter large password
+  Inputs: Enter "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  Expected Outputs: Form request password be less than 50
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 15
+  Function: Password Too Simple No Number | Test Function Name: test_login_valid_password_form_ready | Partition: Password too simple
+  Description: Attemtp signin with oversimple password
+  Inputs: Enter "aaaaaa"
+  Expected Outputs: Form requests at least 1 special char, 1 capital, 1 number
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 16
+  Function: Password Too Simple No Capital | Test Function Name: test_login_page_contains_form_element | Partition: Password too simple
+  Description: Attemtp signin with oversimple password
+  Inputs: Enter "aAaaaa"
+  Expected Outputs: Form requests at least 1 special char, 1 capital, 1 number
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 17
+  Function: Password Too Simple No Special | Test Function Name: test_login_page_has_guest_option | Partition: Password too simple
+  Description: Attemtp signin with oversimple password
+  Inputs: Enter "aA4aaa"
+  Expected Outputs: Form requests at least 1 special char, 1 capital, 1 number
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 18
+  Function: Valid Password | Test Function Name: test_login_page_supabase_config_present | Partition: Valid password
+  Description: Signup with valid password
+  Inputs: Enter "aA4&aa"
+  Expected Outputs: Form parses the password as valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+================================================================================
+SECTION: Signup
+--------------------------------------------------------------------------------
+
+Test ID: 19
+  Function: Valid Account Type Customer | Test Function Name: test_signup_page_loads | Partition: Valid account type
+  Description: Create a customer account
+  Inputs: Select "Customer"
+  Expected Outputs: Transfered to discover page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 20
+  Function: Valid Account Type Barber | Test Function Name: test_signup_page_contains_form_element | Partition: Valid account type
+  Description: Create a barber account
+  Inputs: Select "Barber"
+  Expected Outputs: Transfered to My Profile page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 21
+  Function: Empty Account Type | Test Function Name: test_signup_page_contains_email_input | Partition: Empty account type
+  Description: Attempt to create a account with no role
+  Inputs: Select neither
+  Expected Outputs: Form requests that an option is chosen
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 22
+  Function: Valid Username | Test Function Name: test_signup_page_contains_password_input | Partition: Valid username
+  Description: Make a new username
+  Inputs: Enter "kerry"
+  Expected Outputs: Form parses the username as valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 23
+  Function: Duplicate Username | Test Function Name: test_signup_page_contains_submit_button | Partition: Duplicate username
+  Description: Use username already being used
+  Inputs: Enter "bob"
+  Expected Outputs: Error message asking to use diffrent username
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 24
+  Function: Profanity Filter Username | Test Function Name: test_signup_page_has_login_option | Partition: Profanity filter
+  Description: Make a rude username
+  Inputs: Enter "fuck"
+  Expected Outputs: Form witholds the username for profanity concerns, asks user to choose another name before submitting
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.009s
+
+Test ID: 25
+  Function: Empty Username | Test Function Name: test_signup_page_supabase_config_present | Partition: Empty username
+  Description: Make no username
+  Inputs: Enter null
+  Expected Outputs: Form requests that a username is entered
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 26
+  Function: Username Too Long | Test Function Name: test_signup_invalid_credentials | Partition: Username too long
+  Description: Make username too long
+  Inputs: Enter "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+  Expected Outputs: Form requests that username is less than 50 characters
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 27
+  Function: Duplicate Email | Test Function Name: test_signup_valid_credentials | Partition: Duplicate email
+  Description: Try an email already on the database
+  Inputs: Enter "bob@ss.dev"
+  Expected Outputs: Error "email already in use"
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 28
+  Function: Valid Email | Test Function Name: test_signup_email_validation_present | Partition: Valid email
+  Description: Use a new email
+  Inputs: Enter "kerry@ss.dev"
+  Expected Outputs: Form parses the email as valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 29
+  Function: Invalid Email No At | Test Function Name: test_signup_invalid_email_no_at | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid"
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.007s
+
+Test ID: 30
+  Function: Invalid Email Missing Domain | Test Function Name: test_signup_invalid_email_missing_domain | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid@"
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 31
+  Function: Invalid Email Incomplete Domain | Test Function Name: test_signup_empty_email | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid@ss"
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 32
+  Function: Invalid Email No Extension | Test Function Name: test_signup_empty_password | Partition: Invalid email format
+  Description: Attempt login with syntactly invalid email
+  Inputs: Enter "invalid@ss."
+  Expected Outputs: Error message asking to input valid email address
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 33
+  Function: Empty Email | Test Function Name: test_signup_password_too_short | Partition: Empty email
+  Description: Attempt login without providing email
+  Inputs: Enter null
+  Expected Outputs: Error message asking to input data
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 34
+  Function: Empty Password | Test Function Name: test_signup_password_too_long | Partition: Empty password
+  Description: Dont enter password
+  Inputs: Enter null password
+  Expected Outputs: Form requests the password field is filled
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 35
+  Function: Password Too Short | Test Function Name: test_signup_password_missing_special_char | Partition: Password too short
+  Description: Enter small password
+  Inputs: Enter "1234"
+  Expected Outputs: Form request password be at least 6 long
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 36
+  Function: Password Too Long | Test Function Name: test_signup_password_missing_number | Partition: password too long
+  Description: Enter large password
+  Inputs: Enter "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  Expected Outputs: Form request password be less than 50
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 37
+  Function: Password Too Simple No Number | Test Function Name: test_signup_valid_password | Partition: Password too simple
+  Description: Attemtp signin with oversimple password
+  Inputs: Enter "aaaaaa"
+  Expected Outputs: Form requests at least 1 special char, 1 capital, 1 number
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+================================================================================
+SECTION: My Profile
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_my_profile_page_loads [PASS]
+    - test_my_profile_page_contains_form_element [PASS]
+    - test_my_profile_page_contains_username_input [PASS]
+    - test_my_profile_page_contains_photo_upload [PASS]
+    - test_my_profile_page_contains_location_input [PASS]
+    - test_my_profile_page_contains_account_type_selector [PASS]
+
+Test ID: 41
+  Function: Profanity Filter Username | Test Function Name: test_my_profile_profanity_filter_username | Partition: Profanity filter
+  Description: Make a rude username
+  Inputs: Enter "fuck"
+  Expected Outputs: Form witholds the username for profanity concerns, asks user to choose another name before submitting
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.745s
+
+Test ID: 42
+  Function: Duplicate Username | Test Function Name: test_my_profile_duplicate_username | Partition: Duplicate username
+  Description: Use username already being used
+  Inputs: Enter "bob"
+  Expected Outputs: Error message asking to use diffrent username
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.708s
+
+Test ID: 43
+  Function: Username Too Long | Test Function Name: test_my_profile_username_too_long | Partition: Username too long
+  Description: Make username too long
+  Inputs: Enter "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+  Expected Outputs: Form requests that username is less than 50 characters
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.702s
+
+Test ID: 44
+  Function: Valid Username | Test Function Name: test_my_profile_valid_username | Partition: Valid username
+  Description: Make a new username
+  Inputs: Enter "alexander"
+  Expected Outputs: Form parses the username as valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.671s
+
+Test ID: 45
+  Function: Photo Upload PNG | Test Function Name: test_my_profile_photo_upload_png | Partition: Photo uploads
+  Description: Check png can be uploaded
+  Inputs: Click "upload" and chose a png photo
+  Expected Outputs: The new photo should show
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.812s
+
+Test ID: 46
+  Function: Photo Upload JPEG | Test Function Name: test_my_profile_photo_upload_jpeg | Partition: Photo uploads
+  Description: Check jpeg can be uploaded
+  Inputs: Click "upload" and chose a jpeg photo
+  Expected Outputs: The new photo should show
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.723s
+
+Test ID: 47
+  Function: Photo Upload WEBP | Test Function Name: test_my_profile_photo_upload_webp | Partition: Photo uploads
+  Description: Check webp can be uploaded
+  Inputs: Click "upload" and chose a webp photo
+  Expected Outputs: The new photo should show
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.699s
+
+Test ID: 48
+  Function: Photo Upload JPG Invalid | Test Function Name: test_my_profile_photo_upload_jpg_invalid | Partition: Photo uploads
+  Description: Check jpg is rejected
+  Inputs: Click "upload" and chose a jpg photo
+  Expected Outputs: The system will regect the photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.712s
+
+Test ID: 49
+  Function: Photo Upload Null | Test Function Name: test_my_profile_photo_upload_null | Partition: Photo uploads
+  Description: Check null saftey
+  Inputs: Leave photo as null
+  Expected Outputs: The system will regect the photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.677s
+
+Test ID: 50
+  Function: Valid Postcode | Test Function Name: test_my_profile_postcode_valid | Partition: Valid postcode
+  Description: Standard correctly formatted postcode
+  Inputs: SW1A 1AA
+  Expected Outputs: Accepted
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.684s
+
+Test ID: 51
+  Function: Lowercase Postcode | Test Function Name: test_my_profile_postcode_lowercase | Partition: Valid postcode
+  Description: Lowercase valid postcode
+  Inputs: sw1a 1aa
+  Expected Outputs: Accepted or converted to uppercase
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.697s
+
+Test ID: 52
+  Function: Empty Postcode | Test Function Name: test_my_profile_postcode_empty | Partition: Empty postcode
+  Description: No postcode entered
+  Inputs: null
+  Expected Outputs: Error message shown / rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.677s
+
+Test ID: 53
+  Function: Postcode Too Short | Test Function Name: test_my_profile_postcode_too_short | Partition: Postcode too short
+  Description: Postcode does not contain enough characters
+  Inputs: A1 1A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.719s
+
+Test ID: 54
+  Function: Postcode Too Long | Test Function Name: test_my_profile_postcode_too_long | Partition: Postcode too long
+  Description: Postcode contains too many characters
+  Inputs: SW1A 11AAA
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.745s
+
+Test ID: 55
+  Function: Invalid Postcode Characters | Test Function Name: test_my_profile_postcode_invalid_characters | Partition: Invalid postcode characters
+  Description: Contains special character not allowed
+  Inputs: SW1A 1@A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.732s
+
+Test ID: 56
+  Function: Numeric Only Postcode | Test Function Name: test_my_profile_postcode_numeric_only | Partition: Numeric only
+  Description: Input is not in postcode format
+  Inputs: 123456
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.732s
+
+Test ID: 57
+  Function: Alphabetic Only Postcode | Test Function Name: test_my_profile_postcode_alphabetic_only | Partition: Alphabetic only
+  Description: Input is not in postcode format
+  Inputs: ABCDEF
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.727s
+
+Test ID: 58
+  Function: Incomplete Postcode | Test Function Name: test_my_profile_postcode_incomplete | Partition: Incomplete postcode
+  Description: Incomplete postcode
+  Inputs: SW1A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.677s
+
+Test ID: 59
+  Function: Whitespace Postcode | Test Function Name: test_my_profile_postcode_whitespace | Partition: Whitespace handling
+  Description: Checks handling of extra spaces
+  Inputs: "  SW1A 1AA  "
+  Expected Outputs: Accepted after trimming or rejected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.729s
+
+Test ID: 60
+  Function: No-Space Postcode | Test Function Name: test_my_profile_postcode_no_space | Partition: No-space postcode
+  Description: Checks formatting rule
+  Inputs: SW1A1AA
+  Expected Outputs: Accepted if auto-formatted, otherwise rejected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.673s
+
+Test ID: 61
+  Function: Switch to Customer | Test Function Name: test_my_profile_account_type_switch_customer | Partition: Valid account type
+  Description: Switch to customer account
+  Inputs: Select "Customer"
+  Expected Outputs: Barbershop selection dissapears
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.684s
+
+Test ID: 62
+  Function: Switch to Barber | Test Function Name: test_my_profile_account_type_switch_barber | Partition: Valid account type
+  Description: Switch to barber account
+  Inputs: Select "Barber"
+  Expected Outputs: Barbershop selection appears
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.735s
+
+Test ID: 63
+  Function: Non-Existent Barbershop | Test Function Name: test_my_profile_select_nonexistent_barbershop | Partition: Non-existent barbershop
+  Description: Change barbershop to inexistent shop
+  Inputs: Enter "silly styles" with a barber who has already saved a barbershop to their account
+  Expected Outputs: Form ignores input, when "save changes" pressed the previous valid barbershop will stay
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.668s
+
+Test ID: 64
+  Function: Valid Barbershop | Test Function Name: test_my_profile_select_valid_barbershop | Partition: Valid barbershop
+  Description: Change barbershop to an existing shop
+  Inputs: Select "Supreme Styling"
+  Expected Outputs: Form saves barbershop to barber
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.695s
+
+Test ID: 65
+  Function: Empty Barbershop | Test Function Name: test_my_profile_select_empty_barbershop | Partition: Empty barbershop
+  Description: Enter nothing into field
+  Inputs: Select null
+  Expected Outputs: Form requests "Please select a barbershop"
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.663s
+
+Test ID: 66
+  Function: Register Valid Barbershop | Test Function Name: test_my_profile_register_valid_barbershop | Partition: Valid barbershop
+  Description: Create new barbershop with valid inputs
+  Inputs: Name = "top trims", Location = "SW1A1AA"
+  Expected Outputs: Form saves new barbershop to barber
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.952s
+
+Test ID: 67
+  Function: Register Empty Barbershop | Test Function Name: test_my_profile_register_empty_barbershop | Partition: Empty barbershop
+  Description: Create new barbershop with null inputs
+  Inputs: Name = null, Location = null
+  Expected Outputs: Form requests data be added
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.730s
+
+Test ID: 68
+  Function: Register Profane Barbershop | Test Function Name: test_my_profile_register_profane_barbershop | Partition: Profanity filter
+  Description: Create new barbershop with profane inputs
+  Inputs: Name = "fuck", Location =  "SW1A1AA"
+  Expected Outputs: Form rejects profane input and requests a diffrent name
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.728s
+
+Test ID: 69
+  Function: Register Duplicate Barbershop | Test Function Name: test_my_profile_register_duplicate_barbershop | Partition: Duplicate Barbershop
+  Description: Create new barbershop with duplicate inputs
+  Inputs: Name = "Supreme Styling",  Location =  "SW1A1AA"
+  Expected Outputs: Form rejects duplicate input and requests a diffrent name
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.925s
+
+Test ID: 70
+  Function: Register Unique Barbershop | Test Function Name: test_my_profile_register_unique_barbershop | Partition: Valid Barbershop
+  Description: Create new barbershop with valid inputs. Name is UNIQUE, location is dupliacate. Two shops can open in the same postcode.
+  Inputs: Name = "Not Supreme Styling",  Location =  "SW1A1AA"
+  Expected Outputs: Form saves new barbershop to barber
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.980s
+
+Test ID: 71
+  Function: Barbershop Name Too Long | Test Function Name: test_my_profile_barbershop_name_too_long | Partition: Name too long
+  Description: Create new barbershop with input too long
+  Inputs: Enter "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+  Expected Outputs: Form requests that name is less than 50 characters
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.717s
+
+================================================================================
+SECTION: Barber Dashboard
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_barber_dashboard_authenticated [PASS]
+    - test_barber_dashboard_has_upload_routes [PASS]
+    - test_barber_dashboard_html_structure [PASS]
+
+Test ID: 72
+  Function: Dashboard Loads | Test Function Name: test_barber_dashboard_page_loads | Partition: Dashboard access
+  Description: Access dashboard as authenticated barber
+  Inputs: Navigate to /dashboard
+  Expected Outputs: Dashboard page loads with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.467s
+
+Test ID: 73
+  Function: New Account Empty Gallery | Test Function Name: test_barber_dashboard_with_new_account | Partition: Dashboard display
+  Description: Verify new barber starts with empty gallery
+  Inputs: Open barber dashboard page with new account
+  Expected Outputs: Dashboard shows "No gallery photos yet" message
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.470s
+
+Test ID: 74
+  Function: Add More Photos Button | Test Function Name: test_barber_dashboard_add_more_photos_button | Partition: Dashboard UI
+  Description: Check for UI to add photos
+  Inputs: View gallery area
+  Expected Outputs: Gallery contains "Add more photos" or equivalent button
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.484s
+
+Test ID: 75
+  Function: Photo Upload PNG | Test Function Name: test_barber_dashboard_photo_upload_png | Partition: Photo uploads
+  Description: Check png can be uploaded
+  Inputs: Click "upload" and choose a png photo
+  Expected Outputs: Photo upload succeeds
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 76
+  Function: Photo Upload JPEG | Test Function Name: test_barber_dashboard_photo_upload_jpeg | Partition: Photo uploads
+  Description: Check jpeg can be uploaded
+  Inputs: Click "upload" and choose a jpeg photo
+  Expected Outputs: Photo upload succeeds
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 77
+  Function: Photo Upload WEBP | Test Function Name: test_barber_dashboard_photo_upload_webp | Partition: Photo uploads
+  Description: Check webp can be uploaded
+  Inputs: Click "upload" and choose a webp photo
+  Expected Outputs: Photo upload succeeds
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 78
+  Function: Photo Upload JPG Rejected | Test Function Name: test_barber_dashboard_photo_upload_jpg_rejected | Partition: Photo uploads
+  Description: Check jpg is rejected
+  Inputs: Click "upload" and choose a jpg photo
+  Expected Outputs: System rejects the photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 79
+  Function: Photo Upload Null Rejected | Test Function Name: test_barber_dashboard_photo_upload_null_rejected | Partition: Photo uploads
+  Description: Check null safety
+  Inputs: Leave photo as null
+  Expected Outputs: System rejects or returns error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 80
+  Function: Tag Null Rejected | Test Function Name: test_barber_dashboard_main_tag_null_rejected | Partition: Tag validation
+  Description: Add photo without tag
+  Inputs: Tag field empty
+  Expected Outputs: System rejects empty tag
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 81
+  Function: Tag Invalid Rejected | Test Function Name: test_barber_dashboard_main_tag_invalid | Partition: Tag validation
+  Description: Add photo with non-existent tag
+  Inputs: Enter invalid tag "dfghjk"
+  Expected Outputs: System rejects invalid tag
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 82
+  Function: Tag Valid Accepted | Test Function Name: test_barber_dashboard_main_tag_valid | Partition: Tag validation
+  Description: Add photo with valid tag
+  Inputs: Enter valid tag "beard"
+  Expected Outputs: System accepts valid tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 83
+  Function: Tag Single Applied | Test Function Name: test_barber_dashboard_main_tag_single | Partition: Tag management
+  Description: Verify single tag assignment
+  Inputs: Add single tag "beard"
+  Expected Outputs: Photo displays with single tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 84
+  Function: Photo Edit | Test Function Name: test_barber_dashboard_photo_edit | Partition: Photo editing
+  Description: Photos can be edited
+  Inputs: Edit photo with new tag and new photo
+  Expected Outputs: Photo updates with new tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 85
+  Function: Post Upload PNG | Test Function Name: test_barber_dashboard_post_upload_png | Partition: Post uploads
+  Description: Check png can be uploaded for posts
+  Inputs: Click "upload" and choose a png photo
+  Expected Outputs: Photo upload succeeds
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 86
+  Function: Post Upload JPEG | Test Function Name: test_barber_dashboard_post_upload_jpeg | Partition: Post uploads
+  Description: Check jpeg can be uploaded for posts
+  Inputs: Click "upload" and choose a jpeg photo
+  Expected Outputs: Photo upload succeeds
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 87
+  Function: Post Upload WEBP | Test Function Name: test_barber_dashboard_post_upload_webp | Partition: Post uploads
+  Description: Check webp can be uploaded for posts
+  Inputs: Click "upload" and choose a webp photo
+  Expected Outputs: Photo upload succeeds
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 88
+  Function: Post Upload JPG Rejected | Test Function Name: test_barber_dashboard_post_upload_jpg_rejected | Partition: Post uploads
+  Description: Check jpg is rejected for posts
+  Inputs: Click "upload" and choose a jpg photo
+  Expected Outputs: System rejects the photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 89
+  Function: Post Upload Null Rejected | Test Function Name: test_barber_dashboard_post_upload_null_photo_rejected | Partition: Post uploads
+  Description: Check null safety for posts
+  Inputs: Leave photo as null
+  Expected Outputs: System rejects or returns error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 90
+  Function: Post Tags Null Rejected | Test Function Name: test_barber_dashboard_post_tags_null_rejected | Partition: Post tag validation
+  Description: Create post without tags
+  Inputs: Tags field empty
+  Expected Outputs: System rejects empty tags
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 91
+  Function: Post Tags Invalid Rejected | Test Function Name: test_barber_dashboard_post_tags_invalid | Partition: Post tag validation
+  Description: Create post with non-existent tag
+  Inputs: Enter invalid tag "dfghjk"
+  Expected Outputs: System rejects invalid tag
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 92
+  Function: Post Tags Valid Single | Test Function Name: test_barber_dashboard_post_tags_valid | Partition: Post tag validation
+  Description: Create post with single valid tag
+  Inputs: Enter valid tag "beard"
+  Expected Outputs: System accepts valid tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 93
+  Function: Post Tags Multiple Valid | Test Function Name: test_barber_dashboard_post_tags_multiple | Partition: Post tag validation
+  Description: Create post with multiple tags
+  Inputs: Enter multiple tags "beard,fade"
+  Expected Outputs: System accepts multiple valid tags
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 94
+  Function: Post Upload Success | Test Function Name: test_barber_dashboard_post_upload_success | Partition: Post creation
+  Description: Complete post upload flow
+  Inputs: Upload photo with tags and confirm
+  Expected Outputs: User redirected to dashboard after upload
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+================================================================================
+SECTION: Interactive Map
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_location_form_empty_postcode [PASS]
+    - test_map_page_authenticated [PASS]
+    - test_map_page_has_required_elements [PASS]
+    - test_barbershops_api_returns_valid_json [PASS]
+
+Test ID: 95
+  Function: Location Form Loads No Location | Test Function Name: test_map_page_loads | Partition: Location popup form
+  Description: Accounts with no stored location are asked for their location
+  Inputs: Open map on account with no saved personal location
+  Expected Outputs: A popup menu appears asking for user location
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.238s
+
+Test ID: 96
+  Function: Location Form Doesnt Load With Location | Test Function Name: test_map_page_with_saved_location | Partition: Location popup form
+  Description: Accounts with stored location arent asked for their location
+  Inputs: Open map on account with saved personal location
+  Expected Outputs: No popup menu appears and map is centered on user location
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.239s
+
+Test ID: 97
+  Function: Change Location With My Location Button | Test Function Name: test_map_page_my_location_button | Partition: Location popup form
+  Description: Users can change their stored location
+  Inputs: Open map with saved location and press "my location" at bottom
+  Expected Outputs: A popup menu appears asking for user location
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.239s
+
+Test ID: 98
+  Function: Valid Postcode Standard Format | Test Function Name: test_location_form_valid_postcode_standard | Partition: Valid postcode
+  Description: Standard correctly formatted postcode
+  Inputs: SW1A 1AA
+  Expected Outputs: Accepted
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.524s
+
+Test ID: 99
+  Function: Valid Postcode Lowercase | Test Function Name: test_location_form_valid_postcode_lowercase | Partition: Valid postcode
+  Description: Lowercase valid postcode
+  Inputs: sw1a 1aa
+  Expected Outputs: Accepted or converted to uppercase
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.526s
+
+Test ID: 101
+  Function: Postcode Too Short | Test Function Name: test_location_form_postcode_too_short | Partition: Postcode too short
+  Description: Postcode does not contain enough characters
+  Inputs: A1 1A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.291s
+
+Test ID: 102
+  Function: Postcode Too Long | Test Function Name: test_location_form_postcode_too_long | Partition: Postcode too long
+  Description: Postcode contains too many characters
+  Inputs: SW1A 11AAA
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.278s
+
+Test ID: 103
+  Function: Invalid Postcode Characters | Test Function Name: test_location_form_invalid_characters | Partition: Invalid postcode characters
+  Description: Contains special character not allowed
+  Inputs: SW1A 1@A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.269s
+
+Test ID: 104
+  Function: Numeric Only Postcode | Test Function Name: test_location_form_numeric_only | Partition: Numeric only
+  Description: Input is not in postcode format
+  Inputs: 123456
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.266s
+
+Test ID: 105
+  Function: Alphabetic Only Postcode | Test Function Name: test_location_form_alphabetic_only | Partition: Alphabetic only
+  Description: Input is not in postcode format
+  Inputs: ABCDEF
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.282s
+
+Test ID: 106
+  Function: Incomplete Postcode | Test Function Name: test_location_form_incomplete_postcode | Partition: Incomplete postcode
+  Description: Incomplete postcode
+  Inputs: SW1A
+  Expected Outputs: Rejected
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.491s
+
+Test ID: 107
+  Function: Whitespace Postcode | Test Function Name: test_location_form_whitespace_handling | Partition: Whitespace handling
+  Description: Checks handling of extra spaces
+  Inputs: "  SW1A 1AA  "
+  Expected Outputs: Accepted after trimming or rejected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.505s
+
+Test ID: 108
+  Function: No-Space Postcode | Test Function Name: test_location_form_no_space_postcode | Partition: No-space postcode
+  Description: Checks formatting rule
+  Inputs: SW1A1AA
+  Expected Outputs: Accepted if auto-formatted, otherwise rejected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.499s
+
+Test ID: 109
+  Function: Set Location Button | Test Function Name: test_set_location_with_valid_postcode | Partition: Set location
+  Description: Check location can be saved
+  Inputs: Press "set location" button with valid postcode
+  Expected Outputs: Form dissappears and map recenters to new location
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.491s
+
+Test ID: 110
+  Function: Use Current Location | Test Function Name: test_use_current_location | Partition: Use current location
+  Description: Check location can be saved
+  Inputs: Press "use current location" without postcode
+  Expected Outputs: User's browser provides postcode and map recenters
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.217s
+
+Test ID: 111
+  Function: Search Barbershops Empty Input | Test Function Name: test_search_barbershops_empty_input | Partition: Empty input
+  Description: Check null safety
+  Inputs: Enter null into the "search barbershops" input
+  Expected Outputs: Nothing happens
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 10.716s
+
+Test ID: 112
+  Function: Search Barbershops Invalid Input | Test Function Name: test_search_barbershops_invalid_input | Partition: Invalid input
+  Description: Check input validation
+  Inputs: Enter "rghjikoiytfghb"
+  Expected Outputs: Search bar says "no results found"
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 10.709s
+
+Test ID: 113
+  Function: Search Barbershops Autocomplete | Test Function Name: test_search_barbershops_autocomplete | Partition: Autocorrect
+  Description: Check search bar autocomplete
+  Inputs: Enter "s"
+  Expected Outputs: Search bar gives list of options beginning or including "s"
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.705s
+
+Test ID: 114
+  Function: Search Barbershops Valid Input | Test Function Name: test_search_barbershops_valid_input | Partition: Valid input
+  Description: Check barbershops can be viewed
+  Inputs: Enter "s" and select one of the options
+  Expected Outputs: Map is re centered onto the barbershop selected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.712s
+
+Test ID: 115
+  Function: Search Barbershops Change Input | Test Function Name: test_search_barbershops_change_input | Partition: Change input
+  Description: Check different barbershops can be viewed
+  Inputs: Enter "a" and select one of the options to change search
+  Expected Outputs: Map is re centered onto the barbershop selected
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.712s
+
+Test ID: 116
+  Function: Zoom In Button | Test Function Name: test_zoom_in_button | Partition: Zoom in
+  Description: Check zoom works
+  Inputs: press "+" in top left
+  Expected Outputs: Map is zoomed in or does not zoom any further
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.718s
+
+Test ID: 117
+  Function: Zoom Out Button | Test Function Name: test_zoom_out_button | Partition: Zoom out
+  Description: Check zoom works
+  Inputs: press "-" in top left below "+"
+  Expected Outputs: Map is zoomed out or does not zoom any further
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.738s
+
+Test ID: 118
+  Function: User Pin Select | Test Function Name: test_user_pin_select | Partition: Select pin
+  Description: Check "my location" pin works
+  Inputs: Press the user pin (red dot)
+  Expected Outputs: A card pops up from user pin saying "your location"
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.689s
+
+Test ID: 119
+  Function: User Pin Deselect | Test Function Name: test_user_pin_deselect | Partition: Deselect pin
+  Description: Check pin card can be hidden
+  Inputs: Press the "x" in top right of user pin card
+  Expected Outputs: The card dissapears
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.713s
+
+Test ID: 120
+  Function: Barbershop Pin Select | Test Function Name: test_barbershop_pin_select | Partition: Select pin
+  Description: Check barbershop pin works
+  Inputs: Press the barbershop pin (blue pin marker)
+  Expected Outputs: A card pops up from barbershop pin with shop name, distance, postcode, link to website and link to shop page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.749s
+
+Test ID: 121
+  Function: Barbershop Pin Deselect | Test Function Name: test_barbershop_pin_deselect | Partition: Deselect pin
+  Description: Check pin card can be hidden
+  Inputs: Press the "x" in top right of barbershop pin card
+  Expected Outputs: The card dissapears
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.701s
+
+Test ID: 122
+  Function: Barbershop Website Button | Test Function Name: test_barbershop_website_button | Partition: Go to website
+  Description: Check barber website button works
+  Inputs: Press "website" button
+  Expected Outputs: User is redirected to the barbershop's personal website
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.703s
+
+Test ID: 123
+  Function: Barbershop Page Button | Test Function Name: test_barbershop_page_button | Partition: Go to barbershop page
+  Description: Check barbershop page redirect works
+  Inputs: Press "go to shop" button
+  Expected Outputs: User is redirected to the barbershop's in app page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.666s
+
+================================================================================
+SECTION: Review widget
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_review_widget_page_authenticated [PASS]
+    - test_review_widget_api_reviews_valid_json [PASS]
+    - test_review_widget_submit_api_requires_data [PASS]
+
+Test ID: 124
+  Function: Load Reviews | Test Function Name: test_review_widget_loads_reviews | Partition: Load data
+  Description: Check reviews load from db
+  Inputs: Open barber page
+  Expected Outputs: See a list of reviews and replies
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.273s
+
+Test ID: 125
+  Function: Barber Highlight | Test Function Name: test_review_widget_barber_replies_highlighted | Partition: Barber highlight
+  Description: Check barber replies are highlighted
+  Inputs: Open barber page
+  Expected Outputs: Barber reply is highlighted and put on top of stack
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.811s
+
+Test ID: 126
+  Function: No Reviews Message | Test Function Name: test_review_widget_no_reviews_message | Partition: Load data
+  Description: Check review widget specifies if there are no reviews yet
+  Inputs: Open newly created barber page
+  Expected Outputs: Message saying there are no reviews
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.213s
+
+Test ID: 127
+  Function: Star Rating Zero | Test Function Name: test_review_widget_star_rating_zero | Partition: Star rating select
+  Description: Check star selection
+  Inputs: Select 0 stars
+  Expected Outputs: review of 0 stars is valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.218s
+
+Test ID: 128
+  Function: Star Rating Five | Test Function Name: test_review_widget_star_rating_five | Partition: Star rating select
+  Description: check star selection
+  Inputs: Select 5 stars
+  Expected Outputs: Review of 5 stars is valid
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.231s
+
+Test ID: 129
+  Function: Profanity Filter Review | Test Function Name: test_review_widget_profanity_filter_review | Partition: Profanity filter
+  Description: Make a rude review
+  Inputs: Enter "fuck"
+  Expected Outputs: Form witholds the review for profanity concerns, asks user to choose alternative wording before submitting
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.000s
+
+Test ID: 130
+  Function: Empty Review Rejected | Test Function Name: test_review_widget_empty_review_rejected | Partition: Empty review
+  Description: Make an empty review
+  Inputs: Enter null
+  Expected Outputs: Form requests data be added
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 131
+  Function: Review Too Long | Test Function Name: test_review_widget_review_too_long | Partition: review too big
+  Description: Make a big review
+  Inputs: Enter more than 500 char
+  Expected Outputs: Form does not allow more than 500 char inside
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.215s
+
+Test ID: 132
+  Function: Valid Review Submission | Test Function Name: test_review_widget_valid_review_submission | Partition: Valid review
+  Description: Create a review
+  Inputs: Enter text "testing review function" and 0 stars
+  Expected Outputs: Form closes and new review can be seen
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.239s
+
+Test ID: 133
+  Function: Profanity Filter Reply | Test Function Name: test_review_widget_profanity_filter_reply | Partition: Profanity filter
+  Description: Make a rude reply
+  Inputs: Enter "fuck"
+  Expected Outputs: Form witholds the reply for profanity concerns, asks user to choose alternative wording before submitting
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.000s
+
+Test ID: 134
+  Function: Empty Reply Rejected | Test Function Name: test_review_widget_empty_reply_rejected | Partition: Empty reply
+  Description: Make an empty reply
+  Inputs: Enter null
+  Expected Outputs: Form requests data be added
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.473s
+
+Test ID: 135
+  Function: Reply Too Long | Test Function Name: test_review_widget_reply_too_long | Partition: reply too big
+  Description: Make a big reply
+  Inputs: Enter more than 500 char
+  Expected Outputs: Form does not allow more than 500 char inside
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.443s
+
+Test ID: 136
+  Function: Valid Reply Submission | Test Function Name: test_review_widget_valid_reply_submission | Partition: Valid reply
+  Description: Create a reply
+  Inputs: Enter text "testing reply function"
+  Expected Outputs: Form closes and new reply can be seen
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.479s
+
+Test ID: 137
+  Function: Like Review | Test Function Name: test_review_widget_like_review | Partition: Like a review
+  Description: Like a review
+  Inputs: Press the thumbs up icon below a review
+  Expected Outputs: The number next to the thumb goes up by 1 and thumb greys
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.908s
+
+Test ID: 138
+  Function: Like Reply | Test Function Name: test_review_widget_like_reply | Partition: Like a reply
+  Description: Like a reply
+  Inputs: Press the thumbs up icon below a reply
+  Expected Outputs: The number next to the thumb goes up by 1 and thumb greys
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.166s
+
+Test ID: 139
+  Function: Like Already Liked Review | Test Function Name: test_review_widget_like_already_liked_review | Partition: Like an already liked review
+  Description: Attempt to like the same review twice
+  Inputs: Press the thumbs up icon below a review
+  Expected Outputs: The number next to the thumb does not go up and thumb stays grey
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.309s
+
+Test ID: 140
+  Function: Like Already Liked Reply | Test Function Name: test_review_widget_like_already_liked_reply | Partition: Like an already liked reply
+  Description: Attempt to like the same reply twice
+  Inputs: Press the thumbs up icon below a reply
+  Expected Outputs: The number next to the thumb does not go up and thumb stays grey
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.543s
+
+================================================================================
+SECTION: Discover
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_discover_page_loads [PASS]
+    - test_discover_page_authenticated [PASS]
+    - test_discover_api_valid_json [PASS]
+    - test_fetch_discover_posts_default_sort [PASS]
+    - test_fetch_discover_posts_highest_rated_sort [PASS]
+    - test_fetch_discover_posts_closest_sort [PASS]
+    - test_fetch_discover_posts_pagination [PASS]
+    - test_fetch_discover_search_items_structure [PASS]
+    - test_discover_search_items_api [PASS]
+    - test_discover_tags_search_filters [PASS]
+    - test_discover_multiple_filters [PASS]
+    - test_discover_post_has_valid_barber_info [PASS]
+    - test_selenium_discover_page_loads [PASS]
+    - test_selenium_page_response_time [PASS]
+
+Test ID: 159
+  Function: Tags Search Bar - Empty Input | Test Function Name: test_discover_tags_search_empty_input | Partition: Empty input
+  Description: Check null safety
+  Inputs: Enter null
+  Expected Outputs: Nothing happens
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.266s
+
+Test ID: 160
+  Function: Tags Search Bar - Invalid Input | Test Function Name: test_discover_tags_search_invalid_input | Partition: Invalid input
+  Description: Check input validation
+  Inputs: Enter rghjikoiytfghb
+  Expected Outputs: Search bar says no results found
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.501s
+
+Test ID: 161
+  Function: Tags Search Bar - Autocomplete | Test Function Name: test_discover_tags_search_autocomplete | Partition: Autocomplete
+  Description: Check search bar autocomplete
+  Inputs: Enter s
+  Expected Outputs: Search bar gives list of options
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.296s
+
+Test ID: 162
+  Function: Tags Search Bar - Valid Input | Test Function Name: test_discover_tags_search_valid_input | Partition: Valid input
+  Description: Check tags effect posts
+  Inputs: Enter s and select
+  Expected Outputs: Tag added to list, posts reload with tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.449s
+
+Test ID: 163
+  Function: Tags Search Bar - Change Input | Test Function Name: test_discover_tags_search_change_input | Partition: Change input
+  Description: Check tags effect posts
+  Inputs: Enter a and select
+  Expected Outputs: Another tag added, posts reload
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.883s
+
+Test ID: 164
+  Function: Tag List - Deselect Tag | Test Function Name: test_discover_tag_list_deselect | Partition: Deselect tag
+  Description: Check tags can be deleted
+  Inputs: Click x next to tag
+  Expected Outputs: Tag disappears and posts reload
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.805s
+
+Test ID: 165
+  Function: Filter Select - Open | Test Function Name: test_discover_filter_select_open | Partition: Open filter select
+  Description: Check drop down list has data
+  Inputs: Click the box next to Sort by
+  Expected Outputs: Box extends showing options
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.275s
+
+Test ID: 166
+  Function: Filter Select - Add Following | Test Function Name: test_discover_filter_select_add_following | Partition: Select filter
+  Description: Check filters can be added
+  Inputs: Select following from filter
+  Expected Outputs: Following tag added and posts reload
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.907s
+
+Test ID: 167
+  Function: Filter Select - Deselect Filter | Test Function Name: test_discover_filter_deselect_following | Partition: Deselect filter
+  Description: Check filters can be removed
+  Inputs: Select following again
+  Expected Outputs: Following tag removed and posts reload
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 3.104s
+
+Test ID: 168
+  Function: Post Gallery - Posts Load | Test Function Name: test_discover_posts_load_correctly | Partition: posts load correctly
+  Description: Check posts load and order
+  Inputs: Load discover page
+  Expected Outputs: Posts shown in order, proper ratings and distance
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.433s
+
+Test ID: 169
+  Function: Post Gallery - Posts Load Duplicate | Test Function Name: test_discover_posts_load_correctly_duplicate | Partition: posts load correctly
+  Description: Check posts load and order
+  Inputs: Load discover page
+  Expected Outputs: Posts shown in order, proper ratings and distance
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.422s
+
+Test ID: 170
+  Function: Post Gallery - Following Filter | Test Function Name: test_discover_filtering_following_filter | Partition: filtering works
+  Description: Check posts filter correctly
+  Inputs: Select following filter
+  Expected Outputs: Posts show only followed barbers
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.518s
+
+Test ID: 171
+  Function: Post Gallery - Highest Rated Filter | Test Function Name: test_discover_filtering_highest_rated | Partition: filtering works
+  Description: Check posts filter correctly
+  Inputs: Select highest rated
+  Expected Outputs: Posts show highest rated first
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.658s
+
+Test ID: 172
+  Function: Post Gallery - Closest Filter | Test Function Name: test_discover_filtering_closest | Partition: filtering works
+  Description: Check posts filter correctly
+  Inputs: Select closest filter
+  Expected Outputs: Posts show nearest first
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.756s
+
+Test ID: 173
+  Function: Post Gallery - Most Recent Filter | Test Function Name: test_discover_filtering_most_recent | Partition: filtering works
+  Description: Check posts filter correctly
+  Inputs: Select most recent
+  Expected Outputs: Posts show newest first
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.528s
+
+Test ID: 174
+  Function: Post Gallery - Tag Filtering Sharp Cuts | Test Function Name: test_discover_tag_filtering_sharp_cuts | Partition: tag filtering works
+  Description: Check posts filter by tag
+  Inputs: Select sharp cuts tag
+  Expected Outputs: Posts show only sharp cuts tags
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.249s
+
+Test ID: 175
+  Function: Post Gallery - Tag Filtering Beard | Test Function Name: test_discover_tag_filtering_beard | Partition: tag filtering works
+  Description: Check posts filter by tag
+  Inputs: Select beard tag
+  Expected Outputs: Posts show only beard tags
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.326s
+
+Test ID: 176
+  Function: Post Gallery - Tag Filtering Margret Thatcher | Test Function Name: test_discover_tag_filtering_margret_thatcher | Partition: tag filtering works
+  Description: Check posts filter by tag
+  Inputs: Select Margret Thatcher tag
+  Expected Outputs: Posts show Margret Thatcher only
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.267s
+
+Test ID: 177
+  Function: Post Links to Barber Profile | Test Function Name: test_discover_post_links_to_barber_profile | Partition: post links to barber profile
+  Description: Check post link works
+  Inputs: Click on a post
+  Expected Outputs: User redirected to barber page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.409s
+
+================================================================================
+SECTION: Nav Bar
+--------------------------------------------------------------------------------
+
+Test ID: 178
+  Function: Barber nav buttons load | Test Function Name: test_barber_nav_buttons_load | Partition: role partitions
+  Description: Check correct nav buttons load for barber
+  Inputs: Login as Barber
+  Expected Outputs: User sees "discover", "map", "my profile", "dashboard" and "logout" nav buttons
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.232s
+
+Test ID: 179
+  Function: Customer nav buttons load | Test Function Name: test_customer_nav_buttons_load | Partition: role partitions
+  Description: Check correct nav buttons load for customer
+  Inputs: Login as Customer
+  Expected Outputs: User sees "discover", "map", "my profile" and "logout" nav buttons
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.230s
+
+Test ID: 180
+  Function: Guest nav buttons load | Test Function Name: test_guest_nav_buttons_load | Partition: role partitions
+  Description: Check correct nav buttons load for guest
+  Inputs: Login as Guest
+  Expected Outputs: User sees "discover", "map" and "logout" nav buttons
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 181
+  Function: Link works | Test Function Name: test_discover_button_redirect | Partition: Link works
+  Description: Check button redirect works
+  Inputs: Press "discover" button
+  Expected Outputs: User is redirected to discover page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.429s
+
+Test ID: 182
+  Function: Link works | Test Function Name: test_map_button_redirect | Partition: Link works
+  Description: Check button redirect works
+  Inputs: Press "map" button
+  Expected Outputs: User is redirected to map page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.396s
+
+Test ID: 183
+  Function: Link works | Test Function Name: test_profile_button_redirect | Partition: Link works
+  Description: Check button redirect works
+  Inputs: Press "my profile" button
+  Expected Outputs: User is redirected to my profile page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.761s
+
+Test ID: 184
+  Function: Link works | Test Function Name: test_dashboard_button_redirect | Partition: Link works
+  Description: Check button redirect works
+  Inputs: Press "dashboard" button
+  Expected Outputs: User is redirected to dashboard page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 10.729s
+
+Test ID: 185
+  Function: Link works | Test Function Name: test_logout_button_redirect | Partition: Link works
+  Description: Check button redirect works
+  Inputs: Press "logout" button
+  Expected Outputs: User is redirected to logout page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 3.403s
+
+Test ID: 186
+  Function: re-press link | Test Function Name: test_repress_link_reloads_page | Partition: re-press link
+  Description: Check re-pressing a button wont break the app
+  Inputs: Press link for same page user is currently on
+  Expected Outputs: Page is re-loaded
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 2.399s
+
+================================================================================
+SECTION: Barber Profile
+--------------------------------------------------------------------------------
+
+Test ID: 189
+  Function: User promo loads | Test Function Name: test_user_promo_loads_with_all_data | Partition: user promo
+  Description: Check user promo is loading correctly
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: User promo with profile picture name and barbershop all load
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.195s
+
+Test ID: 190
+  Function: User promo loads without photo | Test Function Name: test_user_promo_loads_without_photo | Partition: user promo
+  Description: Check user promo is loading correctly
+  Inputs: Open page of wertyuj
+  Expected Outputs: User promo with name and barbershop loads but no profile photo
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.503s
+
+Test ID: 191
+  Function: Barber name link works | Test Function Name: test_barber_name_link_works | Partition: barber link
+  Description: Check username link works
+  Inputs: Click barber's name on the user promo
+  Expected Outputs: User is redirected to that barbers page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.235s
+
+Test ID: 192
+  Function: Barbershop name link works | Test Function Name: test_barbershop_name_link_works | Partition: barbershop link
+  Description: Check barbershop name link works
+  Inputs: Click barbershop's name on the user promo
+  Expected Outputs: User is redirected to that barbershop's page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.232s
+
+Test ID: 193
+  Function: Follow button shows following | Test Function Name: test_follow_button_shows_following | Partition: follow button
+  Description: Check follow button loads as following
+  Inputs: Open page of xX_Fade_Queen_Xx123 on account barber@ss.dev
+  Expected Outputs: Button is green and says following
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.163s
+
+Test ID: 194
+  Function: Follow button shows follow | Test Function Name: test_follow_button_shows_follow | Partition: follow button
+  Description: Check follow button loads as follow
+  Inputs: Open page of wertyuj on account barber@ss.dev
+  Expected Outputs: Button is blue and says follow
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.361s
+
+Test ID: 195
+  Function: Unfollow button works | Test Function Name: test_unfollow_button_works | Partition: unfollow
+  Description: Check user can unfollow
+  Inputs: Press the green following button
+  Expected Outputs: button goes blue and greys out
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 196
+  Function: Re-follow button works | Test Function Name: test_re_follow_button_works | Partition: re-follow
+  Description: Check user can re-follow
+  Inputs: Refresh page and press blue follow button
+  Expected Outputs: Button goes green and says following
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 197
+  Function: Bio loads when present | Test Function Name: test_bio_loads_when_present | Partition: check bio
+  Description: Check bio is loading correctly
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: bio is visible on screen
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.272s
+
+Test ID: 198
+  Function: Bio hidden when absent | Test Function Name: test_bio_hidden_when_absent | Partition: check bio
+  Description: Check inexistent bio does not load
+  Inputs: Open page of wertyuj
+  Expected Outputs: bio is NOT visible on screen
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.236s
+
+Test ID: 199
+  Function: Postcode loads | Test Function Name: test_postcode_loads | Partition: check postcode
+  Description: Check postcode loads correctly
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: postcode is visible on screen
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.200s
+
+Test ID: 200
+  Function: Postcode always loads | Test Function Name: test_postcode_always_loads | Partition: check postcode
+  Description: Check postcode loads correctly
+  Inputs: Open page of wertyuj
+  Expected Outputs: postcode is visible on screen
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.242s
+
+Test ID: 201
+  Function: External links load with full data | Test Function Name: test_external_links_load_with_full_data | Partition: Check external links
+  Description: Check links load
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: View website view instagram view tiktok links appear
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.239s
+
+Test ID: 202
+  Function: External links load partial data | Test Function Name: test_external_links_load_partial_data | Partition: Check external links
+  Description: Check only existing links load
+  Inputs: Open page of wertyuj
+  Expected Outputs: View website appears but view instagram and view tiktok dont
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.239s
+
+Test ID: 203
+  Function: Website link redirects | Test Function Name: test_website_link_redirects | Partition: Check website link
+  Description: Check website link works
+  Inputs: Click website link
+  Expected Outputs: User is redirected to the barber's website
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 204
+  Function: Instagram link redirects | Test Function Name: test_instagram_link_redirects | Partition: check instagram link
+  Description: Check instagram link works
+  Inputs: Click instagram link
+  Expected Outputs: User is redirected to barbers instagram
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 205
+  Function: TikTok link redirects | Test Function Name: test_tiktok_link_redirects | Partition: check tiktok link
+  Description: Check tiktok link works
+  Inputs: Click tiktok link
+  Expected Outputs: User is redirected to barbers tiktok
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 206
+  Function: Working hours load | Test Function Name: test_working_hours_load | Partition: check working hours
+  Description: Check barber timetable displays working hours
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: User can see barbers working hours mon-fri 9-5
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.453s
+
+Test ID: 207
+  Function: Working hours hidden when absent | Test Function Name: test_working_hours_hidden_when_absent | Partition: check working hours
+  Description: Check inexistent timetable does not load
+  Inputs: Open page of wertyuj
+  Expected Outputs: User can see no working hours
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.443s
+
+Test ID: 208
+  Function: Mini map loads | Test Function Name: test_mini_map_loads | Partition: Check map
+  Description: check map loads
+  Inputs: Open page of xX_Fade_Queen_Xx123 or wertyuj
+  Expected Outputs: User can see pin location on minimap and see on google maps button
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.216s
+
+Test ID: 209
+  Function: Map widget link works | Test Function Name: test_map_widget_link_works | Partition: Link to map page
+  Description: Check map link works
+  Inputs: Click the map widget
+  Expected Outputs: User is transferred to interactive map page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.207s
+
+Test ID: 210
+  Function: Google Maps button works | Test Function Name: test_google_maps_button_works | Partition: Link to google maps
+  Description: Check link to google maps works
+  Inputs: press see on google maps
+  Expected Outputs: User is redirected to google maps
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.203s
+
+Test ID: 211
+  Function: Average review loads | Test Function Name: test_average_review_loads | Partition: Check average review
+  Description: Check average review score loads
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: User can see barber's average review score 3.8
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.513s
+
+Test ID: 212
+  Function: No reviews message | Test Function Name: test_no_reviews_message | Partition: Check average review
+  Description: Check average review score does not load
+  Inputs: Open page of wertyuj
+  Expected Outputs: User can see No reviews yet
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.462s
+
+Test ID: 213
+  Function: Reviews list loads | Test Function Name: test_reviews_list_loads | Partition: check reviews
+  Description: Check reviews load
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: User can see a list of reviews
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.460s
+
+Test ID: 214
+  Function: Reviews list hidden when absent | Test Function Name: test_reviews_list_hidden_when_absent | Partition: check reviews
+  Description: Check reviews don't load
+  Inputs: Open page of wertyuj
+  Expected Outputs: User can see No reviews yet
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 1.473s
+
+Test ID: 215
+  Function: Gallery loads with 8 photos | Test Function Name: test_gallery_loads_with_8_photos | Partition: Check gallery
+  Description: Check gallery loads correctly
+  Inputs: Open page of xX_Fade_Queen_Xx123
+  Expected Outputs: User can see 8 photos with username and main tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.464s
+
+Test ID: 216
+  Function: Gallery loads with fewer photos | Test Function Name: test_gallery_loads_with_fewer_photos | Partition: Check gallery
+  Description: Check gallery loads correctly
+  Inputs: Open page of wertyuj
+  Expected Outputs: User can see 2 photos with username and NO main tag
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.530s
+
+================================================================================
+SECTION: Barbershop page
+--------------------------------------------------------------------------------
+
+Test ID: 217
+  Function: Check title loads | Test Function Name: test_check_title_loads | Partition: Info
+  Description: Check title loads
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: User can see "Sharp Cuts" title on top of page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 3.432s
+
+Test ID: 218
+  Function: check postcode loads | Test Function Name: test_check_postcode_loads | Partition: Info
+  Description: Check postcode loads correctly
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: postcode is visible on screen under the title
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 3.511s
+
+Test ID: 219
+  Function: Check map loads | Test Function Name: test_check_map_loads | Partition: Info
+  Description: check map loads
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: User can see pin location on minimap
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.873s
+
+Test ID: 220
+  Function: check opening hours load | Test Function Name: test_check_opening_hours_load | Partition: Info
+  Description: Check shop timetable displays opening hours
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: User can see shop opening hours (agregate from all barber's working hours)
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.843s
+
+Test ID: 221
+  Function: check barbers load | Test Function Name: test_check_barbers_load | Partition: Our barbers
+  Description: Check barbers belonging to the shop load
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: User can see "Keir Starmer", "Margret Thatcher" and "Rachel Reaves"
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.824s
+
+Test ID: 222
+  Function: go to barber profile | Test Function Name: test_go_to_barber_profile | Partition: Our barbers
+  Description: check users can go to the barber's profile
+  Inputs: Click "View Profile" on one of the profile cards
+  Expected Outputs: User is redirected to that page
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 1.833s
+
+Test ID: 223
+  Function: check reviews load | Test Function Name: test_check_reviews_load | Partition: Reviews
+  Description: Check reviews load
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: User can see a list of reviews
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.175s
+
+Test ID: 224
+  Function: Check gallery loads | Test Function Name: test_check_gallery_loads | Partition: Gallery
+  Description: Check gallery loads correctly
+  Inputs: Open page of "Sharp Cuts"
+  Expected Outputs: User can see 16 photos from the barbershop with usernames and main tags displayed.
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 2.080s
+
+================================================================================
+TEST SUMMARY
+================================================================================
+Supporting Tests: 33
+Planned Tests: 200
+Total Tests: 239
+Passed: 239
+Failed: 0
+Skipped: 0
+Success Rate: 100.0% (of non-skipped tests)
+
+Exit Code: 0
+Status: ALL TESTS PASSED [OK]
+================================================================================

@@ -1,0 +1,213 @@
+Test ID,Function,Test Function Name,Partition,Inputs,Expected Outputs,Description,Valid/Invalid
+Welcome,,-,-,-,-,-,-
+1,Go to Login Page,test_go_to_login_page,Navigation,"press ""Login"" button",Transfer user to login page,Button navigation to login,v
+2,Go to Signup Page,test_go_to_signup_page,Navigation,"press ""Sign up"" button",Transfer user to signup page,Button navigation to signup,v
+3,Continue as Guest,test_continue_as_guest,Navigation,"press ""Continue as guest"" button",Transfer user to discover page as guest,Guest access,v
+Login,,-,-,-,-,-,-
+4,Invalid Login,test_login_page_invalid_credentials_client_side,Invalid login,"Enter email ""invalid@ss.dev"" password ""111111""",Email or password is incorrect,Attempt login with inexistent account,i
+5,Valid Login,test_login_page_valid_login_attempt_ready,Valid login,"Enter ""barber@ss.dev"" pass ""1111""",accepted,Attempt login with valid account,v
+6,Valid Email Format,test_login_email_validation_elements_present,Valid email,"Enter ""cust@ss.dev""",accepted,Attempt login with valid email,v
+7,Invalid Email No At,test_login_email_format_no_at_symbol,Invalid email format,"Enter ""invalid""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+8,Invalid Email Missing Domain,test_login_email_format_missing_domain,Invalid email format,"Enter ""invalid@""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+9,Invalid Email Incomplete Domain,test_login_email_format_incomplete_domain,Invalid email format,"Enter ""invalid@ss""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+10,Invalid Email No Extension,test_login_page_contains_email_input,Invalid email format,"Enter ""invalid@ss.""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+11,Empty Email,test_login_empty_email_field_handling,Empty email,Enter null,Error message asking to input data,Attempt login without providing email,i
+12,Empty Password,test_login_page_contains_password_input,Empty password,Enter null password,Form requests the password field is filled,Dont enter password,i
+13,Password Too Short,test_login_password_validation_elements,Password too short,"Enter ""1234""",Form request password be at least 6 long,Enter small password,i
+14,Password Too Long,test_login_page_contains_submit_button,password too long,"Enter ""aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa""",Form request password be less than 50,Enter large password,i
+15,Password Too Simple No Number,test_login_valid_password_form_ready,Password too simple,"Enter ""aaaaaa""","Form requests at least 1 special char, 1 capital, 1 number",Attemtp signin with oversimple password,i
+16,Password Too Simple No Capital,test_login_page_contains_form_element,Password too simple,"Enter ""aAaaaa""","Form requests at least 1 special char, 1 capital, 1 number",Attemtp signin with oversimple password,i
+17,Password Too Simple No Special,test_login_page_has_guest_option,Password too simple,"Enter ""aA4aaa""","Form requests at least 1 special char, 1 capital, 1 number",Attemtp signin with oversimple password,i
+18,Valid Password,test_login_page_supabase_config_present,Valid password,"Enter ""aA4&aa""",Form parses the password as valid,Signup with valid password,v
+Signup,,-,-,-,-,-,-
+19,Valid Account Type Customer,test_signup_page_loads,Valid account type,"Select ""Customer""",Transfered to discover page,Create a customer account,v
+20,Valid Account Type Barber,test_signup_page_contains_form_element,Valid account type,"Select ""Barber""",Transfered to My Profile page,Create a barber account,v
+21,Empty Account Type,test_signup_page_contains_email_input,Empty account type,Select neither,Form requests that an option is chosen,Attempt to create a account with no role,i
+22,Valid Username,test_signup_page_contains_password_input,Valid username,"Enter ""kerry""",Form parses the username as valid,Make a new username,v
+23,Duplicate Username,test_signup_page_contains_submit_button,Duplicate username,"Enter ""bob""",Error message asking to use diffrent username,Use username already being used,i
+24,Profanity Filter Username,test_signup_page_has_login_option,Profanity filter,"Enter ""fuck""","Form witholds the username for profanity concerns, asks user to choose another name before submitting",Make a rude username,i
+25,Empty Username,test_signup_page_supabase_config_present,Empty username,Enter null,Form requests that a username is entered,Make no username,i
+26,Username Too Long,test_signup_invalid_credentials,Username too long,"Enter ""iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii""",Form requests that username is less than 50 characters,Make username too long,i
+27,Duplicate Email,test_signup_valid_credentials,Duplicate email,"Enter ""bob@ss.dev""","Error ""email already in use""",Try an email already on the database,i
+28,Valid Email,test_signup_email_validation_present,Valid email,"Enter ""kerry@ss.dev""",Form parses the email as valid,Use a new email,v
+29,Invalid Email No At,test_signup_invalid_email_no_at,Invalid email format,"Enter ""invalid""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+30,Invalid Email Missing Domain,test_signup_invalid_email_missing_domain,Invalid email format,"Enter ""invalid@""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+31,Invalid Email Incomplete Domain,test_signup_empty_email,Invalid email format,"Enter ""invalid@ss""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+32,Invalid Email No Extension,test_signup_empty_password,Invalid email format,"Enter ""invalid@ss.""",Error message asking to input valid email address,Attempt login with syntactly invalid email,i
+33,Empty Email,test_signup_password_too_short,Empty email,Enter null,Error message asking to input data,Attempt login without providing email,i
+34,Empty Password,test_signup_password_too_long,Empty password,Enter null password,Form requests the password field is filled,Dont enter password,i
+35,Password Too Short,test_signup_password_missing_special_char,Password too short,"Enter ""1234""",Form request password be at least 6 long,Enter small password,i
+36,Password Too Long,test_signup_password_missing_number,password too long,"Enter ""aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa""",Form request password be less than 50,Enter large password,i
+37,Password Too Simple No Number,test_signup_valid_password,Password too simple,"Enter ""aaaaaa""","Form requests at least 1 special char, 1 capital, 1 number",Attemtp signin with oversimple password,i
+My Profile,,-,-,-,-,-,-
+38,Profanity Filter Username,test_my_profile_profanity_filter_username,Profanity filter,"Enter ""fuck""","Form witholds the username for profanity concerns, asks user to choose another name before submitting",Make a rude username,i
+39,Duplicate Username,test_my_profile_duplicate_username,Duplicate username,"Enter ""bob""",Error message asking to use diffrent username,Use username already being used,i
+40,Username Too Long,test_my_profile_username_too_long,Username too long,"Enter ""iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii""",Form requests that username is less than 50 characters,Make username too long,i
+41,Valid Username,test_my_profile_valid_username,Valid username,"Enter ""alexander""",Form parses the username as valid,Make a new username,v
+42,Photo Upload PNG,test_my_profile_photo_upload_png,Photo uploads,"Click ""upload"" and chose a png photo",The new photo should show,Check png can be uploaded,v
+43,Photo Upload JPEG,test_my_profile_photo_upload_jpeg,Photo uploads,"Click ""upload"" and chose a jpeg photo",The new photo should show,Check jpeg can be uploaded,v
+44,Photo Upload WEBP,test_my_profile_photo_upload_webp,Photo uploads,"Click ""upload"" and chose a webp photo",The new photo should show,Check webp can be uploaded,v
+45,Photo Upload JPG Invalid,test_my_profile_photo_upload_jpg_invalid,Photo uploads,"Click ""upload"" and chose a jpg photo",The system will regect the photo,Check jpg is rejected,i
+46,Photo Upload Null,test_my_profile_photo_upload_null,Photo uploads,Leave photo as null,The system will regect the photo,Check null saftey,i
+47,Valid Postcode,test_my_profile_postcode_valid,Valid postcode,SW1A 1AA,Accepted,Standard correctly formatted postcode,v
+48,Lowercase Postcode,test_my_profile_postcode_lowercase,Valid postcode,sw1a 1aa,Accepted or converted to uppercase,Lowercase valid postcode,v
+49,Empty Postcode,test_my_profile_postcode_empty,Empty postcode,null,Error message shown / rejected,No postcode entered,i
+50,Postcode Too Short,test_my_profile_postcode_too_short,Postcode too short,A1 1A,Rejected,Postcode does not contain enough characters,i
+51,Postcode Too Long,test_my_profile_postcode_too_long,Postcode too long,SW1A 11AAA,Rejected,Postcode contains too many characters,i
+52,Invalid Postcode Characters,test_my_profile_postcode_invalid_characters,Invalid postcode characters,SW1A 1@A,Rejected,Contains special character not allowed,i
+53,Numeric Only Postcode,test_my_profile_postcode_numeric_only,Numeric only,123456,Rejected,Input is not in postcode format,i
+54,Alphabetic Only Postcode,test_my_profile_postcode_alphabetic_only,Alphabetic only,ABCDEF,Rejected,Input is not in postcode format,i
+55,Incomplete Postcode,test_my_profile_postcode_incomplete,Incomplete postcode,SW1A,Rejected,Incomplete postcode,i
+56,Whitespace Postcode,test_my_profile_postcode_whitespace,Whitespace handling,"""  SW1A 1AA  """,Accepted after trimming or rejected,Checks handling of extra spaces,v
+57,No-Space Postcode,test_my_profile_postcode_no_space,No-space postcode,SW1A1AA,"Accepted if auto-formatted, otherwise rejected",Checks formatting rule,v
+58,Switch to Customer,test_my_profile_account_type_switch_customer,Valid account type,"Select ""Customer""",Barbershop selection dissapears,Switch to customer account,v
+59,Switch to Barber,test_my_profile_account_type_switch_barber,Valid account type,"Select ""Barber""",Barbershop selection appears,Switch to barber account,v
+60,Non-Existent Barbershop,test_my_profile_select_nonexistent_barbershop,Non-existent barbershop,"Enter ""silly styles"" with a barber who has already saved a barbershop to their account","Form ignores input, when ""save changes"" pressed the previous valid barbershop will stay",Change barbershop to inexistent shop,i
+61,Valid Barbershop,test_my_profile_select_valid_barbershop,Valid barbershop,"Select ""Supreme Styling""",Form saves barbershop to barber,Change barbershop to an existing shop,v
+62,Empty Barbershop,test_my_profile_select_empty_barbershop,Empty barbershop,Select null,"Form requests ""Please select a barbershop""",Enter nothing into field,i
+63,Register Valid Barbershop,test_my_profile_register_valid_barbershop,Valid barbershop,"Name = ""top trims"", Location = ""SW1A1AA""",Form saves new barbershop to barber,Create new barbershop with valid inputs,v
+64,Register Empty Barbershop,test_my_profile_register_empty_barbershop,Empty barbershop,"Name = null, Location = null",Form requests data be added,Create new barbershop with null inputs,i
+65,Register Profane Barbershop,test_my_profile_register_profane_barbershop,Profanity filter,"Name = ""fuck"", Location =  ""SW1A1AA""",Form rejects profane input and requests a diffrent name,Create new barbershop with profane inputs,i
+66,Register Duplicate Barbershop,test_my_profile_register_duplicate_barbershop,Duplicate Barbershop,"Name = ""Supreme Styling"",  Location =  ""SW1A1AA""",Form rejects duplicate input and requests a diffrent name,Create new barbershop with duplicate inputs,i
+67,Register Unique Barbershop,test_my_profile_register_unique_barbershop,Valid Barbershop,"Name = ""Not Supreme Styling"",  Location =  ""SW1A1AA""",Form saves new barbershop to barber,"Create new barbershop with valid inputs. Name is UNIQUE, location is dupliacate. Two shops can open in the same postcode.",v
+68,Barbershop Name Too Long,test_my_profile_barbershop_name_too_long,Name too long,"Enter ""iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii""",Form requests that name is less than 50 characters,Create new barbershop with input too long,i
+Barber Dashboard,,-,-,-,-,-,-
+69,Dashboard Loads,test_barber_dashboard_page_loads,Dashboard access,Navigate to /dashboard,Dashboard page loads with HTTP 200 status,Access dashboard as authenticated barber,v
+70,New Account Empty Gallery,test_barber_dashboard_with_new_account,Dashboard display,Open barber dashboard page with new account,"Dashboard shows ""No gallery photos yet"" message",Verify new barber starts with empty gallery,v
+71,Add More Photos Button,test_barber_dashboard_add_more_photos_button,Dashboard UI,View gallery area,"Gallery contains ""Add more photos"" or equivalent button",Check for UI to add photos,v
+72,Photo Upload PNG,test_barber_dashboard_photo_upload_png,Photo uploads,"Click ""upload"" and choose a png photo",Photo upload succeeds,Check png can be uploaded,v
+73,Photo Upload JPEG,test_barber_dashboard_photo_upload_jpeg,Photo uploads,"Click ""upload"" and choose a jpeg photo",Photo upload succeeds,Check jpeg can be uploaded,v
+74,Photo Upload WEBP,test_barber_dashboard_photo_upload_webp,Photo uploads,"Click ""upload"" and choose a webp photo",Photo upload succeeds,Check webp can be uploaded,v
+75,Photo Upload JPG Rejected,test_barber_dashboard_photo_upload_jpg_rejected,Photo uploads,"Click ""upload"" and choose a jpg photo",System rejects the photo,Check jpg is rejected,i
+76,Photo Upload Null Rejected,test_barber_dashboard_photo_upload_null_rejected,Photo uploads,Leave photo as null,System rejects or returns error,Check null safety,i
+77,Tag Null Rejected,test_barber_dashboard_main_tag_null_rejected,Tag validation,Tag field empty,System rejects empty tag,Add photo without tag,i
+78,Tag Invalid Rejected,test_barber_dashboard_main_tag_invalid,Tag validation,"Enter invalid tag ""dfghjk""",System rejects invalid tag,Add photo with non-existent tag,i
+79,Tag Valid Accepted,test_barber_dashboard_main_tag_valid,Tag validation,"Enter valid tag ""beard""",System accepts valid tag,Add photo with valid tag,v
+80,Tag Single Applied,test_barber_dashboard_main_tag_single,Tag management,"Add single tag ""beard""",Photo displays with single tag,Verify single tag assignment,v
+81,Photo Edit,test_barber_dashboard_photo_edit,Photo editing,Edit photo with new tag and new photo,Photo updates with new tag,Photos can be edited,v
+82,Post Upload PNG,test_barber_dashboard_post_upload_png,Post uploads,"Click ""upload"" and choose a png photo",Photo upload succeeds,Check png can be uploaded for posts,v
+83,Post Upload JPEG,test_barber_dashboard_post_upload_jpeg,Post uploads,"Click ""upload"" and choose a jpeg photo",Photo upload succeeds,Check jpeg can be uploaded for posts,v
+84,Post Upload WEBP,test_barber_dashboard_post_upload_webp,Post uploads,"Click ""upload"" and choose a webp photo",Photo upload succeeds,Check webp can be uploaded for posts,v
+85,Post Upload JPG Rejected,test_barber_dashboard_post_upload_jpg_rejected,Post uploads,"Click ""upload"" and choose a jpg photo",System rejects the photo,Check jpg is rejected for posts,i
+86,Post Upload Null Rejected,test_barber_dashboard_post_upload_null_photo_rejected,Post uploads,Leave photo as null,System rejects or returns error,Check null safety for posts,i
+87,Post Tags Null Rejected,test_barber_dashboard_post_tags_null_rejected,Post tag validation,Tags field empty,System rejects empty tags,Create post without tags,i
+88,Post Tags Invalid Rejected,test_barber_dashboard_post_tags_invalid,Post tag validation,"Enter invalid tag ""dfghjk""",System rejects invalid tag,Create post with non-existent tag,i
+89,Post Tags Valid Single,test_barber_dashboard_post_tags_valid,Post tag validation,"Enter valid tag ""beard""",System accepts valid tag,Create post with single valid tag,v
+90,Post Tags Multiple Valid,test_barber_dashboard_post_tags_multiple,Post tag validation,"Enter multiple tags ""beard,fade""",System accepts multiple valid tags,Create post with multiple tags,v
+91,Post Upload Success,test_barber_dashboard_post_upload_success,Post creation,Upload photo with tags and confirm,User redirected to dashboard after upload,Complete post upload flow,v
+Interactive Map,,-,-,-,-,-,-
+92,Location Form Loads No Location,test_map_page_loads,Location popup form,Open map on account with no saved personal location,A popup menu appears asking for user location,Accounts with no stored location are asked for their location,v
+93,Location Form Doesnt Load With Location,test_map_page_with_saved_location,Location popup form,Open map on account with saved personal location,No popup menu appears and map is centered on user location,Accounts with stored location arent asked for their location,v
+94,Change Location With My Location Button,test_map_page_my_location_button,Location popup form,"Open map with saved location and press ""my location"" at bottom",A popup menu appears asking for user location,Users can change their stored location,v
+95,Valid Postcode Standard Format,test_location_form_valid_postcode_standard,Valid postcode,SW1A 1AA,Accepted,Standard correctly formatted postcode,v
+96,Valid Postcode Lowercase,test_location_form_valid_postcode_lowercase,Valid postcode,sw1a 1aa,Accepted or converted to uppercase,Lowercase valid postcode,v
+97,Postcode Too Short,test_location_form_postcode_too_short,Postcode too short,A1 1A,Rejected,Postcode does not contain enough characters,i
+98,Postcode Too Long,test_location_form_postcode_too_long,Postcode too long,SW1A 11AAA,Rejected,Postcode contains too many characters,i
+99,Invalid Postcode Characters,test_location_form_invalid_characters,Invalid postcode characters,SW1A 1@A,Rejected,Contains special character not allowed,i
+100,Numeric Only Postcode,test_location_form_numeric_only,Numeric only,123456,Rejected,Input is not in postcode format,i
+101,Alphabetic Only Postcode,test_location_form_alphabetic_only,Alphabetic only,ABCDEF,Rejected,Input is not in postcode format,i
+102,Incomplete Postcode,test_location_form_incomplete_postcode,Incomplete postcode,SW1A,Rejected,Incomplete postcode,i
+103,Whitespace Postcode,test_location_form_whitespace_handling,Whitespace handling,"""  SW1A 1AA  """,Accepted after trimming or rejected,Checks handling of extra spaces,v
+104,No-Space Postcode,test_location_form_no_space_postcode,No-space postcode,SW1A1AA,"Accepted if auto-formatted, otherwise rejected",Checks formatting rule,v
+105,Set Location Button,test_set_location_with_valid_postcode,Set location,"Press ""set location"" button with valid postcode",Form dissappears and map recenters to new location,Check location can be saved,v
+106,Use Current Location,test_use_current_location,Use current location,"Press ""use current location"" without postcode",User's browser provides postcode and map recenters,Check location can be saved,v
+107,Search Barbershops Empty Input,test_search_barbershops_empty_input,Empty input,"Enter null into the ""search barbershops"" input",Nothing happens,Check null safety,i
+108,Search Barbershops Invalid Input,test_search_barbershops_invalid_input,Invalid input,"Enter ""rghjikoiytfghb""","Search bar says ""no results found""",Check input validation,i
+109,Search Barbershops Autocomplete,test_search_barbershops_autocomplete,Autocorrect,"Enter ""s""","Search bar gives list of options beginning or including ""s""",Check search bar autocomplete,v
+110,Search Barbershops Valid Input,test_search_barbershops_valid_input,Valid input,"Enter ""s"" and select one of the options",Map is re centered onto the barbershop selected,Check barbershops can be viewed,v
+111,Search Barbershops Change Input,test_search_barbershops_change_input,Change input,"Enter ""a"" and select one of the options to change search",Map is re centered onto the barbershop selected,Check different barbershops can be viewed,v
+112,Zoom In Button,test_zoom_in_button,Zoom in,"press ""+"" in top left",Map is zoomed in or does not zoom any further,Check zoom works,v
+113,Zoom Out Button,test_zoom_out_button,Zoom out,"press ""-"" in top left below ""+""",Map is zoomed out or does not zoom any further,Check zoom works,v
+114,User Pin Select,test_user_pin_select,Select pin,Press the user pin (red dot),"A card pops up from user pin saying ""your location""","Check ""my location"" pin works",v
+115,User Pin Deselect,test_user_pin_deselect,Deselect pin,"Press the ""x"" in top right of user pin card",The card dissapears,Check pin card can be hidden,v
+116,Barbershop Pin Select,test_barbershop_pin_select,Select pin,Press the barbershop pin (blue pin marker),"A card pops up from barbershop pin with shop name, distance, postcode, link to website and link to shop page",Check barbershop pin works,v
+117,Barbershop Pin Deselect,test_barbershop_pin_deselect,Deselect pin,"Press the ""x"" in top right of barbershop pin card",The card dissapears,Check pin card can be hidden,v
+118,Barbershop Website Button,test_barbershop_website_button,Go to website,"Press ""website"" button",User is redirected to the barbershop's personal website,Check barber website button works,v
+119,Barbershop Page Button,test_barbershop_page_button,Go to barbershop page,"Press ""go to shop"" button",User is redirected to the barbershop's in app page,Check barbershop page redirect works,v
+Review widget,,-,-,-,-,-,-
+120,Load Reviews,test_review_widget_loads_reviews,Load data,Open barber page,See a list of reviews and replies,Check reviews load from db,v
+121,Barber Highlight,test_review_widget_barber_replies_highlighted,Barber highlight,Open barber page,Barber reply is highlighted and put on top of stack,Check barber replies are highlighted,v
+122,No Reviews Message,test_review_widget_no_reviews_message,Load data,Open newly created barber page,Message saying there are no reviews,Check review widget specifies if there are no reviews yet,v
+123,Star Rating Zero,test_review_widget_star_rating_zero,Star rating select,Select 0 stars,review of 0 stars is valid,Check star selection,v
+124,Star Rating Five,test_review_widget_star_rating_five,Star rating select,Select 5 stars,Review of 5 stars is valid,check star selection,v
+125,Profanity Filter Review,test_review_widget_profanity_filter_review,Profanity filter,"Enter ""fuck""","Form witholds the review for profanity concerns, asks user to choose alternative wording before submitting",Make a rude review,i
+126,Empty Review Rejected,test_review_widget_empty_review_rejected,Empty review,Enter null,Form requests data be added,Make an empty review,i
+127,Review Too Long,test_review_widget_review_too_long,review too big,Enter more than 500 char,Form does not allow more than 500 char inside,Make a big review,i
+128,Valid Review Submission,test_review_widget_valid_review_submission,Valid review,"Enter text ""testing review function"" and 0 stars",Form closes and new review can be seen,Create a review,v
+129,Profanity Filter Reply,test_review_widget_profanity_filter_reply,Profanity filter,"Enter ""fuck""","Form witholds the reply for profanity concerns, asks user to choose alternative wording before submitting",Make a rude reply,i
+130,Empty Reply Rejected,test_review_widget_empty_reply_rejected,Empty reply,Enter null,Form requests data be added,Make an empty reply,i
+131,Reply Too Long,test_review_widget_reply_too_long,reply too big,Enter more than 500 char,Form does not allow more than 500 char inside,Make a big reply,i
+132,Valid Reply Submission,test_review_widget_valid_reply_submission,Valid reply,"Enter text ""testing reply function""",Form closes and new reply can be seen,Create a reply,v
+133,Like Review,test_review_widget_like_review,Like a review,Press the thumbs up icon below a review,The number next to the thumb goes up by 1 and thumb greys,Like a review,v
+134,Like Reply,test_review_widget_like_reply,Like a reply,Press the thumbs up icon below a reply,The number next to the thumb goes up by 1 and thumb greys,Like a reply,v
+135,Like Already Liked Review,test_review_widget_like_already_liked_review,Like an already liked review,Press the thumbs up icon below a review,The number next to the thumb does not go up and thumb stays grey,Attempt to like the same review twice,i
+136,Like Already Liked Reply,test_review_widget_like_already_liked_reply,Like an already liked reply,Press the thumbs up icon below a reply,The number next to the thumb does not go up and thumb stays grey,Attempt to like the same reply twice,i
+Discover,,-,-,-,-,-,-
+137,Tags Search Bar - Empty Input,test_discover_tags_search_empty_input,Empty input,Enter null,Nothing happens,Check null safety,i
+138,Tags Search Bar - Invalid Input,test_discover_tags_search_invalid_input,Invalid input,Enter rghjikoiytfghb,Search bar says no results found,Check input validation,i
+139,Tags Search Bar - Autocomplete,test_discover_tags_search_autocomplete,Autocomplete,Enter s,Search bar gives list of options,Check search bar autocomplete,v
+140,Tags Search Bar - Valid Input,test_discover_tags_search_valid_input,Valid input,Enter s and select,"Tag added to list, posts reload with tag",Check tags effect posts,v
+141,Tags Search Bar - Change Input,test_discover_tags_search_change_input,Change input,Enter a and select,"Another tag added, posts reload",Check tags effect posts,v
+142,Tag List - Deselect Tag,test_discover_tag_list_deselect,Deselect tag,Click x next to tag,Tag disappears and posts reload,Check tags can be deleted,v
+143,Filter Select - Open,test_discover_filter_select_open,Open filter select,Click the box next to Sort by,Box extends showing options,Check drop down list has data,v
+144,Filter Select - Add Following,test_discover_filter_select_add_following,Select filter,Select following from filter,Following tag added and posts reload,Check filters can be added,v
+145,Filter Select - Deselect Filter,test_discover_filter_deselect_following,Deselect filter,Select following again,Following tag removed and posts reload,Check filters can be removed,v
+146,Post Gallery - Posts Load,test_discover_posts_load_correctly,posts load correctly,Load discover page,"Posts shown in order, proper ratings and distance",Check posts load and order,v
+147,Post Gallery - Posts Load Duplicate,test_discover_posts_load_correctly_duplicate,posts load correctly,Load discover page,"Posts shown in order, proper ratings and distance",Check posts load and order,v
+148,Post Gallery - Following Filter,test_discover_filtering_following_filter,filtering works,Select following filter,Posts show only followed barbers,Check posts filter correctly,v
+149,Post Gallery - Highest Rated Filter,test_discover_filtering_highest_rated,filtering works,Select highest rated,Posts show highest rated first,Check posts filter correctly,v
+150,Post Gallery - Closest Filter,test_discover_filtering_closest,filtering works,Select closest filter,Posts show nearest first,Check posts filter correctly,v
+151,Post Gallery - Most Recent Filter,test_discover_filtering_most_recent,filtering works,Select most recent,Posts show newest first,Check posts filter correctly,v
+152,Post Gallery - Tag Filtering Sharp Cuts,test_discover_tag_filtering_sharp_cuts,tag filtering works,Select sharp cuts tag,Posts show only sharp cuts tags,Check posts filter by tag,v
+153,Post Gallery - Tag Filtering Beard,test_discover_tag_filtering_beard,tag filtering works,Select beard tag,Posts show only beard tags,Check posts filter by tag,v
+154,Post Gallery - Tag Filtering Margret Thatcher,test_discover_tag_filtering_margret_thatcher,tag filtering works,Select Margret Thatcher tag,Posts show Margret Thatcher only,Check posts filter by tag,v
+155,Post Links to Barber Profile,test_discover_post_links_to_barber_profile,post links to barber profile,Click on a post,User redirected to barber page,Check post link works,v
+Nav Bar,,-,-,-,-,-,-
+156,Barber nav buttons load,test_barber_nav_buttons_load,role partitions,Login as Barber,"User sees ""discover"", ""map"", ""my profile"", ""dashboard"" and ""logout"" nav buttons",Check correct nav buttons load for barber,v
+157,Customer nav buttons load,test_customer_nav_buttons_load,role partitions,Login as Customer,"User sees ""discover"", ""map"", ""my profile"" and ""logout"" nav buttons",Check correct nav buttons load for customer,v
+158,Guest nav buttons load,test_guest_nav_buttons_load,role partitions,Login as Guest,"User sees ""discover"", ""map"" and ""logout"" nav buttons",Check correct nav buttons load for guest,v
+159,Link works,test_discover_button_redirect,Link works,"Press ""discover"" button",User is redirected to discover page,Check button redirect works,v
+160,Link works,test_map_button_redirect,Link works,"Press ""map"" button",User is redirected to map page,Check button redirect works,v
+161,Link works,test_profile_button_redirect,Link works,"Press ""my profile"" button",User is redirected to my profile page,Check button redirect works,v
+162,Link works,test_dashboard_button_redirect,Link works,"Press ""dashboard"" button",User is redirected to dashboard page,Check button redirect works,v
+163,Link works,test_logout_button_redirect,Link works,"Press ""logout"" button",User is redirected to logout page,Check button redirect works,v
+164,re-press link,test_repress_link_reloads_page,re-press link,Press link for same page user is currently on,Page is re-loaded,Check re-pressing a button wont break the app,i
+Barber Profile,,-,-,-,-,-,-
+165,User promo loads,test_user_promo_loads_with_all_data,user promo,Open page of xX_Fade_Queen_Xx123,User promo with profile picture name and barbershop all load,Check user promo is loading correctly,v
+166,User promo loads without photo,test_user_promo_loads_without_photo,user promo,Open page of wertyuj,User promo with name and barbershop loads but no profile photo,Check user promo is loading correctly,i
+167,Barber name link works,test_barber_name_link_works,barber link,Click barber's name on the user promo,User is redirected to that barbers page,Check username link works,v
+168,Barbershop name link works,test_barbershop_name_link_works,barbershop link,Click barbershop's name on the user promo,User is redirected to that barbershop's page,Check barbershop name link works,v
+169,Follow button shows following,test_follow_button_shows_following,follow button,Open page of xX_Fade_Queen_Xx123 on account barber@ss.dev,Button is green and says following,Check follow button loads as following,v
+170,Follow button shows follow,test_follow_button_shows_follow,follow button,Open page of wertyuj on account barber@ss.dev,Button is blue and says follow,Check follow button loads as follow,v
+171,Unfollow button works,test_unfollow_button_greys_out,unfollow,Press the green following button,button goes blue and greys out,Check user can unfollow,v
+172,Re-follow button works,test_re_follow_persists,re-follow,Refresh page and press blue follow button,Button goes green and says following,Check user can re-follow,v
+173,Bio loads when present,test_bio_loads_when_present,check bio,Open page of xX_Fade_Queen_Xx123,bio is visible on screen,Check bio is loading correctly,v
+174,Bio hidden when absent,test_bio_hidden_when_absent,check bio,Open page of wertyuj,bio is NOT visible on screen,Check inexistent bio does not load,i
+175,Postcode loads,test_postcode_loads,check postcode,Open page of xX_Fade_Queen_Xx123,postcode is visible on screen,Check postcode loads correctly,v
+176,Postcode always loads,test_postcode_always_loads,check postcode,Open page of wertyuj,postcode is visible on screen,Check postcode loads correctly,v
+177,External links load with full data,test_external_links_load_with_full_data,Check external links,Open page of xX_Fade_Queen_Xx123,View website view instagram view tiktok links appear,Check links load,v
+178,External links load partial data,test_external_links_load_partial_data,Check external links,Open page of wertyuj,View website appears but view instagram and view tiktok dont,Check only existing links load,i
+179,Website link redirects,test_website_link_is_valid_url,Check website link,Click website link,User is redirected to the barber's website,Check website link works,v
+180,Instagram link redirects,test_instagram_link_is_valid_url,check instagram link,Click instagram link,User is redirected to barbers instagram,Check instagram link works,v
+181,TikTok link redirects,test_tiktok_link_is_valid_url,check tiktok link,Click tiktok link,User is redirected to barbers tiktok,Check tiktok link works,v
+182,Working hours load,test_working_hours_load,check working hours,Open page of xX_Fade_Queen_Xx123,User can see barbers working hours mon-fri 9-5,Check barber timetable displays working hours,v
+183,Working hours hidden when absent,test_working_hours_hidden_when_absent,check working hours,Open page of wertyuj,User can see no working hours,Check inexistent timetable does not load,i
+184,Mini map loads,test_mini_map_loads,Check map,Open page of xX_Fade_Queen_Xx123 or wertyuj,User can see pin location on minimap and see on google maps button,check map loads,v
+185,Map widget link works,test_map_widget_link_works,Link to map page,Click the map widget,User is transferred to interactive map page,Check map link works,v
+186,Google Maps button works,test_google_maps_button_works,Link to google maps,press see on google maps,User is redirected to google maps,Check link to google maps works,v
+187,Average review loads,test_average_review_loads,Check average review,Open page of xX_Fade_Queen_Xx123,User can see barber's average review score 3.8,Check average review score loads,v
+188,No reviews message,test_no_reviews_message,Check average review,Open page of wertyuj,User can see No reviews yet,Check average review score does not load,i
+189,Reviews list loads,test_reviews_list_loads,check reviews,Open page of xX_Fade_Queen_Xx123,User can see a list of reviews,Check reviews load,v
+190,Reviews list hidden when absent,test_reviews_list_hidden_when_absent,check reviews,Open page of wertyuj,User can see No reviews yet,Check reviews don't load,i
+191,Gallery loads with 8 photos,test_gallery_loads_with_8_photos,Check gallery,Open page of xX_Fade_Queen_Xx123,User can see 8 photos with username and main tag,Check gallery loads correctly,v
+192,Gallery loads with fewer photos,test_gallery_loads_with_fewer_photos,Check gallery,Open page of wertyuj,User can see 2 photos with username and NO main tag,Check gallery loads correctly,v
+Barbershop page,,-,-,-,-,-,-
+193,Check title loads,test_check_title_loads,Info,"Open page of ""Sharp Cuts""","User can see ""Sharp Cuts"" title on top of page",Check title loads,v
+194,check postcode loads,test_check_postcode_loads,Info,"Open page of ""Sharp Cuts""",postcode is visible on screen under the title,Check postcode loads correctly,v
+195,Check map loads,test_check_map_loads,Info,"Open page of ""Sharp Cuts""",User can see pin location on minimap,check map loads,v
+196,check opening hours load,test_check_opening_hours_load,Info,"Open page of ""Sharp Cuts""",User can see shop opening hours (agregate from all barber's working hours),Check shop timetable displays opening hours,v
+197,check barbers load,test_check_barbers_load,Our barbers,"Open page of ""Sharp Cuts""","User can see ""Keir Starmer"", ""Margret Thatcher"" and ""Rachel Reaves""",Check barbers belonging to the shop load,v
+198,go to barber profile,test_go_to_barber_profile,Our barbers,"Click ""View Profile"" on one of the profile cards",User is redirected to that page,check users can go to the barber's profile,v
+199,check reviews load,test_check_reviews_load,Reviews,"Open page of ""Sharp Cuts""",User can see a list of reviews,Check reviews load,v
+200,Check gallery loads,test_check_gallery_loads,Gallery,"Open page of ""Sharp Cuts""",User can see 16 photos from the barbershop with usernames and main tags displayed.,Check gallery loads correctly,v
+,,,,,,,

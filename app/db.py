@@ -1015,19 +1015,40 @@ def update_barber_barbershop(user_id: int, barbershop_id: int) -> None:
 
 
 
-def get_reviews_for_barber(barber_profile_id: int):
-    """Fetch all reviews for a specific barber from the database."""
+def get_reviews_for_barber(barber_id: int):
+    """Fetch all reviews for a specific barber from the database.
+    
+    Returns reviews and replies, with barber replies highlighted first.
+    """
     with _get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 """
-                SELECT r.review_id, r.rating, r.comment, r.created_at, u.username
-                FROM Reviews r
-                JOIN Users u ON r.customer_user_id = u.user_id
-                WHERE r.barber_profile_id = %s
-                ORDER BY r.created_at DESC
+                SELECT 
+                    r.review_id,
+                    r.parent_review_id,
+                    r.rating,
+                    r.text,
+                    r.created_at,
+                    u.username,
+                    u.user_id,
+                    b.barber_id,
+                    (b.user_id = r.user_id) AS is_barber_reply
+                FROM review r
+                JOIN app_user u ON r.user_id = u.user_id
+                LEFT JOIN barber b ON b.barbershop_id = (
+                    SELECT barbershop_id FROM barber WHERE barber_id = %s
+                )
+                WHERE (r.target_barber_id = %s OR r.target_barbershop_id = (
+                    SELECT barbershop_id FROM barber WHERE barber_id = %s
+                ))
+                AND r.status = 'show'
+                ORDER BY 
+                    r.parent_review_id IS NULL DESC,
+                    (b.user_id = r.user_id) DESC,
+                    r.created_at DESC
                 """,
-                (barber_profile_id,),
+                (barber_id, barber_id, barber_id),
             )
             return cur.fetchall()
 
@@ -1397,6 +1418,25 @@ def create_barbershop(name: str, postcode: str, location_lat: float, location_ln
             barbershop_id = cur.fetchone()[0]
         conn.commit()
     return barbershop_id
+
+
+def barbershop_name_exists(name: str) -> bool:
+    """
+    Check if a barbershop with the given name already exists in the database.
+    
+    Args:
+        name: Barbershop name to check
+        
+    Returns:
+        True if the name exists, False otherwise
+    """
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT 1 FROM Barbershop WHERE name = %s LIMIT 1",
+                (name.strip(),),
+            )
+            return cur.fetchone() is not None
 
 
 def follow_barber(user_id: int, barber_id: int) -> bool:

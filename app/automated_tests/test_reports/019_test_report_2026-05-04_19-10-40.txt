@@ -1,0 +1,265 @@
+================================================================================
+SNIP-SNAP AUTOMATED TEST REPORT
+================================================================================
+Generated: 2026-05-04 19:10:41
+
+================================================================================
+SECTION: Welcome
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_welcome_page_loads [PASS]
+
+Test ID: 1
+  Function: Go to Login Page | Test Function Name: test_go_to_login_page | Partition: Navigation
+  Description: Attempt to navigate to login page
+  Inputs: Press "Login" button
+  Expected Outputs: Transfer user to login page with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 2
+  Function: Go to Signup Page | Test Function Name: test_go_to_signup_page | Partition: Navigation
+  Description: Attempt to navigate to signup page
+  Inputs: Press "Sign up" button
+  Expected Outputs: Transfer user to signup page with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 3
+  Function: Continue as Guest | Test Function Name: test_continue_as_guest | Partition: Navigation
+  Description: Attempt to continue as guest and verify redirect
+  Inputs: Press "Continue as guest" button
+  Expected Outputs: Redirect to discover page (HTTP 302/303)
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.001s
+
+Test ID: 4
+  Function: Continue as Guest with Redirect | Test Function Name: test_continue_as_guest_with_redirect | Partition: Navigation
+  Description: Verify guest session creation and complete redirect flow
+  Inputs: Press "Continue as guest" button and follow redirect
+  Expected Outputs: Successfully reach discover page with HTTP 200 status
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.007s
+
+================================================================================
+SECTION: Login
+--------------------------------------------------------------------------------
+
+Test ID: 5
+  Function: Invalid Login | Test Function Name: test_login_page_invalid_credentials_client_side | Partition: Invalid login
+  Description: Attempt login with invalid credentials
+  Inputs: Enter email "invalid@ss.dev" password "111111"
+  Expected Outputs: Login form loads with email and password inputs; Supabase will reject invalid credentials on submission
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 6
+  Function: Valid Login | Test Function Name: test_login_page_valid_login_attempt_ready | Partition: Valid login
+  Description: Attempt login with valid account
+  Inputs: Enter "barber@ss.dev" pass "1111"
+  Expected Outputs: Login form loads with email and password inputs; credentials format passes form validation
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 7
+  Function: Valid Email Format | Test Function Name: test_login_email_validation_elements_present | Partition: Valid email
+  Description: Verify email input exists
+  Inputs: Enter "cust@ss.dev"
+  Expected Outputs: Email input field displays with HTML5 email validation; format passes validation check
+  Valid/Invalid: v
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 8
+  Function: Invalid Email Format | Test Function Name: test_login_email_format_no_at_symbol | Partition: Invalid email format
+  Description: Email input without @ symbol
+  Inputs: Enter "invalid"
+  Expected Outputs: Email input displays with validation; format lacks @ symbol and will fail validation
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 9
+  Function: Invalid Email Format | Test Function Name: test_login_email_format_missing_domain | Partition: Invalid email format
+  Description: Email input incomplete
+  Inputs: Enter "invalid@"
+  Expected Outputs: Email input displays with validation; format incomplete (missing domain) and will fail validation
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 10
+  Function: Invalid Email Format | Test Function Name: test_login_email_format_incomplete_domain | Partition: Invalid email format
+  Description: Email domain incomplete
+  Inputs: Enter "invalid@ss"
+  Expected Outputs: Email input displays with validation; format incomplete (missing extension) and will fail validation
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 11
+  Function: Invalid Email Format | Test Function Name: test_login_page_contains_email_input | Partition: Invalid email format
+  Description: Email extension missing
+  Inputs: Enter "invalid@ss."
+  Expected Outputs: Email input displays with validation; format invalid (no extension) and will fail validation
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 12
+  Function: Empty Email | Test Function Name: test_login_empty_email_field_handling | Partition: Empty email
+  Description: Email field empty
+  Inputs: Enter null
+  Expected Outputs: Email field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 13
+  Function: Empty Password | Test Function Name: test_login_page_contains_password_input | Partition: Empty password
+  Description: Password field empty
+  Inputs: Enter null password
+  Expected Outputs: Password field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 14
+  Function: Password Too Short | Test Function Name: test_login_password_validation_elements | Partition: Password too short
+  Description: Password less than 6 characters
+  Inputs: Enter "1234"
+  Expected Outputs: Password input displays with validation enabled; value (4 chars) fails minimum length requirement (6 chars)
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 15
+  Function: Password Too Long | Test Function Name: test_login_page_contains_submit_button | Partition: Password too long
+  Description: Password exceeds 50 characters
+  Inputs: Enter 51+ characters
+  Expected Outputs: Password input displays with validation enabled; value exceeds maximum length requirement (50 chars)
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+Test ID: 18
+  Function: Password Too Simple | Test Function Name: test_login_valid_password_form_ready | Partition: Password too simple
+  Description: Password lacks special character
+  Inputs: Enter "aA4aaa"
+  Expected Outputs: Password input displays with validation; value fails complexity requirement (missing special character)
+  Valid/Invalid: i
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+================================================================================
+SECTION: Signup
+--------------------------------------------------------------------------------
+
+Supporting tests:
+    - test_signup_page_loads [PASS]
+    - test_signup_page_contains_form_element [PASS]
+    - test_signup_page_contains_email_input [PASS]
+    - test_signup_page_contains_password_input [PASS]
+    - test_signup_page_contains_submit_button [PASS]
+    - test_signup_page_has_login_option [PASS]
+    - test_signup_page_supabase_config_present [PASS]
+    - test_signup_valid_password [PASS]
+
+Test ID: 20
+  Function: Invalid Signup | Test Function Name: test_signup_invalid_credentials | Partition: Invalid credentials
+  Description: Attempt signup with invalid credentials
+  Inputs: Enter email "invalid@ss.dev" password "111111"
+  Expected Outputs: Signup form loads with email and password inputs; Supabase will reject invalid credentials on submission
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 21
+  Function: Valid Signup | Test Function Name: test_signup_valid_credentials | Partition: Valid credentials
+  Description: Attempt signup with valid account
+  Inputs: Enter "barber@ss.dev" pass "aA4&aa"
+  Expected Outputs: Signup form loads with email and password inputs; credentials format passes form validation
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 22
+  Function: Valid Email Format | Test Function Name: test_signup_email_validation_present | Partition: Valid email
+  Description: Verify email input exists
+  Inputs: Enter "cust@ss.dev"
+  Expected Outputs: Email input field displays with HTML5 email validation; format passes validation check
+  Valid/Invalid: v
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 23
+  Function: Invalid Email Format | Test Function Name: test_signup_invalid_email_no_at | Partition: Invalid email format
+  Description: Email input without @ symbol
+  Inputs: Enter "invalid"
+  Expected Outputs: Email input displays with validation; format lacks @ symbol and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.006s
+
+Test ID: 24
+  Function: Invalid Email Format | Test Function Name: test_signup_invalid_email_missing_domain | Partition: Invalid email format
+  Description: Email input incomplete
+  Inputs: Enter "invalid@"
+  Expected Outputs: Email input displays with validation; format incomplete (missing domain) and will fail validation
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 25
+  Function: Empty Email | Test Function Name: test_signup_empty_email | Partition: Empty email
+  Description: Email field empty
+  Inputs: Enter null
+  Expected Outputs: Email field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 26
+  Function: Empty Password | Test Function Name: test_signup_empty_password | Partition: Empty password
+  Description: Password field empty
+  Inputs: Enter null password
+  Expected Outputs: Password field displays; empty value will trigger required field validation error
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 27
+  Function: Password Too Short | Test Function Name: test_signup_password_too_short | Partition: Password too short
+  Description: Password less than 6 characters
+  Inputs: Enter "1234"
+  Expected Outputs: Password input displays with validation enabled; value (4 chars) fails minimum length requirement (6 chars)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 28
+  Function: Password Too Long | Test Function Name: test_signup_password_too_long | Partition: Password too long
+  Description: Password exceeds 50 characters
+  Inputs: Enter 51+ characters
+  Expected Outputs: Password input displays with validation enabled; value exceeds maximum length requirement (50 chars)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 29
+  Function: Password Too Simple | Test Function Name: test_signup_password_missing_special_char | Partition: Password too simple
+  Description: Password lacks special character
+  Inputs: Enter "aaaaaa"
+  Expected Outputs: Password input displays with validation; value fails complexity requirement (missing special character and number)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 30
+  Function: Password Too Simple | Test Function Name: test_signup_password_missing_number | Partition: Password too simple
+  Description: Password lacks number
+  Inputs: Enter "aAaaaa"
+  Expected Outputs: Password input displays with validation; value fails complexity requirement (missing number)
+  Valid/Invalid: i
+  Status: PASS [OK] | Duration: 0.005s
+
+Test ID: 31
+  Function: Valid Password | Test Function Name: Valid password format | Partition: Valid password
+  Description: uppercase
+  Inputs: Enter "aA4&aa"
+  Expected Outputs: Password input displays; value meets all validation requirements (length
+  Valid/Invalid: number
+  Status: SKIP [NOT RUN] | Duration: 0.000s
+
+================================================================================
+TEST SUMMARY
+================================================================================
+Total Tests: 24
+Passed: 24
+Failed: 0
+Success Rate: 100.0%
+
+Exit Code: 0
+Status: ALL TESTS PASSED [OK]
+================================================================================

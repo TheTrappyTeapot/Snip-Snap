@@ -1,0 +1,74 @@
+================================================================================
+SNIP-SNAP AUTOMATED TEST REPORT
+================================================================================
+Generated: 2026-05-04 18:02:43
+
+SECTION: Welcome Page Tests
+--------------------------------------------------------------------------------
+
+Test #1: 0
+  Function Name: test_welcome_page_loads
+  Function: Welcome Page Load
+  Partition: Basic
+  Inputs: -
+  Expected Output: HTTP 200 status and 'Welcome to Snip-Snap' message displayed
+  Description: Verify welcome page loads successfully
+  Valid/Invalid: v
+  Status: PASS [OK]
+  Duration: 0.009s
+
+Test #2: 1
+  Function Name: test_go_to_login_page
+  Function: Go to Login Page
+  Partition: Navigation
+  Inputs: Press "Login" button
+  Expected Output: Transfer user to login page with HTTP 200 status
+  Description: Attempt to navigate to login page
+  Valid/Invalid: v
+  Status: PASS [OK]
+  Duration: 0.006s
+
+Test #3: 2
+  Function Name: test_go_to_signup_page
+  Function: Go to Signup Page
+  Partition: Navigation
+  Inputs: Press "Sign up" button
+  Expected Output: Transfer user to signup page with HTTP 200 status
+  Description: Attempt to navigate to signup page
+  Valid/Invalid: v
+  Status: PASS [OK]
+  Duration: 0.006s
+
+Test #4: 3
+  Function Name: test_continue_as_guest
+  Function: Continue as Guest
+  Partition: Navigation
+  Inputs: Press "Continue as guest" button
+  Expected Output: Redirect to discover page (HTTP 302/303)
+  Description: Attempt to continue as guest and verify redirect
+  Valid/Invalid: v
+  Status: PASS [OK]
+  Duration: 0.001s
+
+Test #5: 3-ext
+  Function Name: test_continue_as_guest_with_redirect
+  Function: Continue as Guest with Redirect
+  Partition: Navigation
+  Inputs: Press "Continue as guest" button and follow redirect
+  Expected Output: Successfully reach discover page with HTTP 200 status
+  Description: Verify guest session creation and complete redirect flow
+  Valid/Invalid: v
+  Status: PASS [OK]
+  Duration: 0.007s
+
+================================================================================
+TEST SUMMARY
+================================================================================
+Total Tests: 5
+Passed: 5
+Failed: 0
+Success Rate: 100.0%
+
+Exit Code: 0
+Status: ALL TESTS PASSED [OK]
+================================================================================

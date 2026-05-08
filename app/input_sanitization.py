@@ -209,13 +209,25 @@ def validate_postcode(postcode):
     if len(stripped) > 8:
         return "Postcode is too long."
 
+    # Check for length - UK postcodes should be at least 6 characters (without space)
+    if len(stripped.replace(" ", "")) < 6:
+        # If it has a space, it's too short; if no space, it's incomplete
+        if " " in stripped:
+            return "Postcode is too short."
+        else:
+            return "Postcode is incomplete."
+
+    # Check for special characters (anything that's not alphanumeric or space)
+    if not all(c.isalnum() or c.isspace() for c in stripped):
+        return "Postcode contains invalid character(s). Please use only letters, numbers, and spaces."
+
     # UK postcode regex: format is [1-2 letters][1-2 digits][optional letter] [1 digit][2 letters]
     # Examples: SW1A 1AA, B33 8TH, CR2 6XH, M1 1AA
     # Space is optional in the regex but commonly present
     uk_postcode_pattern = r"^[A-Z]{1,2}[0-9]{1,2}[A-Z]?\s?[0-9][A-Z]{2}$"
     
     if not re.match(uk_postcode_pattern, stripped):
-        return "Please enter a valid UK postcode (e.g., SW1A 1AA or B33 8TH)."
+        return "Invalid UK postcode format (e.g., SW1A 1AA or B33 8TH)."
 
     # Check for profanities
     err = sanitize_input(stripped)
