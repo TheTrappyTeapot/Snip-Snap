@@ -1,23 +1,13 @@
-Code File Pages
-===============
+Code Files Documentation
+=========================
+
+The source code documentation organized by module and file type.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
+   :caption: Documentation Structure
 
-   app____init__.py
-   app__access.py
-   app__api.py
-   app__app.py
-   app__auth.py
-   app__database_schema.sql
-   app__db.py
-   app__handy_scripts__cleanup_non_post_photos.py
-   app__handy_scripts__clear_all_photos.py
-   app__handy_scripts__generate_haircut_photos.py
-   app__handy_scripts__populate_postcodes_from_coords.py
-   app__input_sanitization.py
-   app__routes.py
-   app__static__css__app.css
+   app/index
    app__static__css__components__barberGallery.css
    app__static__css__components__editableGallery.css
    app__static__css__components__editableUserPromo.css
