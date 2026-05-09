@@ -15,6 +15,7 @@ python:
 
 sphinx:
   configuration: docs/conf.py
+  builder: html
 
 formats:
   - pdf

@@ -19,11 +19,14 @@ extensions = [
     'sphinx.ext.napoleon',
 ]
 
+# Source directory configuration
+source_suffix = '.rst'
+
 # Templates path
 templates_path = ['_templates']
 
 # Exclude patterns
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'source/_build']
 
 # HTML theme
 html_theme = 'sphinx_rtd_theme'
@@ -46,5 +49,5 @@ html_theme_options = {
 # HTML static files
 html_static_path = ['_static']
 
-# Master document
-master_doc = 'source/index'
+# Root document (formerly master_doc)
+root_doc = 'source/index'
