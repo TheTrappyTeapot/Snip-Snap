@@ -187,15 +187,16 @@ def load_test_metadata_from_csv(csv_file):
         with open(csv_file, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # Check if this is a section header (Test ID empty, Function has value)
-                if not row['Test ID'] and row['Function']:
-                    current_section = row['Function'].strip()
+                # Check if this is a section header (Test Function Name is '-', indicates section row)
+                # Section rows have format: "SectionName,,-,-,-,-,-,-"
+                if row['Test Function Name'].strip() == '-' and not row['Function'].strip() and row['Test ID'].strip():
+                    current_section = row['Test ID'].strip()
                     if current_section not in sections:
                         sections.append(current_section)
                     continue
                 
-                # Skip rows with no test function name
-                if not row['Test Function Name']:
+                # Skip rows with no test function name or placeholder '-'
+                if not row['Test Function Name'] or row['Test Function Name'].strip() == '-':
                     continue
                 
                 test_func_name = row['Test Function Name'].strip()
@@ -221,6 +222,8 @@ def load_test_metadata_from_csv(csv_file):
                     metadata_by_id[test_id] = {**entry, "func_name": test_func_name}
     except Exception as e:
         print(f"Warning: Could not load test metadata from CSV: {e}")
+        import traceback
+        traceback.print_exc()
     
     return metadata, metadata_by_id, sections
 
