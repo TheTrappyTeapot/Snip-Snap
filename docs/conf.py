@@ -50,4 +50,4 @@ html_theme_options = {
 html_static_path = ['_static']
 
 # Root document (formerly master_doc)
-root_doc = 'source/index'
+root_doc = 'index'
