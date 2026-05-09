@@ -2,9 +2,10 @@ CSS Stylesheets
 ================
 
 .. toctree::
-   :maxdepth: 2
-   :glob:
+   :maxdepth: 1
+   :hidden:
 
-   *.rst
+   app.css
+   main.css
    components/index
    pages/index

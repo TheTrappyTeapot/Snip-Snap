@@ -4,8 +4,8 @@ HTML Templates
 Flask Jinja2 HTML templates.
 
 .. toctree::
-   :maxdepth: 2
-   :glob:
+   :maxdepth: 1
+   :hidden:
 
-   *.rst
+   base.html
    pages/index

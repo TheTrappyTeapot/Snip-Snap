@@ -5,6 +5,11 @@ JavaScript for major application features.
 
 .. toctree::
    :maxdepth: 1
-   :glob:
+   :hidden:
 
-   *.rst
+   discoverSearch.js
+   galleryEdit.js
+   postGallery.js
+   profileEdit.js
+   timetableEdit.js
+   uploadPost.js
