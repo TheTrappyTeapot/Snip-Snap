@@ -1,5 +1,43 @@
-app/handy_scripts/generate_haircut_photos.py
-============================================
+app/handy_scripts/generate_haircut_photos.py - Generate Test Photos
+==================================================
+
+**Purpose**: Utility script to generate sample haircut photos for testing and development.
+
+**What it does**:
+
+This development script:
+
+- Creates synthetic haircut images using image generation
+- Uploads them to the gallery for testing
+- Associates photos with test barber accounts
+- Generates realistic-looking test data
+- Populates the discovery feed for UI testing
+
+**How to use**:
+
+Run from the command line::
+
+    python -m app.handy_scripts.generate_haircut_photos
+
+**When to use**:
+
+- Development: Populate test database with sample data
+- UI/UX testing: Test gallery layout with multiple images
+- Demo: Show working application to stakeholders
+- Load testing: Generate large amounts of test content
+
+**Configuration**:
+
+You can customize:
+
+- Number of photos to generate (default: 20)
+- Which barbers to associate photos with
+- Photo categories/styles
+
+**Example**::
+
+    # Generate 50 photos for barber_id 1
+    python -m app.handy_scripts.generate_haircut_photos --count 50 --barber 1===================
 
 Overview
 --------

@@ -1,5 +1,54 @@
-app/db.py
-=========
+app/db.py - Database Access Layer
+==================================
+
+**Purpose**: Provides all database operations for the Snip-Snap application.
+
+**What it does**:
+
+This module contains all functions for interacting with the PostgreSQL database hosted on Supabase. It handles:
+
+- User management (create, read, update user profiles)
+- Barbershop information and operations
+- Photo gallery management and uploads
+- Reviews and ratings system
+- Social features (follow/unfollow barbers)
+- Search and discovery queries
+
+**Key Functions**:
+
+- ``_get_conn()``: Creates PostgreSQL connection with SSL
+- ``create_app_user(email, username, role)``: Creates a new user
+- ``update_user_profile(...)``: Updates user information
+- ``fetch_discover_posts(...)``: Gets paginated gallery posts for discovery
+- ``create_haircut_post(...)``: Creates a new photo post
+- ``get_barbershops_for_map()``: Gets barbershops for map display
+- ``create_review(...)``: Submits a review for a barber
+- ``follow_barber(user_id, barber_id)``: Follow a barber
+
+**How to use**:
+
+Import and use database functions throughout the application::
+
+    from app.db import create_app_user, update_user_profile, fetch_discover_posts
+    
+    # Create a user
+    user_id = create_app_user("user@example.com", "username123", "customer")
+    
+    # Update profile
+    update_user_profile(user_id, username="newname", role="barber")
+    
+    # Get discovery posts
+    posts = fetch_discover_posts(limit=20, offset=0)
+
+**Environment Requirements**:
+
+- ``DATABASE_URL``: PostgreSQL connection string from Supabase
+
+**Connection Details**:
+
+- Automatically enforces SSL connection for security
+- Uses connection pooling for performance
+- Returns RealDictCursor for easy dict-based row access
 
 Overview
 --------

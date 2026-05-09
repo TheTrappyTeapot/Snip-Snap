@@ -1,5 +1,66 @@
-app/api.py
-==========
+app/api.py - REST API Endpoints
+==============================
+
+**Purpose**: Provides JSON REST API endpoints for frontend applications.
+
+**What it does**:
+
+This module defines all API endpoints used by the frontend (JavaScript) to communicate with the backend. It handles:
+
+- User authentication and registration
+- User profile management
+- Barbershop and barber data retrieval
+- Gallery photo uploads and retrieval
+- Review submission and management
+- Social features (follow/unfollow)
+- Map data for barbershop locations
+- Discovery feed with pagination
+
+**Key Endpoints**:
+
+- ``POST /api/auth/create-user``: Create new user account
+- ``GET /api/discover``: Get paginated gallery posts
+- ``POST /api/upload-photo``: Upload a new gallery photo
+- ``PUT /api/profile``: Update user profile
+- ``GET /api/barbershops``: Get list of barbershops
+- ``POST /api/reviews``: Create a review
+- ``GET /api/reviews/<barber_id>``: Get reviews for a barber
+- ``POST /api/follow``: Follow a barber
+- ``DELETE /api/follow``: Unfollow a barber
+
+**How to use**:
+
+Frontend JavaScript makes requests to these endpoints::
+
+    // JavaScript example
+    const response = await fetch('/api/discover?limit=20&offset=0');
+    const posts = await response.json();
+
+**Response Format**:
+
+All endpoints return JSON with status information::
+
+    {
+        "success": true,
+        "data": { ... },
+        "message": "Operation successful"
+    }
+
+**Authentication**:
+
+Most endpoints require a valid Supabase JWT token in the Authorization header::
+
+    Authorization: Bearer <JWT_TOKEN>
+
+**Error Handling**:
+
+API returns appropriate HTTP status codes:
+
+- ``200``: Success
+- ``400``: Bad request (validation error)
+- ``401``: Unauthorized (invalid token)
+- ``403``: Forbidden (insufficient permissions)
+- ``500``: Server error=
 
 Overview
 --------
